@@ -5,11 +5,9 @@ const Hello: React.FC = () => {
     const hours = date.getHours() + 1;
     if (5 < hours && hours < 11) {
       return "morning.";
-    }
-    else if (1 < hours && hours < 16) {
+    } else if (1 < hours && hours < 16) {
       return "afternoon.";
-    }
-    else {
+    } else {
       return "night.";
     }
   };
