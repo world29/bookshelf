@@ -2,7 +2,7 @@
   "name": "bookshelf",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
@@ -10,9 +10,10 @@
     "webpack:build": "webpack --config webpack.config.js",
     "webpack:watch": "webpack --watch --config webpack.config.js",
     "webpack:start": "webpack serve --config webpack.config.js --open",
+    "electron": "electron .",
     "build": "run-s tsc webpack:build",
     "watch": "run-p tsc:watch webpack:watch",
-    "start": "run-p tsc:watch webpack:start",
+    "start": "run-s webpack:build electron",
     "lint": "eslint src",
     "lint:fix": "eslint --fix src"
   },
@@ -30,6 +31,7 @@
     "@typescript-eslint/eslint-plugin": "^5.27.1",
     "@typescript-eslint/parser": "^5.27.1",
     "babel-loader": "^8.2.5",
+    "electron": "^19.0.3",
     "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",

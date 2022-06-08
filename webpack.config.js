@@ -2,12 +2,12 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ESLintWebpackPlugin = require("eslint-webpack-plugin");
 
-module.exports = {
+const common = {
   mode: "development",
-  entry: path.resolve(__dirname, "src/app.tsx"),
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "app.js",
+    publicPath: "./",
+    filename: "[name].js",
   },
   resolve: {
     modules: [path.resolve(__dirname, "node_modules")],
@@ -32,6 +32,27 @@ module.exports = {
       },
     ],
   },
+};
+
+const main = {
+  ...common,
+  target: "electron-main",
+  entry: {
+    main: "./src/main/index.ts",
+  },
+  plugins: [
+    new ESLintWebpackPlugin({
+      extensions: ["ts", "tsx", "js"],
+    }),
+  ],
+};
+
+const renderer = {
+  ...common,
+  target: "electron-renderer",
+  entry: {
+    renderer: "./src/app.tsx",
+  },
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "src/index.html"),
@@ -44,3 +65,5 @@ module.exports = {
     static: path.resolve(__dirname, "dist"),
   },
 };
+
+module.exports = [main, renderer];
