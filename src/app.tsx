@@ -1,16 +1,20 @@
 ﻿import * as React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
 import { Files } from "./features/files/Files";
 
 require("./renderer");
 
-ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <Files />
-    </Provider>
-  </React.StrictMode>,
-  document.getElementById("app")
-);
+const container = document.getElementById("app");
+if (container) {
+  const root = createRoot(container);
+
+  root.render(
+    <React.StrictMode>
+      <Provider store={store}>
+        <Files />
+      </Provider>
+    </React.StrictMode>
+  );
+}
