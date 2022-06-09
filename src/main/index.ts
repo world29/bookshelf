@@ -1,4 +1,5 @@
 ﻿import { app, BrowserWindow } from "electron";
+import { join } from "path";
 
 import { setupMenu } from "./menu";
 
@@ -6,6 +7,9 @@ const createWindow = () => {
   const mainWindow: BrowserWindow = new BrowserWindow({
     width: 1600,
     height: 900,
+    webPreferences: {
+      preload: join(__dirname, "preload.js"),
+    },
   });
   mainWindow.loadFile("dist/index.html");
 

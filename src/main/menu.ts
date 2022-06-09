@@ -15,7 +15,9 @@ const handleFileOpen = (appWindow: BrowserWindow): void => {
       if (canceled) {
         return;
       }
-      console.log(filePaths);
+
+      // レンダラープロセスにファイル登録のメッセージを送る
+      appWindow.webContents.send("file-added", filePaths);
     })
     .catch((err) => console.error(err));
 };

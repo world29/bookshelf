@@ -66,4 +66,12 @@ const renderer = {
   },
 };
 
-module.exports = [main, renderer];
+const preload = {
+  ...common,
+  target: "electron-preload",
+  entry: {
+    preload: "./src/preload.ts",
+  },
+};
+
+module.exports = [main, renderer, preload];
