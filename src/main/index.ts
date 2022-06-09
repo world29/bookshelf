@@ -1,11 +1,15 @@
 ﻿import { app, BrowserWindow } from "electron";
 
+import { setupMenu } from "./menu";
+
 const createWindow = () => {
   const mainWindow: BrowserWindow = new BrowserWindow({
     width: 1600,
     height: 900,
   });
   mainWindow.loadFile("dist/index.html");
+
+  setupMenu(mainWindow);
 
   mainWindow.webContents.openDevTools();
 };
