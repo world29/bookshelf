@@ -51,7 +51,7 @@ const renderer = {
   ...common,
   target: "electron-renderer",
   entry: {
-    renderer: "./src/app.tsx",
+    renderer: "./src/renderer/index.ts",
   },
   plugins: [
     new HtmlWebpackPlugin({
