@@ -1,26 +1,28 @@
 ﻿import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+import { FileInfo } from "../../../lib/file";
 import { RootState } from "../../app/store";
 
 export interface FilesState {
-  paths: string[];
+  fileInfos: FileInfo[];
 }
 
 const initialState: FilesState = {
-  paths: ["hoge", "fuga", "foo", "bar"],
+  fileInfos: [],
 };
 
 export const filesSlice = createSlice({
   name: "files",
   initialState,
   reducers: {
-    addFilePath: (state, action: PayloadAction<string>) => {
-      state.paths.push(action.payload);
+    addFile: (state, action: PayloadAction<FileInfo>) => {
+      state.fileInfos.push(action.payload);
     },
   },
 });
 
-export const { addFilePath } = filesSlice.actions;
+export const { addFile } = filesSlice.actions;
 
-export const selectFiles = (state: RootState) => state.files.paths;
+export const selectFiles = (state: RootState) => state.files.fileInfos;
 
 export default filesSlice.reducer;

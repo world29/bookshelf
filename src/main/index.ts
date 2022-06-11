@@ -1,7 +1,28 @@
 ﻿import { app, BrowserWindow } from "electron";
 import { join } from "path";
 
+import { IFileRegistry } from "../lib/file";
+import { IContext } from "./context";
+import { FileRegistry } from "./file-registry";
 import { setupMenu } from "./menu";
+
+class Context implements IContext {
+  private _window: BrowserWindow;
+  private _fileRegistry: IFileRegistry;
+
+  constructor(window: BrowserWindow) {
+    this._window = window;
+    this._fileRegistry = new FileRegistry();
+  }
+
+  get fileRegistry(): IFileRegistry {
+    return this._fileRegistry;
+  }
+
+  get appWindow(): BrowserWindow {
+    return this._window;
+  }
+}
 
 const createWindow = () => {
   const mainWindow: BrowserWindow = new BrowserWindow({
@@ -13,7 +34,9 @@ const createWindow = () => {
   });
   mainWindow.loadFile("dist/index.html");
 
-  setupMenu(mainWindow);
+  const context = new Context(mainWindow);
+
+  setupMenu(context);
 
   mainWindow.webContents.openDevTools();
 };

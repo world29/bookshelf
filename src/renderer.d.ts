@@ -1,8 +1,10 @@
 ﻿import { IpcRendererEvent } from "electron";
 
+import { FileInfo } from "./lib/file";
+
 export interface IElectronAPI {
   onFileAdded: (
-    callback: (event: IpcRendererEvent, files: string[]) => void
+    callback: (event: IpcRendererEvent, fileInfo: FileInfo) => void
   ) => void;
 }
 

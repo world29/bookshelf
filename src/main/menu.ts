@@ -1,13 +1,12 @@
-﻿import { BrowserWindow, dialog, Menu, MenuItem } from "electron";
+﻿import { dialog, Menu, MenuItem } from "electron";
+import { IContext } from "./context";
 
 /**
  * [File > Open] メニューのハンドラ
- *
- * @param {BrowserWindow} appWindow - アプリケーションウィンドウ (ダイアログを開くのに必要)
  */
-const handleFileOpen = (appWindow: BrowserWindow): void => {
+const handleFileOpen = (context: IContext): void => {
   dialog
-    .showOpenDialog(appWindow, {
+    .showOpenDialog(context.appWindow, {
       title: "select file to open",
       properties: ["openFile"],
     })
@@ -16,25 +15,22 @@ const handleFileOpen = (appWindow: BrowserWindow): void => {
         return;
       }
 
-      // レンダラープロセスにファイル登録のメッセージを送る
-      appWindow.webContents.send("file-added", filePaths);
+      context.fileRegistry.requestAddFiles(filePaths);
     })
     .catch((err) => console.error(err));
 };
 
 /**
  * アプリケーションメニューの初期化
- *
- * @param {BrowserWindow} appWindow - アプリケーションウィンドウ
  */
-export function setupMenu(appWindow: BrowserWindow): void {
+export function setupMenu(context: IContext): void {
   const fileMenu = new MenuItem({
     role: "fileMenu",
     submenu: [
       {
         label: "Open",
         click: () => {
-          handleFileOpen(appWindow);
+          handleFileOpen(context);
         },
       },
       { type: "separator" },

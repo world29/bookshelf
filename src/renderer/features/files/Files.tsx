@@ -11,12 +11,16 @@ export function Files() {
         <thead>
           <tr>
             <th>FilePath</th>
+            <th>FileSize</th>
+            <th>FileHash</th>
           </tr>
         </thead>
         <tbody>
-          {files.map((value, index) => (
+          {files.map((fileInfo, index) => (
             <tr key={index}>
-              <td>{value}</td>
+              <td>{fileInfo.filePath}</td>
+              <td>{fileInfo.fileSize}</td>
+              <td>{fileInfo.fileHash}</td>
             </tr>
           ))}
         </tbody>
