@@ -45,6 +45,9 @@ const main = {
       extensions: ["ts", "tsx", "js"],
     }),
   ],
+  externals: {
+    sqlite3: "commonjs sqlite3",
+  },
 };
 
 const renderer = {
