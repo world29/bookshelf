@@ -1,9 +1,17 @@
-﻿import * as React from "react";
-import { useAppSelector } from "../../app/hooks";
-import { selectFiles } from "./filesSlice";
+﻿import React, { useEffect } from "react";
+
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { loadFiles, selectFiles } from "./filesSlice";
 
 export function Files() {
   const files = useAppSelector(selectFiles);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    window.electronAPI
+      .getFiles()
+      .then((fileInfos) => dispatch(loadFiles(fileInfos)));
+  }, []);
 
   return (
     <div>
@@ -13,6 +21,7 @@ export function Files() {
             <th>FilePath</th>
             <th>FileSize</th>
             <th>FileHash</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -21,6 +30,18 @@ export function Files() {
               <td>{fileInfo.filePath}</td>
               <td>{fileInfo.fileSize}</td>
               <td>{fileInfo.fileHash}</td>
+              <td>
+                <button
+                  onClick={() =>
+                    window.electronAPI
+                      .removeFile(fileInfo.filePath)
+                      .then(() => window.electronAPI.getFiles())
+                      .then((fileInfos) => dispatch(loadFiles(fileInfos)))
+                  }
+                >
+                  x
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

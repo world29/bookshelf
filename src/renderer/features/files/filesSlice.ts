@@ -18,10 +18,13 @@ export const filesSlice = createSlice({
     addFile: (state, action: PayloadAction<FileInfo>) => {
       state.fileInfos.push(action.payload);
     },
+    loadFiles: (state, action: PayloadAction<FileInfo[]>) => {
+      state.fileInfos = action.payload;
+    },
   },
 });
 
-export const { addFile } = filesSlice.actions;
+export const { addFile, loadFiles } = filesSlice.actions;
 
 export const selectFiles = (state: RootState) => state.files.fileInfos;
 

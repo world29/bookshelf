@@ -3,7 +3,7 @@ import { join } from "path";
 
 import { IFileRegistry } from "../lib/file";
 import { IContext } from "./context";
-import { FileRegistry } from "./file-registry";
+import fileRegistry from "./file-registry";
 import { setupMenu } from "./menu";
 
 class Context implements IContext {
@@ -12,7 +12,7 @@ class Context implements IContext {
 
   constructor(window: BrowserWindow) {
     this._window = window;
-    this._fileRegistry = new FileRegistry();
+    this._fileRegistry = fileRegistry;
   }
 
   get fileRegistry(): IFileRegistry {

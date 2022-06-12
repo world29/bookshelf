@@ -6,6 +6,8 @@ export interface IElectronAPI {
   onFileAdded: (
     callback: (event: IpcRendererEvent, fileInfo: FileInfo) => void
   ) => void;
+  removeFile: (filePath: string) => Promise<void>;
+  getFiles: () => Promise<FileInfo[]>;
 }
 
 declare global {

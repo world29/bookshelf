@@ -1,8 +1,14 @@
 ﻿import fs from "fs";
 import crypt from "crypto";
-import { BrowserWindow } from "electron";
+import { BrowserWindow, ipcMain, IpcMainInvokeEvent } from "electron";
 
 import { FileInfo, IFileRegistry } from "../lib/file";
+
+ipcMain.handle("remove-file", (_event: IpcMainInvokeEvent, filePath: string) =>
+  Promise.resolve(fileRegistry.removeFile(filePath))
+);
+
+ipcMain.handle("get-files", () => Promise.resolve(fileRegistry.getFiles()));
 
 // レンダラープロセスにファイル登録のメッセージを送る
 const sendFileAdded = (fileInfo: FileInfo) => {
@@ -12,11 +18,32 @@ const sendFileAdded = (fileInfo: FileInfo) => {
   }
 };
 
-export class FileRegistry implements IFileRegistry {
+class FileRegistry implements IFileRegistry {
+  private fileInfos: FileInfo[];
+
+  constructor() {
+    this.fileInfos = [
+      { filePath: "hoge/fuga", fileSize: 200, fileHash: "hashshahshhash" },
+    ];
+  }
+
   requestAddFiles(filePaths: string[]) {
     filePaths.forEach((filePath) =>
-      this.loadFile(filePath).then((fileInfo) => sendFileAdded(fileInfo))
+      this.loadFile(filePath).then((fileInfo) => {
+        this.fileInfos.push(fileInfo);
+        sendFileAdded(fileInfo);
+      })
     );
+  }
+
+  removeFile(filePath: string) {
+    this.fileInfos = this.fileInfos.filter(
+      (info) => info.filePath !== filePath
+    );
+  }
+
+  getFiles() {
+    return this.fileInfos;
   }
 
   loadFile(filePath: string): Promise<FileInfo> {
@@ -38,3 +65,6 @@ export class FileRegistry implements IFileRegistry {
     });
   }
 }
+
+const fileRegistry = new FileRegistry();
+export default fileRegistry;
