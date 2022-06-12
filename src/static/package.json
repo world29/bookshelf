@@ -1,0 +1,11 @@
+{
+  "productName": "bookshelf",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "sqlite3": "^5.0.8"
+  }
+}

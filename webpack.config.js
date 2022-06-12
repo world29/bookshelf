@@ -1,6 +1,7 @@
 ﻿const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ESLintWebpackPlugin = require("eslint-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 const common = {
   mode: "development",
@@ -41,6 +42,9 @@ const main = {
     main: "./src/main/index.ts",
   },
   plugins: [
+    new CopyWebpackPlugin({
+      patterns: [{ from: "src/static/package.json" }],
+    }),
     new ESLintWebpackPlugin({
       extensions: ["ts", "tsx", "js"],
     }),
