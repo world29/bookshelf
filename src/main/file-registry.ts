@@ -1,14 +1,22 @@
 ﻿import fs from "fs";
 import crypt from "crypto";
-import { BrowserWindow, ipcMain, IpcMainInvokeEvent } from "electron";
+import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent } from "electron";
+import sqlite3 from "sqlite3";
+import { join } from "path";
 
 import { FileInfo, IFileRegistry } from "../lib/file";
 
 ipcMain.handle("remove-file", (_event: IpcMainInvokeEvent, filePath: string) =>
-  Promise.resolve(fileRegistry.removeFile(filePath))
+  fileRegistry.removeFile(filePath)
 );
 
-ipcMain.handle("get-files", () => Promise.resolve(fileRegistry.getFiles()));
+ipcMain.handle("get-files", () => fileRegistry.getFiles());
+
+interface FileTableRow {
+  file_path: string;
+  file_size: number;
+  file_hash: string;
+}
 
 // レンダラープロセスにファイル登録のメッセージを送る
 const sendFileAdded = (fileInfo: FileInfo) => {
@@ -19,31 +27,69 @@ const sendFileAdded = (fileInfo: FileInfo) => {
 };
 
 class FileRegistry implements IFileRegistry {
-  private fileInfos: FileInfo[];
+  private db: sqlite3.Database;
 
   constructor() {
-    this.fileInfos = [
-      { filePath: "hoge/fuga", fileSize: 200, fileHash: "hashshahshhash" },
-    ];
+    this.db = new sqlite3.Database(this.databasePath);
+  }
+
+  get databasePath() {
+    return join(app.getPath("userData"), "files.db");
+  }
+
+  initialize() {
+    this.db.run(
+      "CREATE TABLE IF NOT EXISTS MEMBERS(file_path, file_size, file_hash)"
+    );
+  }
+
+  finalize() {
+    this.db.close();
   }
 
   requestAddFiles(filePaths: string[]) {
     filePaths.forEach((filePath) =>
       this.loadFile(filePath).then((fileInfo) => {
-        this.fileInfos.push(fileInfo);
-        sendFileAdded(fileInfo);
+        this.addFile(fileInfo);
       })
     );
   }
 
-  removeFile(filePath: string) {
-    this.fileInfos = this.fileInfos.filter(
-      (info) => info.filePath !== filePath
+  addFile(fileInfo: FileInfo) {
+    this.db.run(
+      "INSERT INTO MEMBERS(file_path, file_size, file_hash) values(?, ?, ?)",
+      fileInfo.filePath,
+      fileInfo.fileSize,
+      fileInfo.fileHash,
+      () => sendFileAdded(fileInfo)
     );
   }
 
+  removeFile(filePath: string) {
+    return new Promise<void>((resolve) => {
+      this.db.run("DELETE FROM MEMBERS WHERE file_path = ?", filePath, () =>
+        resolve()
+      );
+    });
+  }
+
   getFiles() {
-    return this.fileInfos;
+    return new Promise<FileInfo[]>((resolve, reject) => {
+      this.db.all(
+        "SELECT * FROM MEMBERS",
+        (err: Error, rows: FileTableRow[]) => {
+          if (err) reject(err);
+
+          const fileInfos = rows.map<FileInfo>((row) => ({
+            filePath: row.file_path,
+            fileSize: row.file_size,
+            fileHash: row.file_hash,
+          }));
+
+          resolve(fileInfos);
+        }
+      );
+    });
   }
 
   loadFile(filePath: string): Promise<FileInfo> {
@@ -67,4 +113,7 @@ class FileRegistry implements IFileRegistry {
 }
 
 const fileRegistry = new FileRegistry();
+
+fileRegistry.initialize();
+
 export default fileRegistry;

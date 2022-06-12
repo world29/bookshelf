@@ -13,10 +13,10 @@ export interface IFileRegistry {
   /**
    * ファイルをレジストリから削除する (ファイルシステムからは削除しない)
    */
-  removeFile: (filePath: string) => void;
+  removeFile: (filePath: string) => Promise<void>;
 
   /**
    * 登録されたファイルの取得
    */
-  getFiles: () => FileInfo[];
+  getFiles: () => Promise<FileInfo[]>;
 }
