@@ -32,7 +32,7 @@ const createWindow = () => {
       preload: join(__dirname, "preload.js"),
     },
   });
-  mainWindow.loadFile("dist/index.html");
+  mainWindow.loadFile("index.html");
 
   const context = new Context(mainWindow);
 
