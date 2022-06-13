@@ -1,5 +1,5 @@
 ﻿import { store } from "./app/store";
-import { loadBooks } from "./features/files/filesSlice";
+import { loadBooks } from "./features/books/booksSlice";
 
 window.electronAPI.onBookAdded(() => {
   window.electronAPI

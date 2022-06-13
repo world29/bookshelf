@@ -1,6 +1,6 @@
 ﻿import { IpcRendererEvent } from "electron";
 
-import { BookInfo } from "./lib/file";
+import { BookInfo } from "./lib/book";
 
 export interface IElectronAPI {
   onBookAdded: (

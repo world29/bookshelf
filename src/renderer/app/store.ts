@@ -1,9 +1,9 @@
 ﻿import { configureStore } from "@reduxjs/toolkit";
-import filesReducer from "../features/files/filesSlice";
+import booksReducer from "../features/books/booksSlice";
 
 export const store = configureStore({
   reducer: {
-    files: filesReducer,
+    books: booksReducer,
   },
 });
 

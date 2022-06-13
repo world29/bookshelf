@@ -1,22 +1,22 @@
 ﻿import { app, BrowserWindow } from "electron";
 import { join } from "path";
 
-import { IFileRegistry } from "../lib/file";
+import { IBookRepository } from "../lib/book";
 import { IContext } from "./context";
-import fileRegistry from "./file-registry";
+import bookRepository from "./book-repository";
 import { setupMenu } from "./menu";
 
 class Context implements IContext {
   private _window: BrowserWindow;
-  private _fileRegistry: IFileRegistry;
+  private _bookRepository: IBookRepository;
 
   constructor(window: BrowserWindow) {
     this._window = window;
-    this._fileRegistry = fileRegistry;
+    this._bookRepository = bookRepository;
   }
 
-  get fileRegistry(): IFileRegistry {
-    return this._fileRegistry;
+  get bookRepository(): IBookRepository {
+    return this._bookRepository;
   }
 
   get appWindow(): BrowserWindow {
@@ -54,5 +54,5 @@ app.on("window-all-closed", () => {
 });
 
 app.on("quit", () => {
-  fileRegistry.finalize();
+  bookRepository.finalize();
 });

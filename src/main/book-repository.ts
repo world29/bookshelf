@@ -4,14 +4,22 @@ import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent } from "electron";
 import sqlite3 from "sqlite3";
 import { join, basename } from "path";
 
-import { BookInfo, FileInfo, IFileRegistry } from "../lib/file";
+import { BookInfo, IBookRepository } from "../lib/book";
 
 ipcMain.handle("remove-file", (_event: IpcMainInvokeEvent, filePath: string) =>
-  fileRegistry.removeFile(filePath)
+  bookRepository.removeFile(filePath)
 );
 
-ipcMain.handle("get-books", () => fileRegistry.getBooks());
+ipcMain.handle("get-books", () => bookRepository.getBooks());
 
+// ファイル情報
+export interface FileInfo {
+  fileSize: number;
+  filePath: string;
+  fileHash: string;
+}
+
+// 本の情報
 interface BookRecord {
   file_path: string;
   file_size: number;
@@ -21,7 +29,7 @@ interface BookRecord {
   score: number;
 }
 
-// レンダラープロセスにファイル登録のメッセージを送る
+// レンダラープロセスに登録のメッセージを送る
 const sendBookAdded = (bookInfo: BookInfo) => {
   const window = BrowserWindow.getFocusedWindow();
   if (window) {
@@ -29,7 +37,7 @@ const sendBookAdded = (bookInfo: BookInfo) => {
   }
 };
 
-class FileRegistry implements IFileRegistry {
+class BookRepository implements IBookRepository {
   private db: sqlite3.Database;
 
   constructor() {
@@ -53,12 +61,12 @@ class FileRegistry implements IFileRegistry {
   requestAddFiles(filePaths: string[]) {
     filePaths.forEach((filePath) =>
       this.loadFile(filePath).then((fileInfo) => {
-        this.addFile(fileInfo);
+        this.addFileToDB(fileInfo);
       })
     );
   }
 
-  addFile(fileInfo: FileInfo) {
+  addFileToDB(fileInfo: FileInfo) {
     const fileName = basename(fileInfo.filePath);
 
     this.db.serialize(() => {
@@ -84,7 +92,9 @@ class FileRegistry implements IFileRegistry {
           if (rows.length > 0) {
             const bookInfo: BookInfo = {
               title: rows[0].title,
-              fileInfo,
+              filePath: fileInfo.filePath,
+              fileSize: fileInfo.fileSize,
+              fileHash: fileInfo.fileHash,
             };
             sendBookAdded(bookInfo);
           }
@@ -108,11 +118,9 @@ class FileRegistry implements IFileRegistry {
 
         const bookInfo = rows.map<BookInfo>((row) => ({
           title: row.title,
-          fileInfo: {
-            filePath: row.file_path,
-            fileSize: row.file_size,
-            fileHash: row.file_hash,
-          },
+          filePath: row.file_path,
+          fileSize: row.file_size,
+          fileHash: row.file_hash,
         }));
 
         resolve(bookInfo);
@@ -140,8 +148,8 @@ class FileRegistry implements IFileRegistry {
   }
 }
 
-const fileRegistry = new FileRegistry();
+const bookRepository = new BookRepository();
 
-fileRegistry.initialize();
+bookRepository.initialize();
 
-export default fileRegistry;
+export default bookRepository;

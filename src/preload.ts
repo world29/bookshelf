@@ -1,6 +1,6 @@
 ﻿import { contextBridge, ipcRenderer, IpcRendererEvent } from "electron";
 
-import { BookInfo } from "./lib/file";
+import { BookInfo } from "./lib/book";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   // メインからレンダラーへ

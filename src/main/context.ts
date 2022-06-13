@@ -1,7 +1,8 @@
 ﻿import { BrowserWindow } from "electron";
-import { IFileRegistry } from "../lib/file";
+
+import { IBookRepository } from "../lib/book";
 
 export interface IContext {
-  get fileRegistry(): IFileRegistry;
+  get bookRepository(): IBookRepository;
   get appWindow(): BrowserWindow;
 }

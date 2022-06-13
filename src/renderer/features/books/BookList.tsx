@@ -1,16 +1,16 @@
 ﻿import React, { useEffect } from "react";
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { loadBooks, selectBooks } from "./filesSlice";
+import { loadBooks, selectBooks } from "./booksSlice";
 
-export function Files() {
+export function BookList() {
   const books = useAppSelector(selectBooks);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     window.electronAPI
       .getBooks()
-      .then((fileInfos) => dispatch(loadBooks(fileInfos)));
+      .then((bookInfos) => dispatch(loadBooks(bookInfos)));
   }, []);
 
   return (
@@ -27,12 +27,12 @@ export function Files() {
           {books.map((book, index) => (
             <tr key={index}>
               <td>{book.title}</td>
-              <td>{book.fileInfo.fileSize}</td>
+              <td>{book.fileSize}</td>
               <td>
                 <button
                   onClick={() =>
                     window.electronAPI
-                      .removeFile(book.fileInfo.filePath)
+                      .removeFile(book.filePath)
                       .then(() => window.electronAPI.getBooks())
                       .then((fileInfos) => dispatch(loadBooks(fileInfos)))
                   }

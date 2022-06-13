@@ -15,7 +15,7 @@ const handleFileOpen = (context: IContext): void => {
         return;
       }
 
-      context.fileRegistry.requestAddFiles(filePaths);
+      context.bookRepository.requestAddFiles(filePaths);
     })
     .catch((err) => console.error(err));
 };

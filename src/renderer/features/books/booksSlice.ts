@@ -1,6 +1,6 @@
 ﻿import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { BookInfo } from "../../../lib/file";
+import { BookInfo } from "../../../lib/book";
 import { RootState } from "../../app/store";
 
 export interface BooksState {
@@ -11,8 +11,8 @@ const initialState: BooksState = {
   bookInfos: [],
 };
 
-export const filesSlice = createSlice({
-  name: "files",
+export const booksSlice = createSlice({
+  name: "books",
   initialState,
   reducers: {
     loadBooks: (state, action: PayloadAction<BookInfo[]>) => {
@@ -21,8 +21,8 @@ export const filesSlice = createSlice({
   },
 });
 
-export const { loadBooks } = filesSlice.actions;
+export const { loadBooks } = booksSlice.actions;
 
-export const selectBooks = (state: RootState) => state.files.bookInfos;
+export const selectBooks = (state: RootState) => state.books.bookInfos;
 
-export default filesSlice.reducer;
+export default booksSlice.reducer;
