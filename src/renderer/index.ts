@@ -1,8 +1,10 @@
 ﻿import { store } from "./app/store";
-import { addFile } from "./features/files/filesSlice";
+import { loadBooks } from "./features/files/filesSlice";
 
-window.electronAPI.onFileAdded((_event, fileInfo) => {
-  store.dispatch(addFile(fileInfo));
+window.electronAPI.onBookAdded(() => {
+  window.electronAPI
+    .getBooks()
+    .then((bookInfos) => store.dispatch(loadBooks(bookInfos)));
 });
 
 require("./app");

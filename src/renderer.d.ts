@@ -1,13 +1,13 @@
 ﻿import { IpcRendererEvent } from "electron";
 
-import { FileInfo } from "./lib/file";
+import { BookInfo } from "./lib/file";
 
 export interface IElectronAPI {
-  onFileAdded: (
-    callback: (event: IpcRendererEvent, fileInfo: FileInfo) => void
+  onBookAdded: (
+    callback: (event: IpcRendererEvent, bookInfo: BookInfo) => void
   ) => void;
   removeFile: (filePath: string) => Promise<void>;
-  getFiles: () => Promise<FileInfo[]>;
+  getBooks: () => Promise<BookInfo[]>;
 }
 
 declare global {

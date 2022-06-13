@@ -4,6 +4,11 @@
   fileHash: string;
 }
 
+export interface BookInfo {
+  title: string;
+  fileInfo: FileInfo;
+}
+
 export interface IFileRegistry {
   /**
    * 複数ファイルの登録を要求する
@@ -16,7 +21,7 @@ export interface IFileRegistry {
   removeFile: (filePath: string) => Promise<void>;
 
   /**
-   * 登録されたファイルの取得
+   * 登録された本の取得
    */
-  getFiles: () => Promise<FileInfo[]>;
+  getBooks: () => Promise<BookInfo[]>;
 }

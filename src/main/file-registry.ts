@@ -2,27 +2,30 @@
 import crypt from "crypto";
 import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent } from "electron";
 import sqlite3 from "sqlite3";
-import { join } from "path";
+import { join, basename } from "path";
 
-import { FileInfo, IFileRegistry } from "../lib/file";
+import { BookInfo, FileInfo, IFileRegistry } from "../lib/file";
 
 ipcMain.handle("remove-file", (_event: IpcMainInvokeEvent, filePath: string) =>
   fileRegistry.removeFile(filePath)
 );
 
-ipcMain.handle("get-files", () => fileRegistry.getFiles());
+ipcMain.handle("get-books", () => fileRegistry.getBooks());
 
-interface FileTableRow {
+interface BookRecord {
   file_path: string;
   file_size: number;
   file_hash: string;
+  title: string;
+  author: string;
+  score: number;
 }
 
 // レンダラープロセスにファイル登録のメッセージを送る
-const sendFileAdded = (fileInfo: FileInfo) => {
+const sendBookAdded = (bookInfo: BookInfo) => {
   const window = BrowserWindow.getFocusedWindow();
   if (window) {
-    window.webContents.send("file-added", fileInfo);
+    window.webContents.send("book-added", bookInfo);
   }
 };
 
@@ -34,12 +37,12 @@ class FileRegistry implements IFileRegistry {
   }
 
   get databasePath() {
-    return join(app.getPath("userData"), "files.db");
+    return join(app.getPath("userData"), "books.db");
   }
 
   initialize() {
     this.db.run(
-      "CREATE TABLE IF NOT EXISTS MEMBERS(file_path, file_size, file_hash)"
+      "CREATE TABLE IF NOT EXISTS books(file_path, file_size, file_hash, title, author, score)"
     );
   }
 
@@ -56,39 +59,64 @@ class FileRegistry implements IFileRegistry {
   }
 
   addFile(fileInfo: FileInfo) {
-    this.db.run(
-      "INSERT INTO MEMBERS(file_path, file_size, file_hash) values(?, ?, ?)",
-      fileInfo.filePath,
-      fileInfo.fileSize,
-      fileInfo.fileHash,
-      () => sendFileAdded(fileInfo)
-    );
+    const fileName = basename(fileInfo.filePath);
+
+    this.db.serialize(() => {
+      // レコードを追加
+      this.db.run(
+        "INSERT INTO books(file_path, file_size, file_hash) VALUES(?, ?, ?)",
+        fileInfo.filePath,
+        fileInfo.fileSize,
+        fileInfo.fileHash
+      );
+      // タイトルを更新
+      this.db.run(
+        "UPDATE books SET title = ? WHERE file_path = ?",
+        fileName,
+        fileInfo.filePath
+      );
+      // 追加したレコードを取得してレンダラープロセスに通知する
+      this.db.all(
+        "SELECT * FROM books WHERE file_path = ?",
+        fileInfo.filePath,
+        (err, rows: BookRecord[]) => {
+          if (err) return;
+          if (rows.length > 0) {
+            const bookInfo: BookInfo = {
+              title: rows[0].title,
+              fileInfo,
+            };
+            sendBookAdded(bookInfo);
+          }
+        }
+      );
+    });
   }
 
   removeFile(filePath: string) {
     return new Promise<void>((resolve) => {
-      this.db.run("DELETE FROM MEMBERS WHERE file_path = ?", filePath, () =>
+      this.db.run("DELETE FROM books WHERE file_path = ?", filePath, () =>
         resolve()
       );
     });
   }
 
-  getFiles() {
-    return new Promise<FileInfo[]>((resolve, reject) => {
-      this.db.all(
-        "SELECT * FROM MEMBERS",
-        (err: Error, rows: FileTableRow[]) => {
-          if (err) reject(err);
+  getBooks() {
+    return new Promise<BookInfo[]>((resolve, reject) => {
+      this.db.all("SELECT * FROM books", (err: Error, rows: BookRecord[]) => {
+        if (err) reject(err);
 
-          const fileInfos = rows.map<FileInfo>((row) => ({
+        const bookInfo = rows.map<BookInfo>((row) => ({
+          title: row.title,
+          fileInfo: {
             filePath: row.file_path,
             fileSize: row.file_size,
             fileHash: row.file_hash,
-          }));
+          },
+        }));
 
-          resolve(fileInfos);
-        }
-      );
+        resolve(bookInfo);
+      });
     });
   }
 

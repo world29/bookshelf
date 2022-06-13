@@ -1,16 +1,16 @@
 ﻿import React, { useEffect } from "react";
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { loadFiles, selectFiles } from "./filesSlice";
+import { loadBooks, selectBooks } from "./filesSlice";
 
 export function Files() {
-  const files = useAppSelector(selectFiles);
+  const books = useAppSelector(selectBooks);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     window.electronAPI
-      .getFiles()
-      .then((fileInfos) => dispatch(loadFiles(fileInfos)));
+      .getBooks()
+      .then((fileInfos) => dispatch(loadBooks(fileInfos)));
   }, []);
 
   return (
@@ -18,25 +18,23 @@ export function Files() {
       <table>
         <thead>
           <tr>
-            <th>FilePath</th>
+            <th>Title</th>
             <th>FileSize</th>
-            <th>FileHash</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          {files.map((fileInfo, index) => (
+          {books.map((book, index) => (
             <tr key={index}>
-              <td>{fileInfo.filePath}</td>
-              <td>{fileInfo.fileSize}</td>
-              <td>{fileInfo.fileHash}</td>
+              <td>{book.title}</td>
+              <td>{book.fileInfo.fileSize}</td>
               <td>
                 <button
                   onClick={() =>
                     window.electronAPI
-                      .removeFile(fileInfo.filePath)
-                      .then(() => window.electronAPI.getFiles())
-                      .then((fileInfos) => dispatch(loadFiles(fileInfos)))
+                      .removeFile(book.fileInfo.filePath)
+                      .then(() => window.electronAPI.getBooks())
+                      .then((fileInfos) => dispatch(loadBooks(fileInfos)))
                   }
                 >
                   x
