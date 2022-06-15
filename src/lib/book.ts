@@ -20,4 +20,9 @@ export interface IBookRepository {
    * 登録された本の取得
    */
   getBooks: () => Promise<BookInfo[]>;
+
+  /**
+   * タイトルの設定
+   */
+  setBookTitle: (filePath: string, title: string) => Promise<BookInfo>;
 }

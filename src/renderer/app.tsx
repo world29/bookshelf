@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 
 import { store } from "./app/store";
-import { BookList } from "./features/books/BookList";
+import { BooksPage } from "./features/books/BooksPage";
 
 const container = document.getElementById("app");
 if (container) {
@@ -12,7 +12,7 @@ if (container) {
   root.render(
     <React.StrictMode>
       <Provider store={store}>
-        <BookList />
+        <BooksPage />
       </Provider>
     </React.StrictMode>
   );

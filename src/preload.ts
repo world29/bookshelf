@@ -10,4 +10,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // レンダラーからメインへ
   removeFile: (filePath: string) => ipcRenderer.invoke("remove-file", filePath),
   getBooks: () => ipcRenderer.invoke("get-books"),
+  setBookTitle: (filePath: string, title: string) =>
+    ipcRenderer.invoke("set-book-title", filePath, title),
 });

@@ -8,6 +8,7 @@ export interface IElectronAPI {
   ) => void;
   removeFile: (filePath: string) => Promise<void>;
   getBooks: () => Promise<BookInfo[]>;
+  setBookTitle: (filePath: string, title: string) => Promise<BookInfo>;
 }
 
 declare global {

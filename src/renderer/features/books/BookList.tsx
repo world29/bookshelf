@@ -1,7 +1,7 @@
 ﻿import React, { useEffect } from "react";
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { loadBooks, selectBooks } from "./booksSlice";
+import { loadBooks, selectBooks, setEditTarget } from "./booksSlice";
 
 export function BookList() {
   const books = useAppSelector(selectBooks);
@@ -21,6 +21,7 @@ export function BookList() {
             <th>Title</th>
             <th>FileSize</th>
             <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -28,6 +29,11 @@ export function BookList() {
             <tr key={index}>
               <td>{book.title}</td>
               <td>{book.fileSize}</td>
+              <td>
+                <button onClick={() => dispatch(setEditTarget(book.filePath))}>
+                  edit
+                </button>
+              </td>
               <td>
                 <button
                   onClick={() =>

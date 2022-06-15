@@ -12,6 +12,12 @@ ipcMain.handle("remove-file", (_event: IpcMainInvokeEvent, filePath: string) =>
 
 ipcMain.handle("get-books", () => bookRepository.getBooks());
 
+ipcMain.handle(
+  "set-book-title",
+  (_event: IpcMainInvokeEvent, filePath: string, title: string) =>
+    bookRepository.setBookTitle(filePath, title)
+);
+
 // ファイル情報
 export interface FileInfo {
   fileSize: number;
@@ -124,6 +130,34 @@ class BookRepository implements IBookRepository {
         }));
 
         resolve(bookInfo);
+      });
+    });
+  }
+
+  setBookTitle(filePath: string, title: string) {
+    return new Promise<BookInfo>((resolve, reject) => {
+      this.db.serialize(() => {
+        this.db.run(
+          "UPDATE books set title = ? WHERE file_path = ?",
+          title,
+          filePath
+        );
+        this.db.get(
+          "SELECT * FROM books WHERE file_path = ?",
+          filePath,
+          (err, row) => {
+            if (err) reject(err);
+
+            const bookInfo = {
+              title: row.title,
+              filePath: row.file_path,
+              fileSize: row.file_size,
+              fileHash: row.file_hash,
+            };
+
+            resolve(bookInfo);
+          }
+        );
       });
     });
   }

@@ -1,7 +1,7 @@
 ﻿import React, { useCallback, useEffect, useRef } from "react";
 
 export interface DialogProps {
-  onClose: () => void;
+  onClose?: () => void;
   open?: boolean;
   children?: React.ReactNode;
 }
@@ -17,26 +17,23 @@ export function Dialog(props: DialogProps) {
   }, []);
 
   const closeModal = useCallback(() => {
-    if (dialogEl.current) {
+    if (dialogEl.current && dialogEl.current.open) {
       dialogEl.current.close();
-      props.onClose();
+      props.onClose?.();
     }
   }, []);
 
   useEffect(() => {
     if (props.open) {
       showModal();
+    } else {
+      closeModal();
     }
-  }, [dialogEl]);
+  }, [dialogEl, props.open]);
 
   return (
     <div>
-      <dialog ref={dialogEl}>
-        {props.children}
-        <button type="button" onClick={closeModal}>
-          close
-        </button>
-      </dialog>
+      <dialog ref={dialogEl}>{props.children}</dialog>
     </div>
   );
 }
