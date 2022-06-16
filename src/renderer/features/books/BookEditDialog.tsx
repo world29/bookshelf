@@ -9,6 +9,7 @@ export function BookEditDialog() {
 
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
+  const [authors, setAuthors] = useState<string[]>([]);
 
   useEffect(() => {
     if (editTarget) {
@@ -17,22 +18,36 @@ export function BookEditDialog() {
     }
   }, [editTarget]);
 
+  useEffect(() => {
+    window.electronAPI.getAuthors().then(setAuthors);
+  }, []);
+
   if (editTarget) {
     return (
       <Dialog open>
+        <label htmlFor="input-title">Title</label>
         <div>
           <input
             type="text"
             defaultValue={editTarget.title}
             onChange={(e) => setTitle(e.target.value)}
+            id="input-title"
           />
         </div>
+        <label htmlFor="input-author">Author</label>
         <div>
           <input
             type="text"
             defaultValue={editTarget.author}
             onChange={(e) => setAuthor(e.target.value)}
+            list="input-author-datalist"
+            id="input-author"
           />
+          <datalist id="input-author-datalist">
+            {authors.map((optionValue) => (
+              <option value={optionValue} key={optionValue} />
+            ))}
+          </datalist>
         </div>
         <span>
           <button

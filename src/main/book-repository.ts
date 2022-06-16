@@ -12,6 +12,8 @@ ipcMain.handle("remove-file", (_event: IpcMainInvokeEvent, filePath: string) =>
 
 ipcMain.handle("get-books", () => bookRepository.getBooks());
 
+ipcMain.handle("get-authors", () => bookRepository.getAuthors());
+
 ipcMain.handle(
   "set-book-title",
   (_event: IpcMainInvokeEvent, filePath: string, title: string) =>
@@ -143,6 +145,23 @@ class BookRepository implements IBookRepository {
 
         resolve(rows.map<BookInfo>(recordToInfo));
       });
+    });
+  }
+
+  getAuthors() {
+    return new Promise<string[]>((resolve, reject) => {
+      this.db.all(
+        "SELECT DISTINCT author FROM books",
+        (err: Error, rows: BookRecord[]) => {
+          if (err) reject(err);
+
+          resolve(
+            rows
+              .map<string>((row) => row.author)
+              .filter((author) => author !== "")
+          );
+        }
+      );
     });
   }
 

@@ -34,6 +34,12 @@ export interface IBookRepository {
   getBooks: () => Promise<BookInfo[]>;
 
   /**
+   * 著者一覧の取得
+   * 重複を除いたリストを返します。
+   */
+  getAuthors: () => Promise<string[]>;
+
+  /**
    * タイトルの設定
    */
   setBookTitle: (filePath: string, title: string) => Promise<BookInfo>;
