@@ -18,6 +18,12 @@ ipcMain.handle(
     bookRepository.setBookTitle(filePath, title)
 );
 
+ipcMain.handle(
+  "set-book-score",
+  (_event: IpcMainInvokeEvent, filePath: string, score: number) =>
+    bookRepository.setBookScore(filePath, score)
+);
+
 // ファイル情報
 export interface FileInfo {
   fileSize: number;
@@ -56,7 +62,7 @@ class BookRepository implements IBookRepository {
 
   initialize() {
     this.db.run(
-      "CREATE TABLE IF NOT EXISTS books(file_path, file_size, file_hash, title, author, score)"
+      "CREATE TABLE IF NOT EXISTS books(file_path, file_size, file_hash, title, author, score INTEGER DEFAULT 0)"
     );
   }
 
@@ -98,6 +104,7 @@ class BookRepository implements IBookRepository {
           if (rows.length > 0) {
             const bookInfo: BookInfo = {
               title: rows[0].title,
+              score: rows[0].score,
               filePath: fileInfo.filePath,
               fileSize: fileInfo.fileSize,
               fileHash: fileInfo.fileHash,
@@ -124,6 +131,7 @@ class BookRepository implements IBookRepository {
 
         const bookInfo = rows.map<BookInfo>((row) => ({
           title: row.title,
+          score: row.score,
           filePath: row.file_path,
           fileSize: row.file_size,
           fileHash: row.file_hash,
@@ -150,6 +158,36 @@ class BookRepository implements IBookRepository {
 
             const bookInfo = {
               title: row.title,
+              score: row.score,
+              filePath: row.file_path,
+              fileSize: row.file_size,
+              fileHash: row.file_hash,
+            };
+
+            resolve(bookInfo);
+          }
+        );
+      });
+    });
+  }
+
+  setBookScore(filePath: string, score: number) {
+    return new Promise<BookInfo>((resolve, reject) => {
+      this.db.serialize(() => {
+        this.db.run(
+          "UPDATE books set score = ? WHERE file_path = ?",
+          score,
+          filePath
+        );
+        this.db.get(
+          "SELECT * FROM books WHERE file_path = ?",
+          filePath,
+          (err, row) => {
+            if (err) reject(err);
+
+            const bookInfo = {
+              title: row.title,
+              score: row.score,
               filePath: row.file_path,
               fileSize: row.file_size,
               fileHash: row.file_hash,

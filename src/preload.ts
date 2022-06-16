@@ -12,4 +12,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getBooks: () => ipcRenderer.invoke("get-books"),
   setBookTitle: (filePath: string, title: string) =>
     ipcRenderer.invoke("set-book-title", filePath, title),
+  setBookScore: (filePath: string, score: number) =>
+    ipcRenderer.invoke("set-book-score", filePath, score),
 });

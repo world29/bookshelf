@@ -1,5 +1,6 @@
 ﻿export interface BookInfo {
   title: string;
+  score: number;
   fileSize: number;
   filePath: string;
   fileHash: string;
@@ -25,4 +26,9 @@ export interface IBookRepository {
    * タイトルの設定
    */
   setBookTitle: (filePath: string, title: string) => Promise<BookInfo>;
+
+  /**
+   * スコアの設定
+   */
+  setBookScore: (filePath: string, score: number) => Promise<BookInfo>;
 }

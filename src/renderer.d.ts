@@ -9,6 +9,7 @@ export interface IElectronAPI {
   removeFile: (filePath: string) => Promise<void>;
   getBooks: () => Promise<BookInfo[]>;
   setBookTitle: (filePath: string, title: string) => Promise<BookInfo>;
+  setBookScore: (filePath: string, score: number) => Promise<BookInfo>;
 }
 
 declare global {
