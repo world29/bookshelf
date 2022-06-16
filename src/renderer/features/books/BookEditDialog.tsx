@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { Dialog } from "../../Dialog";
 import { clearEditTarget, loadBook, selectEditTarget } from "./booksSlice";
@@ -8,6 +8,12 @@ export function BookEditDialog() {
   const dispatch = useAppDispatch();
 
   const [title, setTitle] = useState("");
+
+  useEffect(() => {
+    if (editTarget) {
+      setTitle(editTarget.title);
+    }
+  }, [editTarget]);
 
   if (editTarget) {
     return (
