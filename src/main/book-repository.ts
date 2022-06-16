@@ -96,21 +96,21 @@ class BookRepository implements IBookRepository {
         fileInfo.filePath
       );
       // 追加したレコードを取得してレンダラープロセスに通知する
-      this.db.all(
+      this.db.get(
         "SELECT * FROM books WHERE file_path = ?",
         fileInfo.filePath,
-        (err, rows: BookRecord[]) => {
+        (err, row) => {
           if (err) return;
-          if (rows.length > 0) {
-            const bookInfo: BookInfo = {
-              title: rows[0].title,
-              score: rows[0].score,
-              filePath: fileInfo.filePath,
-              fileSize: fileInfo.fileSize,
-              fileHash: fileInfo.fileHash,
-            };
-            sendBookAdded(bookInfo);
-          }
+
+          const bookInfo = {
+            title: row.title,
+            score: row.score,
+            filePath: row.file_path,
+            fileSize: row.file_size,
+            fileHash: row.file_hash,
+          };
+
+          sendBookAdded(bookInfo);
         }
       );
     });
