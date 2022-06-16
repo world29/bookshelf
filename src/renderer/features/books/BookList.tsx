@@ -19,7 +19,7 @@ export function BookList() {
         <thead>
           <tr>
             <th>Title</th>
-            <th>FileSize</th>
+            <th>Author</th>
             <th>Score</th>
             <th></th>
             <th></th>
@@ -29,7 +29,7 @@ export function BookList() {
           {books.map((book, index) => (
             <tr key={index}>
               <td>{book.title}</td>
-              <td>{book.fileSize}</td>
+              <td>{book.author}</td>
               <td>
                 <input
                   type="number"

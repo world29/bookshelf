@@ -1,6 +1,6 @@
 ﻿import { IpcRendererEvent } from "electron";
 
-import { BookInfo } from "./lib/book";
+import { BookInfo, BookPropertyKeyValue } from "./lib/book";
 
 export interface IElectronAPI {
   onBookAdded: (
@@ -10,6 +10,10 @@ export interface IElectronAPI {
   getBooks: () => Promise<BookInfo[]>;
   setBookTitle: (filePath: string, title: string) => Promise<BookInfo>;
   setBookScore: (filePath: string, score: number) => Promise<BookInfo>;
+  setBookProperties: (
+    filePath: string,
+    properties: BookPropertyKeyValue
+  ) => Promise<BookInfo>;
 }
 
 declare global {

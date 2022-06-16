@@ -1,10 +1,21 @@
 ﻿export interface BookInfo {
   title: string;
+  author: string;
   score: number;
   fileSize: number;
   filePath: string;
   fileHash: string;
 }
+
+/**
+ * プロパティの値がとりうる型
+ */
+export type BookPropertyValue = string | number;
+
+/**
+ * 複数のプロパティをオブジェクト形式で保持する型
+ */
+export type BookPropertyKeyValue = { [key: string]: BookPropertyValue };
 
 export interface IBookRepository {
   /**
@@ -31,4 +42,12 @@ export interface IBookRepository {
    * スコアの設定
    */
   setBookScore: (filePath: string, score: number) => Promise<BookInfo>;
+
+  /**
+   * プロパティの一括設定
+   */
+  setBookProperties: (
+    filePath: string,
+    properties: BookPropertyKeyValue
+  ) => Promise<BookInfo>;
 }

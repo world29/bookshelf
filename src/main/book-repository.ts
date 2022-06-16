@@ -4,7 +4,7 @@ import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent } from "electron";
 import sqlite3 from "sqlite3";
 import { join, basename } from "path";
 
-import { BookInfo, IBookRepository } from "../lib/book";
+import { BookInfo, BookPropertyKeyValue, IBookRepository } from "../lib/book";
 
 ipcMain.handle("remove-file", (_event: IpcMainInvokeEvent, filePath: string) =>
   bookRepository.removeFile(filePath)
@@ -24,6 +24,15 @@ ipcMain.handle(
     bookRepository.setBookScore(filePath, score)
 );
 
+ipcMain.handle(
+  "set-book-properties",
+  (
+    _event: IpcMainInvokeEvent,
+    filePath: string,
+    properties: BookPropertyKeyValue
+  ) => bookRepository.setBookProperties(filePath, properties)
+);
+
 // ファイル情報
 export interface FileInfo {
   fileSize: number;
@@ -39,6 +48,17 @@ interface BookRecord {
   title: string;
   author: string;
   score: number;
+}
+
+function recordToInfo(row: BookRecord): BookInfo {
+  return {
+    title: row.title,
+    author: row.author,
+    score: row.score,
+    filePath: row.file_path,
+    fileSize: row.file_size,
+    fileHash: row.file_hash,
+  };
 }
 
 // レンダラープロセスに登録のメッセージを送る
@@ -62,7 +82,7 @@ class BookRepository implements IBookRepository {
 
   initialize() {
     this.db.run(
-      "CREATE TABLE IF NOT EXISTS books(file_path, file_size, file_hash, title, author, score INTEGER DEFAULT 0)"
+      "CREATE TABLE IF NOT EXISTS books(file_path, file_size, file_hash, title, author TEXT DEFAULT '', score INTEGER DEFAULT 0)"
     );
   }
 
@@ -102,15 +122,7 @@ class BookRepository implements IBookRepository {
         (err, row) => {
           if (err) return;
 
-          const bookInfo = {
-            title: row.title,
-            score: row.score,
-            filePath: row.file_path,
-            fileSize: row.file_size,
-            fileHash: row.file_hash,
-          };
-
-          sendBookAdded(bookInfo);
+          sendBookAdded(recordToInfo(row));
         }
       );
     });
@@ -129,15 +141,7 @@ class BookRepository implements IBookRepository {
       this.db.all("SELECT * FROM books", (err: Error, rows: BookRecord[]) => {
         if (err) reject(err);
 
-        const bookInfo = rows.map<BookInfo>((row) => ({
-          title: row.title,
-          score: row.score,
-          filePath: row.file_path,
-          fileSize: row.file_size,
-          fileHash: row.file_hash,
-        }));
-
-        resolve(bookInfo);
+        resolve(rows.map<BookInfo>(recordToInfo));
       });
     });
   }
@@ -156,15 +160,7 @@ class BookRepository implements IBookRepository {
           (err, row) => {
             if (err) reject(err);
 
-            const bookInfo = {
-              title: row.title,
-              score: row.score,
-              filePath: row.file_path,
-              fileSize: row.file_size,
-              fileHash: row.file_hash,
-            };
-
-            resolve(bookInfo);
+            resolve(recordToInfo(row));
           }
         );
       });
@@ -185,15 +181,37 @@ class BookRepository implements IBookRepository {
           (err, row) => {
             if (err) reject(err);
 
-            const bookInfo = {
-              title: row.title,
-              score: row.score,
-              filePath: row.file_path,
-              fileSize: row.file_size,
-              fileHash: row.file_hash,
-            };
+            resolve(recordToInfo(row));
+          }
+        );
+      });
+    });
+  }
 
-            resolve(bookInfo);
+  setBookProperties(
+    filePath: string,
+    properties: BookPropertyKeyValue
+  ): Promise<BookInfo> {
+    return new Promise<BookInfo>((resolve, reject) => {
+      this.db.serialize(() => {
+        //memo: DB のフィールド名と BookInfo のプロパティ名が異なる場合は変換が必要
+        const fieldsNameQuery = Object.keys(properties)
+          .map((key) => `${key} = ?`)
+          .join(",");
+
+        this.db.run(
+          `UPDATE books set ${fieldsNameQuery} WHERE file_path = ?`,
+          ...Object.values(properties),
+          filePath
+        );
+
+        this.db.get(
+          "SELECT * FROM books WHERE file_path = ?",
+          filePath,
+          (err, row) => {
+            if (err) reject(err);
+
+            resolve(recordToInfo(row));
           }
         );
       });

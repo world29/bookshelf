@@ -1,6 +1,6 @@
 ﻿import { contextBridge, ipcRenderer, IpcRendererEvent } from "electron";
 
-import { BookInfo } from "./lib/book";
+import { BookInfo, BookPropertyKeyValue } from "./lib/book";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   // メインからレンダラーへ
@@ -14,4 +14,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("set-book-title", filePath, title),
   setBookScore: (filePath: string, score: number) =>
     ipcRenderer.invoke("set-book-score", filePath, score),
+  setBookProperties: (filePath: string, properties: BookPropertyKeyValue) =>
+    ipcRenderer.invoke("set-book-properties", filePath, properties),
 });

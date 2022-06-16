@@ -8,10 +8,12 @@ export function BookEditDialog() {
   const dispatch = useAppDispatch();
 
   const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
 
   useEffect(() => {
     if (editTarget) {
       setTitle(editTarget.title);
+      setAuthor(editTarget.author);
     }
   }, [editTarget]);
 
@@ -25,11 +27,18 @@ export function BookEditDialog() {
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
+        <div>
+          <input
+            type="text"
+            defaultValue={editTarget.author}
+            onChange={(e) => setAuthor(e.target.value)}
+          />
+        </div>
         <span>
           <button
             onClick={() => {
               window.electronAPI
-                .setBookTitle(editTarget.filePath, title)
+                .setBookProperties(editTarget.filePath, { title, author })
                 .then((bookInfo) => dispatch(loadBook(bookInfo)))
                 .then(() => dispatch(clearEditTarget()));
             }}
