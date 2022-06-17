@@ -1,6 +1,11 @@
 ﻿import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { Dialog } from "../../Dialog";
+import {
+  AddAuthorDialogProps,
+  AddAuthorDialogResult,
+  BookAddAuthorDialog,
+} from "./BookAddAuthorDialog";
 import { clearEditTarget, loadBook, selectEditTarget } from "./booksSlice";
 
 export function BookEditDialog() {
@@ -10,6 +15,9 @@ export function BookEditDialog() {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [authors, setAuthors] = useState<string[]>([]);
+  const [dialogProps, setDialogProps] = useState<
+    AddAuthorDialogProps | undefined
+  >(undefined);
 
   useEffect(() => {
     if (editTarget) {
@@ -21,6 +29,17 @@ export function BookEditDialog() {
   useEffect(() => {
     window.electronAPI.getAuthors().then(setAuthors);
   }, []);
+
+  const openAddAuthorDialog = () => {
+    new Promise<AddAuthorDialogResult>((resolve) => {
+      setDialogProps({ onClose: resolve });
+    })
+      .then(({ canceled, authorName }) => {
+        if (canceled) return;
+        if (authorName) setAuthors(authors.concat(authorName));
+      })
+      .finally(() => setDialogProps(undefined));
+  };
 
   if (editTarget) {
     return (
@@ -34,20 +53,23 @@ export function BookEditDialog() {
             id="input-title"
           />
         </div>
-        <label htmlFor="input-author">Author</label>
+        <label htmlFor="select-author">Author</label>
         <div>
-          <input
-            type="text"
+          <select
             defaultValue={editTarget.author}
             onChange={(e) => setAuthor(e.target.value)}
-            list="input-author-datalist"
-            id="input-author"
-          />
-          <datalist id="input-author-datalist">
+            id="select-author"
+          >
+            <option value="">{""}</option>
             {authors.map((optionValue) => (
-              <option value={optionValue} key={optionValue} />
+              <option value={optionValue} key={optionValue}>
+                {optionValue}
+              </option>
             ))}
-          </datalist>
+          </select>
+          <span>
+            <button onClick={() => openAddAuthorDialog()}>+</button>
+          </span>
         </div>
         <span>
           <button
@@ -62,6 +84,7 @@ export function BookEditDialog() {
           </button>
           <button onClick={() => dispatch(clearEditTarget())}>cancel</button>
         </span>
+        {dialogProps && <BookAddAuthorDialog {...dialogProps} />}
       </Dialog>
     );
   }
