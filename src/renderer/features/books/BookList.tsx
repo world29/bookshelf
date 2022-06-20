@@ -1,7 +1,28 @@
 ﻿import React, { useEffect } from "react";
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { loadBook, loadBooks, selectBooks, setEditTarget } from "./booksSlice";
+import { SortOrder } from "../../components/Table";
+import { TableBody } from "../../components/TableBody";
+import { TableHead } from "../../components/TableHead";
+import { loadBooks, selectBooks } from "./booksSlice";
+
+const columns = [
+  {
+    label: "Title",
+    accessor: "title",
+    sortable: true,
+  },
+  {
+    label: "Author",
+    accessor: "author",
+    sortable: true,
+  },
+  {
+    label: "Score",
+    accessor: "score",
+    sortable: true,
+  },
+];
 
 export function BookList() {
   const books = useAppSelector(selectBooks);
@@ -13,57 +34,17 @@ export function BookList() {
       .then((bookInfos) => dispatch(loadBooks(bookInfos)));
   }, []);
 
+  const handleSorting = (sortField: string, sortOrder: SortOrder) => {
+    window.electronAPI
+      .getBooksSortBy(sortField, sortOrder === SortOrder.Ascending)
+      .then((bookInfos) => dispatch(loadBooks(bookInfos)));
+  };
+
   return (
     <div>
       <table>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Score</th>
-            <th></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {books.map((book, index) => (
-            <tr key={index}>
-              <td>{book.title}</td>
-              <td>{book.author}</td>
-              <td>
-                <input
-                  type="number"
-                  step="1"
-                  min="0"
-                  max="5"
-                  defaultValue={book.score}
-                  onChange={(e) => {
-                    window.electronAPI
-                      .setBookScore(book.filePath, e.target.valueAsNumber)
-                      .then((bookInfo) => dispatch(loadBook(bookInfo)));
-                  }}
-                />
-              </td>
-              <td>
-                <button onClick={() => dispatch(setEditTarget(book.filePath))}>
-                  edit
-                </button>
-              </td>
-              <td>
-                <button
-                  onClick={() =>
-                    window.electronAPI
-                      .removeFile(book.filePath)
-                      .then(() => window.electronAPI.getBooks())
-                      .then((fileInfos) => dispatch(loadBooks(fileInfos)))
-                  }
-                >
-                  x
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+        <TableHead columns={columns} handleSorting={handleSorting} />
+        <TableBody columns={columns} dataRows={books} />
       </table>
     </div>
   );

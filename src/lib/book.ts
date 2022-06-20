@@ -34,6 +34,13 @@ export interface IBookRepository {
   getBooks: () => Promise<BookInfo[]>;
 
   /**
+   * ソート済みの本一覧を取得
+   * @param sortBy - 指定したカラム名についてソートした結果を返します。
+   * @param ascending - true なら昇順、false なら降順です。
+   */
+  getBooksSortBy: (sortBy: string, ascending: boolean) => Promise<BookInfo[]>;
+
+  /**
    * 著者一覧の取得
    * 重複を除いたリストを返します。
    */

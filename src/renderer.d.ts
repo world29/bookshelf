@@ -8,6 +8,7 @@ export interface IElectronAPI {
   ) => void;
   removeFile: (filePath: string) => Promise<void>;
   getBooks: () => Promise<BookInfo[]>;
+  getBooksSortBy: (sortBy: string, ascending: boolean) => Promise<BookInfo[]>;
   getAuthors: () => Promise<string[]>;
   setBookTitle: (filePath: string, title: string) => Promise<BookInfo>;
   setBookScore: (filePath: string, score: number) => Promise<BookInfo>;

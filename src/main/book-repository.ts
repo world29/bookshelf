@@ -12,6 +12,12 @@ ipcMain.handle("remove-file", (_event: IpcMainInvokeEvent, filePath: string) =>
 
 ipcMain.handle("get-books", () => bookRepository.getBooks());
 
+ipcMain.handle(
+  "get-books-sort-by",
+  (_event: IpcMainInvokeEvent, sortBy: string, ascending: boolean) =>
+    bookRepository.getBooksSortBy(sortBy, ascending)
+);
+
 ipcMain.handle("get-authors", () => bookRepository.getAuthors());
 
 ipcMain.handle(
@@ -145,6 +151,19 @@ class BookRepository implements IBookRepository {
 
         resolve(rows.map<BookInfo>(recordToInfo));
       });
+    });
+  }
+
+  getBooksSortBy(sortBy: string, ascending: boolean) {
+    return new Promise<BookInfo[]>((resolve, reject) => {
+      this.db.all(
+        `SELECT * FROM books ORDER BY ${sortBy} ${ascending ? "ASC" : "DESC"}`,
+        (err: Error, rows: BookRecord[]) => {
+          if (err) reject(err);
+
+          resolve(rows.map<BookInfo>(recordToInfo));
+        }
+      );
     });
   }
 
