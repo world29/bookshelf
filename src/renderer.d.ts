@@ -1,5 +1,5 @@
 ﻿export interface IElectronAPI {
-  doThing: () => void;
+  doThing: () => Promise<string>;
 }
 
 declare global {

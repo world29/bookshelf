@@ -1,5 +1,6 @@
 ﻿import { app, BrowserWindow } from "electron";
 import { join } from "path";
+import setupAPIs from "./api";
 
 const createWindow = () => {
   const mainWindow: BrowserWindow = new BrowserWindow({
@@ -29,3 +30,5 @@ app.on("window-all-closed", () => {
 app.on("quit", () => {
   console.log("quit");
 });
+
+setupAPIs();
