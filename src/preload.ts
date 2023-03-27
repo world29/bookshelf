@@ -1,22 +1,5 @@
-﻿import { contextBridge, ipcRenderer, IpcRendererEvent } from "electron";
-
-import { BookInfo, BookPropertyKeyValue } from "./lib/book";
+﻿import { contextBridge, ipcRenderer } from "electron";
 
 contextBridge.exposeInMainWorld("electronAPI", {
-  // メインからレンダラーへ
-  onBookAdded: (
-    callback: (event: IpcRendererEvent, bookInfo: BookInfo[]) => void
-  ) => ipcRenderer.on("book-added", callback),
-  // レンダラーからメインへ
-  removeFile: (filePath: string) => ipcRenderer.invoke("remove-file", filePath),
-  getBooks: () => ipcRenderer.invoke("get-books"),
-  getBooksSortBy: (sortBy: string, ascending: boolean) =>
-    ipcRenderer.invoke("get-books-sort-by", sortBy, ascending),
-  getAuthors: () => ipcRenderer.invoke("get-authors"),
-  setBookTitle: (filePath: string, title: string) =>
-    ipcRenderer.invoke("set-book-title", filePath, title),
-  setBookScore: (filePath: string, score: number) =>
-    ipcRenderer.invoke("set-book-score", filePath, score),
-  setBookProperties: (filePath: string, properties: BookPropertyKeyValue) =>
-    ipcRenderer.invoke("set-book-properties", filePath, properties),
+  doThing: () => ipcRenderer.send("do-a-thing"),
 });
