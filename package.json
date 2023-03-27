@@ -10,7 +10,7 @@
     "dev": "electron dist",
     "start": "run-s build dev",
     "package:install-deps": "npm --prefix ./dist install ./dist",
-    "package:pack": "electron-packager ./dist --platform=win32 --arch=x64 --asar --overwrite",
+    "package:pack": "electron-packager ./dist --platform=win32 --arch=x64 --asar --overwrite --out=out",
     "package": "run-s package:*",
     "lint": "eslint src",
     "lint:fix": "eslint --fix src"
