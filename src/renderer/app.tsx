@@ -1,14 +1,21 @@
 ﻿import { useEffect, useState } from "react";
 
+import { Book } from "../models/book";
+import BookList from "./BookList";
+
 export default function App() {
-  const [message, setMessage] = useState("");
+  const [books, setBooks] = useState<Book[]>([]);
 
   useEffect(() => {
-    const getMessage = async () => {
-      window.electronAPI.doThing().then((res) => setMessage(res));
+    const getBooks = async () => {
+      window.electronAPI.findBooks("").then((res) => setBooks(res));
     };
-    getMessage();
+    getBooks().then(() => console.dir(books));
   }, []);
 
-  return <div>{message}</div>;
+  return (
+    <div>
+      <BookList books={books} />
+    </div>
+  );
 }

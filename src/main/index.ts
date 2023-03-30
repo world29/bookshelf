@@ -1,6 +1,8 @@
 ﻿import { app, BrowserWindow } from "electron";
 import { join } from "path";
+
 import setupAPIs from "./api";
+import db from "./database";
 
 const createWindow = () => {
   const mainWindow: BrowserWindow = new BrowserWindow({
@@ -16,6 +18,9 @@ const createWindow = () => {
 };
 
 app.whenReady().then(() => {
+  db.initialize();
+  setupAPIs();
+
   createWindow();
 
   app.on("activate", () => {
@@ -28,7 +33,5 @@ app.on("window-all-closed", () => {
 });
 
 app.on("quit", () => {
-  console.log("quit");
+  db.finalize();
 });
-
-setupAPIs();
