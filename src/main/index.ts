@@ -1,8 +1,9 @@
-﻿import { app, BrowserWindow } from "electron";
+﻿import { app, BrowserWindow, session } from "electron";
 import { join } from "path";
-
 import setupAPIs from "./api";
 import db from "./database";
+
+const reactDevTools = join(__dirname, "../externals/ReactDevTools");
 
 const createWindow = () => {
   const mainWindow: BrowserWindow = new BrowserWindow({
@@ -15,6 +16,10 @@ const createWindow = () => {
   mainWindow.loadFile("index.html");
 
   mainWindow.webContents.openDevTools();
+
+  session.defaultSession.loadExtension(reactDevTools, {
+    allowFileAccess: true,
+  });
 };
 
 app.whenReady().then(() => {
