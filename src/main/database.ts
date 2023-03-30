@@ -28,7 +28,7 @@ function finalize() {
 function findBooks(searchQuery: string): Promise<Book[]> {
   return new Promise((resolve, reject) => {
     db.all(
-      `SELECT * FROM book WHERE title LIKE %${searchQuery}% OR author LIKE %${searchQuery}%`,
+      `SELECT * FROM books WHERE title LIKE '%${searchQuery}%' OR author LIKE '%${searchQuery}%'`,
       (err: Error, rows: Row[]) => {
         if (err) reject(err);
 
