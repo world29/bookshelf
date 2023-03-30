@@ -17,6 +17,16 @@ const common = {
   module: {
     rules: [
       {
+        test: [/\.css/],
+        use: [
+          "style-loader",
+          {
+            loader: "css-loader",
+            options: { url: false },
+          },
+        ],
+      },
+      {
         test: [/\.ts$/, /\.tsx$/],
         use: [
           {
