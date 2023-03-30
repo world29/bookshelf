@@ -1,7 +1,8 @@
 ﻿import { useEffect, useState } from "react";
 
 import { Book } from "../models/book";
-import BookList from "./BookList";
+import Pagination from "./Pagination";
+import "./styles/App.css";
 
 export default function App() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -14,8 +15,8 @@ export default function App() {
   }, []);
 
   return (
-    <div>
-      <BookList books={books} />
+    <div className="App">
+      <Pagination books={books} />
     </div>
   );
 }

@@ -1,0 +1,10 @@
+﻿.bookWrapper {
+  text-align: center;
+  width: 100%;
+}
+
+.paginateWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
