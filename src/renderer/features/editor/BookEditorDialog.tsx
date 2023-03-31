@@ -42,7 +42,7 @@ export default function BookEditorDialog() {
   }
 
   return (
-    <Modal open={isEditing} onClose={closeModal}>
+    <Modal open={isEditing}>
       <>
         <p>dialog test</p>
         <form onSubmit={handleSubmit}>
