@@ -2,7 +2,7 @@
 
 import { Book } from "../models/book";
 import { useAppDispatch } from "./app/hooks";
-import { setTitle } from "./features/books/booksSlice";
+import { beginEdit } from "./features/editor/editorSlice";
 import "./styles/BookList.css";
 
 type BookListItemProps = {
@@ -18,42 +18,16 @@ const BookListItem = (props: BookListItemProps) => {
 
   const dispatch = useAppDispatch();
 
-  const [editMode, setEditMode] = useState(false);
-
-  const handleClickTitle = () => {
-    setEditMode(true);
-  };
-
-  const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setTitle({ path: book.path, title: e.target.value }));
-  };
-
-  const handleSubmitTitle = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    setEditMode(false);
-  };
-
-  const handleBlurTitle = (e: React.FocusEvent<HTMLInputElement>) => {
-    setEditMode(false);
+  const handleClickEdit = () => {
+    dispatch(beginEdit(book.path));
   };
 
   return (
     <div>
       <img src={"https://via.placeholder.com/150/92c952"} alt="album" />
       <div>
-        {editMode ? (
-          <form onSubmit={handleSubmitTitle}>
-            <input
-              type="text"
-              defaultValue={book.title}
-              onChange={handleChangeTitle}
-              onBlur={handleBlurTitle}
-            />
-          </form>
-        ) : (
-          <div onClick={handleClickTitle}>{book.title}</div>
-        )}
+        <div>{book.title}</div>
+        <button onClick={handleClickEdit}>edit</button>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import { useAppDispatch } from "./app/hooks";
 import { RootState } from "./app/store";
 import { fetchBooks } from "./features/books/booksSlice";
 import { Counter } from "./features/counter/Counter";
+import BookEditorDialog from "./features/editor/BookEditorDialog";
 import Pagination from "./Pagination";
 import "./styles/App.css";
 
@@ -21,6 +22,7 @@ export default function App() {
     <div className="App">
       <Counter />
       <Pagination books={books} />
+      <BookEditorDialog />
     </div>
   );
 }
