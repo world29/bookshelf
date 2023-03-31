@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
@@ -16,8 +16,13 @@ export default function BookEditorDialog() {
 
   const dispatch = useAppDispatch();
 
-  const [title, setTitle] = useState<string>(book ? book.title : "");
-  const [author, setAuthor] = useState<string>(book ? book.author : "");
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+
+  useEffect(() => {
+    setTitle(book ? book.title : "");
+    setAuthor(book ? book.author : "");
+  }, [book]);
 
   const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
