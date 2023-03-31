@@ -1,18 +1,20 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-import { Book } from "../models/book";
+import { useAppDispatch } from "./app/hooks";
+import { RootState } from "./app/store";
+import { fetchBooks } from "./features/books/booksSlice";
 import { Counter } from "./features/counter/Counter";
 import Pagination from "./Pagination";
 import "./styles/App.css";
 
 export default function App() {
-  const [books, setBooks] = useState<Book[]>([]);
+  const books = useSelector((state: RootState) => state.books);
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const getBooks = async () => {
-      window.electronAPI.findBooks("").then((res) => setBooks(res));
-    };
-    getBooks().then(() => console.dir(books));
+    dispatch(fetchBooks());
   }, []);
 
   return (

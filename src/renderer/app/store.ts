@@ -3,6 +3,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import logger from "redux-logger";
 
 import counterReducer from "../features/counter/counterSlice";
+import booksReducer from "../features/books/booksSlice";
 import rootSaga from "./rootSaga";
 
 const sagaMiddleware = createSagaMiddleware();
@@ -10,6 +11,7 @@ const sagaMiddleware = createSagaMiddleware();
 const store = configureStore({
   reducer: {
     counter: counterReducer,
+    books: booksReducer,
   },
   middleware: (getDefaultMiddleware) => [
     ...getDefaultMiddleware(),

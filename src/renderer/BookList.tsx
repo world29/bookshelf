@@ -1,6 +1,8 @@
 ﻿import React, { useState } from "react";
 
 import { Book } from "../models/book";
+import { useAppDispatch } from "./app/hooks";
+import { setTitle } from "./features/books/booksSlice";
 import "./styles/BookList.css";
 
 type BookListItemProps = {
@@ -14,16 +16,16 @@ type BookListProps = {
 const BookListItem = (props: BookListItemProps) => {
   const { book } = props;
 
-  const [editMode, setEditMode] = useState(false);
+  const dispatch = useAppDispatch();
 
-  const [title, setTitle] = useState(book.title);
+  const [editMode, setEditMode] = useState(false);
 
   const handleClickTitle = () => {
     setEditMode(true);
   };
 
   const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
+    dispatch(setTitle({ path: book.path, title: e.target.value }));
   };
 
   const handleSubmitTitle = (e: React.FormEvent<HTMLFormElement>) => {
@@ -44,13 +46,13 @@ const BookListItem = (props: BookListItemProps) => {
           <form onSubmit={handleSubmitTitle}>
             <input
               type="text"
-              defaultValue={title}
+              defaultValue={book.title}
               onChange={handleChangeTitle}
               onBlur={handleBlurTitle}
             />
           </form>
         ) : (
-          <div onClick={handleClickTitle}>{title}</div>
+          <div onClick={handleClickTitle}>{book.title}</div>
         )}
       </div>
     </div>
