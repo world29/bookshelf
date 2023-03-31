@@ -12,6 +12,12 @@ const setupAPIs = () => {
     (_event: IpcMainInvokeEvent, searchQuery: string) =>
       db.findBooks(searchQuery)
   );
+
+  ipcMain.handle(
+    "update-book",
+    (_event: IpcMainInvokeEvent, path: string, title: string, author: string) =>
+      db.updateBook(path, title, author)
+  );
 };
 
 export default setupAPIs;

@@ -38,8 +38,31 @@ function findBooks(searchQuery: string): Promise<Book[]> {
   });
 }
 
+function updateBook(
+  path: string,
+  title: string,
+  author: string
+): Promise<Book> {
+  return new Promise((resolve, reject) => {
+    db.serialize(() => {
+      db.run(
+        "UPDATE books SET title = ?, author = ? WHERE path = ?",
+        title,
+        author,
+        path
+      );
+      db.get("SELECT * FROM books WHERE path = ?", path, (err, row) => {
+        if (err) reject(err);
+
+        resolve(row);
+      });
+    });
+  });
+}
+
 export default {
   initialize,
   finalize,
   findBooks,
+  updateBook,
 };

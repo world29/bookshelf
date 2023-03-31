@@ -1,9 +1,10 @@
 ﻿import React, { useState } from "react";
 import { useSelector } from "react-redux";
 
-import { useAppDispatch } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { RootState } from "../../app/store";
 import Modal from "../../common/Modal";
+import { selectBook, updateBook } from "../books/booksSlice";
 import { endEdit } from "./editorSlice";
 
 export default function BookEditorDialog() {
@@ -11,14 +12,14 @@ export default function BookEditorDialog() {
     (state: RootState) => state.editor
   );
 
-  const book = useSelector((state: RootState) =>
-    state.books.find((book) => book.path === bookPath)
+  const book = useAppSelector((state) =>
+    selectBook(state, bookPath ? bookPath : "")
   );
 
   const dispatch = useAppDispatch();
 
-  const [title, setTitle] = useState<string | undefined>(book?.title);
-  const [author, setAuthor] = useState<string | undefined>(book?.author);
+  const [title, setTitle] = useState<string>(book ? book.title : "");
+  const [author, setAuthor] = useState<string>(book ? book.author : "");
 
   const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -31,7 +32,7 @@ export default function BookEditorDialog() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log(`title:${title}, author:${author}`);
+    dispatch(updateBook({ path: book ? book.path : "", title, author }));
   };
 
   const closeModal = () => {

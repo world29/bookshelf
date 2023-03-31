@@ -1,24 +1,34 @@
 ﻿import { takeLatest, put, select, call } from "redux-saga/effects";
 
 import { Book } from "../../../models/book";
-import { RootState } from "../../app/store";
 import {
   booksFetched,
-  bookPropertiesUpdated,
+  bookUpdated,
   fetchBooks,
-  setTitle,
+  selectBook,
+  updateBook,
 } from "./booksSlice";
 
-function* handleSetTitle(action: { payload: { path: string; title: string } }) {
-  const { path, title } = action.payload;
+function* handleUpdateBook(action: {
+  payload: { path: string; title: string; author: string };
+}) {
+  const { path, title, author } = action.payload;
 
-  const book: Book = yield select((state: RootState) =>
-    state.books.find((book) => book.path === path)
+  const book: Book | undefined = yield select(selectBook, path);
+
+  if (!book) {
+    //error
+    return;
+  }
+
+  const newBook: Book = yield call(
+    window.electronAPI.updateBook,
+    path,
+    title,
+    author
   );
 
-  const newBook = { ...book, title: title };
-
-  yield put(bookPropertiesUpdated(newBook));
+  yield put(bookUpdated(newBook));
 }
 
 function* handleFetchBooks() {
@@ -28,6 +38,6 @@ function* handleFetchBooks() {
 }
 
 export default [
-  takeLatest(setTitle, handleSetTitle),
+  takeLatest(updateBook, handleUpdateBook),
   takeLatest(fetchBooks, handleFetchBooks),
 ];
