@@ -31,6 +31,8 @@ export default function BookEditorDialog() {
     e.preventDefault();
 
     dispatch(updateBook({ path: book ? book.path : "", title, author }));
+
+    closeModal();
   };
 
   const closeModal = () => {
