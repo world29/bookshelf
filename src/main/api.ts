@@ -3,7 +3,7 @@
 import db from "./database";
 
 const setupAPIs = () => {
-  ipcMain.handle("do-a-thing", (_event: IpcMainInvokeEvent) =>
+  ipcMain.handle("do-a-thing", () =>
     Promise.resolve("hello from main process.")
   );
 

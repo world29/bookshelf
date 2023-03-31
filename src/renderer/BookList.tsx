@@ -1,6 +1,4 @@
-﻿import React, { useState } from "react";
-
-import { Book } from "../models/book";
+﻿import { Book } from "../models/book";
 import { useAppDispatch } from "./app/hooks";
 import { beginEdit } from "./features/editor/editorSlice";
 import "./styles/BookList.css";
