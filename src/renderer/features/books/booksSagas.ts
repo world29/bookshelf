@@ -14,7 +14,7 @@ function* handleUpdateBook(action: {
 }) {
   const { path, title, author } = action.payload;
 
-  const book: Book | undefined = yield select(selectBook, path);
+  const book: Book | undefined = yield select(selectBook(path));
 
   if (!book) {
     //error

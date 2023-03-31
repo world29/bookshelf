@@ -27,7 +27,7 @@ export const updateBook = createAction<{
   author: string;
 }>("books/updateBook");
 
-export const selectBook = (state: RootState, path: string) =>
+export const selectBook = (path: string) => (state: RootState) =>
   state.books.find((book) => book.path === path);
 
 export default booksSlice.reducer;

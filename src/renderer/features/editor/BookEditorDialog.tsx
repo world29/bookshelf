@@ -12,9 +12,7 @@ export default function BookEditorDialog() {
     (state: RootState) => state.editor
   );
 
-  const book = useAppSelector((state) =>
-    selectBook(state, bookPath ? bookPath : "")
-  );
+  const book = useAppSelector(selectBook(bookPath ? bookPath : ""));
 
   const dispatch = useAppDispatch();
 
