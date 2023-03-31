@@ -2,12 +2,12 @@
 
 interface EditorState {
   isEditing: boolean;
-  bookPath: string | null;
+  bookPath: string;
 }
 
 const initialState: EditorState = {
   isEditing: false,
-  bookPath: null,
+  bookPath: "",
 };
 
 export const editorSlice = createSlice({

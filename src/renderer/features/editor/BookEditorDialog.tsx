@@ -12,7 +12,7 @@ export default function BookEditorDialog() {
     (state: RootState) => state.editor
   );
 
-  const book = useAppSelector(selectBook(bookPath ? bookPath : ""));
+  const book = useAppSelector(selectBook(bookPath));
 
   const dispatch = useAppDispatch();
 
@@ -35,7 +35,7 @@ export default function BookEditorDialog() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    dispatch(updateBook({ path: book ? book.path : "", title, author }));
+    dispatch(updateBook({ path: bookPath, title, author }));
 
     closeModal();
   };
