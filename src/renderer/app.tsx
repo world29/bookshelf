@@ -1,8 +1,6 @@
 ﻿import { useEffect } from "react";
-import { useSelector } from "react-redux";
 
-import { useAppDispatch } from "./app/hooks";
-import { RootState } from "./app/store";
+import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { fetchBooks } from "./features/books/booksSlice";
 import BookAddDialog from "./features/editor/BookAddDialog";
 import BookEditorDialog from "./features/editor/BookEditorDialog";
@@ -11,7 +9,7 @@ import Pagination from "./Pagination";
 import "./styles/App.css";
 
 export default function App() {
-  const books = useSelector((state: RootState) => state.books);
+  const books = useAppSelector((state) => state.books);
 
   const dispatch = useAppDispatch();
 

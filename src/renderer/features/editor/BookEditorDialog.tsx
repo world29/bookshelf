@@ -1,14 +1,13 @@
 ﻿import React, { useEffect, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { RootState } from "../../app/store";
 import Modal from "../../common/Modal";
 import { selectBook, updateBook } from "../books/booksSlice";
 import { closeEditDialog } from "./editorSlice";
 
 export default function BookEditorDialog() {
   const { isOpen, bookPath } = useAppSelector(
-    (state: RootState) => state.editor.editDialog
+    (state) => state.editor.editDialog
   );
 
   const book = useAppSelector(selectBook(bookPath));
