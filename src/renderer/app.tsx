@@ -6,7 +6,7 @@ import { RootState } from "./app/store";
 import { fetchBooks } from "./features/books/booksSlice";
 import BookAddDialog from "./features/editor/BookAddDialog";
 import BookEditorDialog from "./features/editor/BookEditorDialog";
-import { beginAdd } from "./features/editor/editorSlice";
+import { openAddDialog } from "./features/editor/editorSlice";
 import Pagination from "./Pagination";
 import "./styles/App.css";
 
@@ -20,7 +20,7 @@ export default function App() {
   }, []);
 
   const handleClickAdd = () => {
-    dispatch(beginAdd());
+    dispatch(openAddDialog());
   };
 
   return (

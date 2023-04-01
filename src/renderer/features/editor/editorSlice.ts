@@ -24,27 +24,32 @@ export const editorSlice = createSlice({
   name: "editor",
   initialState,
   reducers: {
-    beginEdit: (state, action: PayloadAction<string>) => {
+    openEditDialog: (state, action: PayloadAction<string>) => {
       state.editDialog = {
         isOpen: true,
         bookPath: action.payload,
       };
     },
-    endEdit: (state) => {
+    closeEditDialog: (state) => {
       state.editDialog = {
         isOpen: false,
         bookPath: "",
       };
     },
-    beginAdd: (state) => {
+    openAddDialog: (state) => {
       state.addDialog.isOpen = true;
     },
-    endAdd: (state) => {
+    closeAddDialog: (state) => {
       state.addDialog.isOpen = false;
     },
   },
 });
 
-export const { beginEdit, endEdit, beginAdd, endAdd } = editorSlice.actions;
+export const {
+  openEditDialog,
+  closeEditDialog,
+  openAddDialog,
+  closeAddDialog,
+} = editorSlice.actions;
 
 export default editorSlice.reducer;

@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { RootState } from "../../app/store";
 import Modal from "../../common/Modal";
 import { selectBook, updateBook } from "../books/booksSlice";
-import { endEdit } from "./editorSlice";
+import { closeEditDialog } from "./editorSlice";
 
 export default function BookEditorDialog() {
   const { isOpen, bookPath } = useAppSelector(
@@ -40,7 +40,7 @@ export default function BookEditorDialog() {
   };
 
   const closeModal = () => {
-    dispatch(endEdit());
+    dispatch(closeEditDialog());
   };
 
   if (!book) {

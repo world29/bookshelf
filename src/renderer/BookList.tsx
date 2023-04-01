@@ -1,6 +1,6 @@
 ﻿import { Book } from "../models/book";
 import { useAppDispatch } from "./app/hooks";
-import { beginEdit } from "./features/editor/editorSlice";
+import { openEditDialog } from "./features/editor/editorSlice";
 import "./styles/BookList.css";
 
 type BookListItemProps = {
@@ -17,7 +17,7 @@ const BookListItem = (props: BookListItemProps) => {
   const dispatch = useAppDispatch();
 
   const handleClickEdit = () => {
-    dispatch(beginEdit(book.path));
+    dispatch(openEditDialog(book.path));
   };
 
   return (

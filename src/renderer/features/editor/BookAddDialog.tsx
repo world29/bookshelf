@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { RootState } from "../../app/store";
 import Modal from "../../common/Modal";
 import { addBook } from "../books/booksSlice";
-import { endAdd } from "./editorSlice";
+import { closeAddDialog } from "./editorSlice";
 
 export default function BookAddDialog() {
   const { isOpen } = useAppSelector(
@@ -28,7 +28,7 @@ export default function BookAddDialog() {
   };
 
   const closeModal = () => {
-    dispatch(endAdd());
+    dispatch(closeAddDialog());
   };
 
   return (
