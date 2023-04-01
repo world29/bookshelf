@@ -51,7 +51,7 @@ function updateBook(
         author,
         path
       );
-      db.get("SELECT * FROM books WHERE path = ?", path, (err, row) => {
+      db.get("SELECT * FROM books WHERE path = ?", path, (err, row: Row) => {
         if (err) reject(err);
 
         resolve(row);
