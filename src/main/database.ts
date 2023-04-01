@@ -1,9 +1,9 @@
 ﻿import { app } from "electron";
 import sqlite3 from "sqlite3";
-import path from "path";
+import { join, parse } from "path";
 import { Book } from "../models/book";
 
-const databasePath: string = path.join(app.getPath("userData"), "books.db");
+const databasePath: string = join(app.getPath("userData"), "books.db");
 
 const db = new sqlite3.Database(databasePath);
 
@@ -60,8 +60,11 @@ function updateBook(
   });
 }
 
-function addBook(path: string, title: string, author: string): Promise<Book> {
+function addBook(path: string): Promise<Book> {
   return new Promise((resolve, reject) => {
+    const title = parse(path).base;
+    const author = "";
+
     db.serialize(() => {
       db.run("INSERT INTO books VALUES(?, ?, ?)", path, title, author);
       db.get("SELECT * FROM books WHERE path = ?", path, (err, row: Row) => {

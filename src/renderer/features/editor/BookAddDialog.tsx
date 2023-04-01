@@ -24,6 +24,13 @@ export default function BookAddDialog() {
     closeModal();
   };
 
+  const handleClickFileSelect = () => {
+    window.electronAPI.openFileDialog().then((result) => {
+      if (result.canceled) return;
+      setFilePath(result.filePaths[0]);
+    });
+  };
+
   const closeModal = () => {
     dispatch(closeAddDialog());
   };
@@ -32,7 +39,10 @@ export default function BookAddDialog() {
     <Modal open={isOpen}>
       <>
         <form onSubmit={handleSubmit}>
-          <input type="text" onChange={handleChangeFilePath} />
+          <input type="text" onChange={handleChangeFilePath} value={filePath} />
+          <button type="button" onClick={handleClickFileSelect}>
+            select file
+          </button>
           <div>
             <button type="submit">add</button>
             <button type="button" onClick={closeModal}>

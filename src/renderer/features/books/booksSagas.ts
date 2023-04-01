@@ -42,15 +42,7 @@ function* handleFetchBooks() {
 function* handleAddBook(action: { payload: { path: string } }) {
   const { path } = action.payload;
 
-  const title = "";
-  const author = "";
-
-  const newBook: Book = yield call(
-    window.electronAPI.addBook,
-    path,
-    title,
-    author
-  );
+  const newBook: Book = yield call(window.electronAPI.addBook, path);
 
   yield put(bookAdded(newBook));
 }

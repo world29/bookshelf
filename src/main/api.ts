@@ -1,8 +1,8 @@
-﻿import { ipcMain, IpcMainInvokeEvent } from "electron";
+﻿import { BrowserWindow, dialog, ipcMain, IpcMainInvokeEvent } from "electron";
 
 import db from "./database";
 
-const setupAPIs = () => {
+const setupAPIs = (mainWindow: BrowserWindow) => {
   ipcMain.handle("do-a-thing", () =>
     Promise.resolve("hello from main process.")
   );
@@ -19,10 +19,21 @@ const setupAPIs = () => {
       db.updateBook(path, title, author)
   );
 
-  ipcMain.handle(
-    "add-book",
-    (_event: IpcMainInvokeEvent, path: string, title: string, author: string) =>
-      db.addBook(path, title, author)
+  ipcMain.handle("add-book", (_event: IpcMainInvokeEvent, path: string) =>
+    db.addBook(path)
+  );
+
+  ipcMain.handle("open-file-dialog", () =>
+    dialog.showOpenDialog(mainWindow, {
+      properties: ["openFile"],
+      title: "ファイルを選択",
+      filters: [
+        {
+          name: "画像ファイル",
+          extensions: ["png", "jpg", "jpeg"],
+        },
+      ],
+    })
   );
 };
 
