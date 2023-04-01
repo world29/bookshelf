@@ -60,9 +60,23 @@ function updateBook(
   });
 }
 
+function addBook(path: string, title: string, author: string): Promise<Book> {
+  return new Promise((resolve, reject) => {
+    db.serialize(() => {
+      db.run("INSERT INTO books VALUES(?, ?, ?)", path, title, author);
+      db.get("SELECT * FROM books WHERE path = ?", path, (err, row: Row) => {
+        if (err) reject(err);
+
+        resolve(row);
+      });
+    });
+  });
+}
+
 export default {
   initialize,
   finalize,
   findBooks,
   updateBook,
+  addBook,
 };

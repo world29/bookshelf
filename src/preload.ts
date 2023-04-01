@@ -6,4 +6,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("find-books", searchQuery),
   updateBook: (path: string, title: string, author: string) =>
     ipcRenderer.invoke("update-book", path, title, author),
+  addBook: (path: string, title: string, author: string) =>
+    ipcRenderer.invoke("add-book", path, title, author),
 });

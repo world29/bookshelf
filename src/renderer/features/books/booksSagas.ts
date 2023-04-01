@@ -4,9 +4,11 @@ import { Book } from "../../../models/book";
 import {
   booksFetched,
   bookUpdated,
+  bookAdded,
   fetchBooks,
   selectBook,
   updateBook,
+  addBook,
 } from "./booksSlice";
 
 function* handleUpdateBook(action: {
@@ -37,7 +39,24 @@ function* handleFetchBooks() {
   yield put(booksFetched(books));
 }
 
+function* handleAddBook(action: { payload: { path: string } }) {
+  const { path } = action.payload;
+
+  const title = "";
+  const author = "";
+
+  const newBook: Book = yield call(
+    window.electronAPI.addBook,
+    path,
+    title,
+    author
+  );
+
+  yield put(bookAdded(newBook));
+}
+
 export default [
   takeLatest(updateBook, handleUpdateBook),
   takeLatest(fetchBooks, handleFetchBooks),
+  takeLatest(addBook, handleAddBook),
 ];

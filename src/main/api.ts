@@ -18,6 +18,12 @@ const setupAPIs = () => {
     (_event: IpcMainInvokeEvent, path: string, title: string, author: string) =>
       db.updateBook(path, title, author)
   );
+
+  ipcMain.handle(
+    "add-book",
+    (_event: IpcMainInvokeEvent, path: string, title: string, author: string) =>
+      db.addBook(path, title, author)
+  );
 };
 
 export default setupAPIs;

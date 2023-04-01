@@ -1,0 +1,48 @@
+﻿import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { RootState } from "../../app/store";
+import Modal from "../../common/Modal";
+import { addBook } from "../books/booksSlice";
+import { endAdd } from "./editorSlice";
+
+export default function BookAddDialog() {
+  const { isAdding } = useSelector((state: RootState) => state.editor);
+
+  const dispatch = useAppDispatch();
+
+  const [filePath, setFilePath] = useState("");
+
+  const handleChangeFilePath = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilePath(e.target.value);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    dispatch(addBook({ path: filePath }));
+
+    closeModal();
+  };
+
+  const closeModal = () => {
+    dispatch(endAdd());
+  };
+
+  return (
+    <Modal open={isAdding}>
+      <>
+        <form onSubmit={handleSubmit}>
+          <input type="text" onChange={handleChangeFilePath} />
+          <div>
+            <button type="submit">add</button>
+            <button type="button" onClick={closeModal}>
+              cancel
+            </button>
+          </div>
+        </form>
+      </>
+    </Modal>
+  );
+}

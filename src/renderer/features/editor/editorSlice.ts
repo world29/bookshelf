@@ -3,11 +3,13 @@
 interface EditorState {
   isEditing: boolean;
   bookPath: string;
+  isAdding: boolean;
 }
 
 const initialState: EditorState = {
   isEditing: false,
   bookPath: "",
+  isAdding: false,
 };
 
 export const editorSlice = createSlice({
@@ -21,9 +23,15 @@ export const editorSlice = createSlice({
     endEdit: (state) => {
       state.isEditing = false;
     },
+    beginAdd: (state) => {
+      state.isAdding = true;
+    },
+    endAdd: (state) => {
+      state.isAdding = false;
+    },
   },
 });
 
-export const { beginEdit, endEdit } = editorSlice.actions;
+export const { beginEdit, endEdit, beginAdd, endAdd } = editorSlice.actions;
 
 export default editorSlice.reducer;
