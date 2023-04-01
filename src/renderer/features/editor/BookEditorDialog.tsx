@@ -1,5 +1,4 @@
 ﻿import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { RootState } from "../../app/store";
@@ -8,8 +7,8 @@ import { selectBook, updateBook } from "../books/booksSlice";
 import { endEdit } from "./editorSlice";
 
 export default function BookEditorDialog() {
-  const { isEditing, bookPath } = useSelector(
-    (state: RootState) => state.editor
+  const { isOpen, bookPath } = useAppSelector(
+    (state: RootState) => state.editor.editDialog
   );
 
   const book = useAppSelector(selectBook(bookPath));
@@ -49,7 +48,7 @@ export default function BookEditorDialog() {
   }
 
   return (
-    <Modal open={isEditing}>
+    <Modal open={isOpen}>
       <>
         <p>dialog test</p>
         <form onSubmit={handleSubmit}>

@@ -1,5 +1,4 @@
 ﻿import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { RootState } from "../../app/store";
@@ -8,7 +7,9 @@ import { addBook } from "../books/booksSlice";
 import { endAdd } from "./editorSlice";
 
 export default function BookAddDialog() {
-  const { isAdding } = useSelector((state: RootState) => state.editor);
+  const { isOpen } = useAppSelector(
+    (state: RootState) => state.editor.addDialog
+  );
 
   const dispatch = useAppDispatch();
 
@@ -31,7 +32,7 @@ export default function BookAddDialog() {
   };
 
   return (
-    <Modal open={isAdding}>
+    <Modal open={isOpen}>
       <>
         <form onSubmit={handleSubmit}>
           <input type="text" onChange={handleChangeFilePath} />

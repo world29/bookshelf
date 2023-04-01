@@ -1,15 +1,23 @@
 ﻿import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface EditorState {
-  isEditing: boolean;
-  bookPath: string;
-  isAdding: boolean;
+  editDialog: {
+    isOpen: boolean;
+    bookPath: string;
+  };
+  addDialog: {
+    isOpen: boolean;
+  };
 }
 
 const initialState: EditorState = {
-  isEditing: false,
-  bookPath: "",
-  isAdding: false,
+  editDialog: {
+    isOpen: false,
+    bookPath: "",
+  },
+  addDialog: {
+    isOpen: false,
+  },
 };
 
 export const editorSlice = createSlice({
@@ -17,17 +25,22 @@ export const editorSlice = createSlice({
   initialState,
   reducers: {
     beginEdit: (state, action: PayloadAction<string>) => {
-      state.isEditing = true;
-      state.bookPath = action.payload;
+      state.editDialog = {
+        isOpen: true,
+        bookPath: action.payload,
+      };
     },
     endEdit: (state) => {
-      state.isEditing = false;
+      state.editDialog = {
+        isOpen: false,
+        bookPath: "",
+      };
     },
     beginAdd: (state) => {
-      state.isAdding = true;
+      state.addDialog.isOpen = true;
     },
     endAdd: (state) => {
-      state.isAdding = false;
+      state.addDialog.isOpen = false;
     },
   },
 });
