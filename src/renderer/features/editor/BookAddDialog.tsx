@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+﻿import React, { useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import Modal from "../../common/Modal";
