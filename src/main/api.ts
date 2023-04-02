@@ -1,6 +1,7 @@
 ﻿import { BrowserWindow, dialog, ipcMain, IpcMainInvokeEvent } from "electron";
 
 import db from "./database";
+import { createThumbnailFromFile } from "./thumbnail";
 
 const setupAPIs = (mainWindow: BrowserWindow) => {
   ipcMain.handle("do-a-thing", () =>
@@ -29,14 +30,26 @@ const setupAPIs = (mainWindow: BrowserWindow) => {
     db.addBook(path)
   );
 
+  ipcMain.handle(
+    "create-thumbnail",
+    (_event: IpcMainInvokeEvent, filePath: string) =>
+      createThumbnailFromFile(filePath)
+  );
+
   ipcMain.handle("open-file-dialog", () =>
     dialog.showOpenDialog(mainWindow, {
       properties: ["openFile"],
       title: "ファイルを選択",
       filters: [
+        /*
         {
           name: "画像ファイル",
           extensions: ["png", "jpg", "jpeg"],
+        },
+        */
+        {
+          name: "アーカイブファイル",
+          extensions: ["zip"],
         },
       ],
     })

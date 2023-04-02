@@ -48,6 +48,22 @@ function* handleAddBook(action: { payload: { path: string } }) {
     yield put(bookAdded(newBook));
   }
 
+  // アーカイブファイルなら、先頭の画像ファイルをサムネイルに設定する。
+  if (path.endsWith(".zip")) {
+    const thumbnailPath: string = yield call(
+      window.electronAPI.createThumbnail,
+      path
+    );
+
+    const newBook: Book = yield call(
+      window.electronAPI.updateBookThumbnail,
+      path,
+      thumbnailPath
+    );
+
+    yield put(bookUpdated(newBook));
+  }
+
   // 画像ファイルなら、それをサムネイルに設定する。
   if (path.endsWith(".png")) {
     const newBook: Book = yield call(
