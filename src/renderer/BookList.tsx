@@ -20,9 +20,14 @@ const BookListItem = (props: BookListItemProps) => {
     dispatch(openEditDialog(book.path));
   };
 
+  const thumbnailPath =
+    book.thumbnailPath !== ""
+      ? book.thumbnailPath
+      : "https://via.placeholder.com/150/92c952";
+
   return (
     <div>
-      <img src={"https://via.placeholder.com/150/92c952"} alt="album" />
+      <img src={thumbnailPath} alt="album" />
       <div>
         <div>{book.title}</div>
         <button onClick={handleClickEdit}>edit</button>

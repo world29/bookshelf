@@ -42,9 +42,22 @@ function* handleFetchBooks() {
 function* handleAddBook(action: { payload: { path: string } }) {
   const { path } = action.payload;
 
-  const newBook: Book = yield call(window.electronAPI.addBook, path);
+  {
+    const newBook: Book = yield call(window.electronAPI.addBook, path);
 
-  yield put(bookAdded(newBook));
+    yield put(bookAdded(newBook));
+  }
+
+  // 画像ファイルなら、それをサムネイルに設定する。
+  if (path.endsWith(".png")) {
+    const newBook: Book = yield call(
+      window.electronAPI.updateBookThumbnail,
+      path,
+      path
+    );
+
+    yield put(bookUpdated(newBook));
+  }
 }
 
 export default [
