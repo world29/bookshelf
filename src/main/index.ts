@@ -13,6 +13,7 @@ const createWindow = () => {
       preload: join(__dirname, "preload.js"),
     },
   });
+  setupAPIs(mainWindow);
   mainWindow.loadFile("index.html");
 
   mainWindow.webContents.openDevTools();
@@ -24,7 +25,6 @@ const createWindow = () => {
 
 app.whenReady().then(() => {
   db.initialize();
-  setupAPIs();
 
   createWindow();
 
