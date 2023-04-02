@@ -19,6 +19,12 @@ const setupAPIs = (mainWindow: BrowserWindow) => {
       db.updateBook(path, title, author)
   );
 
+  ipcMain.handle(
+    "update-book-thumbnail",
+    (_event: IpcMainInvokeEvent, path: string, thumbnailPath: string) =>
+      db.updateBookThumbnail(path, thumbnailPath)
+  );
+
   ipcMain.handle("add-book", (_event: IpcMainInvokeEvent, path: string) =>
     db.addBook(path)
   );

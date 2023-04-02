@@ -11,13 +11,23 @@ type Row = {
   path: string;
   title: string;
   author: string;
+  thumbnailPath: string;
 };
 
 // データベース初期化
 function initialize() {
-  db.run(
-    "CREATE TABLE IF NOT EXISTS books(path TEXT, title TEXT, author TEXT DEFAULT '')"
-  );
+  db.serialize(() => {
+    db.run(
+      "CREATE TABLE IF NOT EXISTS books(path TEXT, title TEXT, author TEXT DEFAULT '')"
+    );
+    // カラムを追加する。すでにカラムが存在する場合はエラーになるためコールバックを渡しておく。
+    db.run(
+      "ALTER TABLE books ADD COLUMN thumbnailPath TEXT DEFAULT ''",
+      (result: sqlite3.RunResult, err: Error | null) => {
+        if (err) console.error(err);
+      }
+    );
+  });
 }
 
 // データベース終了
@@ -60,13 +70,44 @@ function updateBook(
   });
 }
 
+function updateBookThumbnail(
+  path: string,
+  thumbnailPath: string
+): Promise<Book> {
+  return new Promise((resolve, reject) => {
+    db.serialize(() => {
+      db.run(
+        "UPDATE books SET thumbnailPath = ? WHERE path = ?",
+        thumbnailPath,
+        path
+      );
+      db.get(
+        "SELECT * FROM books WHERE path = ?",
+        path,
+        (err: Error | null, row: Row) => {
+          if (err) reject(err);
+
+          resolve(row);
+        }
+      );
+    });
+  });
+}
+
 function addBook(path: string): Promise<Book> {
   return new Promise((resolve, reject) => {
     const title = parse(path).base;
     const author = "";
+    const thumbnailPath = "";
 
     db.serialize(() => {
-      db.run("INSERT INTO books VALUES(?, ?, ?)", path, title, author);
+      db.run(
+        "INSERT INTO books VALUES(?, ?, ?, ?)",
+        path,
+        title,
+        author,
+        thumbnailPath
+      );
       db.get("SELECT * FROM books WHERE path = ?", path, (err, row: Row) => {
         if (err) reject(err);
 
@@ -81,5 +122,6 @@ export default {
   finalize,
   findBooks,
   updateBook,
+  updateBookThumbnail,
   addBook,
 };

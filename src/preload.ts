@@ -6,6 +6,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("find-books", searchQuery),
   updateBook: (path: string, title: string, author: string) =>
     ipcRenderer.invoke("update-book", path, title, author),
+  updateBookThumbnail: (path: string, thumbnailPath: string) =>
+    ipcRenderer.invoke("update-book-thumbnail", path, thumbnailPath),
   addBook: (path: string) => ipcRenderer.invoke("add-book", path),
   openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),
 });

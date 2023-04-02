@@ -2,4 +2,5 @@
   path: string;
   title: string;
   author: string;
+  thumbnailPath: string;
 };
