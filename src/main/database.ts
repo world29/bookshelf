@@ -97,17 +97,9 @@ function updateBookThumbnail(
 function addBook(path: string): Promise<Book> {
   return new Promise((resolve, reject) => {
     const title = parse(path).base;
-    const author = "";
-    const thumbnailPath = "";
 
     db.serialize(() => {
-      db.run(
-        "INSERT INTO books VALUES(?, ?, ?, ?)",
-        path,
-        title,
-        author,
-        thumbnailPath
-      );
+      db.run("INSERT INTO books (path, title) VALUES(?, ?)", path, title);
       db.get("SELECT * FROM books WHERE path = ?", path, (err, row: Row) => {
         if (err) reject(err);
 
