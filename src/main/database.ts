@@ -104,7 +104,14 @@ function addBook(path: string): Promise<Book> {
     const title = basename(path, extname(path));
 
     db.serialize(() => {
-      db.run("INSERT INTO books (path, title) VALUES(?, ?)", path, title);
+      db.run(
+        "INSERT OR FAIL INTO books (path, title) VALUES(?, ?)",
+        path,
+        title,
+        (err: Error | null) => {
+          if (err) reject(err);
+        }
+      );
       db.get("SELECT * FROM books WHERE path = ?", path, (err, row: Row) => {
         if (err) reject(err);
 
