@@ -15,23 +15,30 @@ const createThumbnailFromZip = (filePath: string) => {
     throw new Error(`empty zip: ${filePath}`);
   }
 
-  const firstEntryName = entries[0].entryName;
-
-  // img タグで表示できる画像ファイルをサムネイルとして抜き出す。
+  // img タグで表示できる最初の画像ファイルをサムネイルとして抜き出す。
   const extensionsRenderableImgTag = [".png", ".jpg", ".jpeg", ".gif"];
 
-  if (!extensionsRenderableImgTag.includes(extname(firstEntryName))) {
-    throw new Error(`unsupported file format: ${firstEntryName}`);
+  let imageEntryName = "";
+
+  for (const entry of entries) {
+    if (extensionsRenderableImgTag.includes(extname(entry.entryName))) {
+      imageEntryName = entry.entryName;
+      break;
+    }
+  }
+
+  if (imageEntryName === "") {
+    throw new Error(`supported image not found: ${filePath}`);
   }
 
   const uid = uuidv4();
   const outDir = join(thumbnailsDir, uid);
 
-  if (!zip.extractEntryTo(firstEntryName, outDir, false, true)) {
+  if (!zip.extractEntryTo(imageEntryName, outDir, false, true)) {
     throw new Error(`failed to extract file: ${filePath}`);
   }
 
-  return join(outDir, basename(firstEntryName));
+  return join(outDir, basename(imageEntryName));
 };
 
 export function createThumbnailFromFile(filePath: string): Promise<string> {
