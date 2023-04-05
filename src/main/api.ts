@@ -30,6 +30,10 @@ const setupAPIs = (mainWindow: BrowserWindow) => {
     db.addBook(path)
   );
 
+  ipcMain.handle("remove-book", (_event: IpcMainInvokeEvent, path: string) =>
+    db.removeBook(path)
+  );
+
   ipcMain.handle(
     "create-thumbnail",
     (_event: IpcMainInvokeEvent, filePath: string) =>

@@ -16,10 +16,13 @@ export const booksSlice = createSlice({
     booksFetched: (state, action: PayloadAction<Book[]>) => action.payload,
     bookAdded: (state, action: PayloadAction<Book>) =>
       state.concat(action.payload),
+    bookRemoved: (state, action: PayloadAction<string>) =>
+      state.filter((book) => book.path !== action.payload),
   },
 });
 
-export const { bookUpdated, booksFetched, bookAdded } = booksSlice.actions;
+export const { bookUpdated, booksFetched, bookAdded, bookRemoved } =
+  booksSlice.actions;
 
 export const fetchBooks = createAction("books/fetchBooks");
 
@@ -32,6 +35,10 @@ export const updateBook = createAction<{
 export const addBook = createAction<{
   path: string;
 }>("books/addBook");
+
+export const removeBook = createAction<{
+  path: string;
+}>("books/removeBook");
 
 export const selectBook = (path: string) => (state: RootState) =>
   state.books.find((book) => book.path === path);

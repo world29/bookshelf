@@ -5,10 +5,12 @@ import {
   booksFetched,
   bookUpdated,
   bookAdded,
+  bookRemoved,
   fetchBooks,
   selectBook,
   updateBook,
   addBook,
+  removeBook,
 } from "./booksSlice";
 
 function* handleUpdateBook(action: {
@@ -76,8 +78,17 @@ function* handleAddBook(action: { payload: { path: string } }) {
   }
 }
 
+function* handleRemoveBook(action: { payload: { path: string } }) {
+  const { path } = action.payload;
+
+  const removedPath: string = yield call(window.electronAPI.removeBook, path);
+
+  yield put(bookRemoved(removedPath));
+}
+
 export default [
   takeLatest(updateBook, handleUpdateBook),
   takeLatest(fetchBooks, handleFetchBooks),
   takeLatest(addBook, handleAddBook),
+  takeLatest(removeBook, handleRemoveBook),
 ];

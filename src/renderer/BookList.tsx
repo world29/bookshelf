@@ -1,5 +1,6 @@
 ﻿import { Book } from "../models/book";
 import { useAppDispatch } from "./app/hooks";
+import { removeBook } from "./features/books/booksSlice";
 import { openEditDialog } from "./features/editor/editorSlice";
 import "./styles/BookList.css";
 
@@ -20,6 +21,10 @@ const BookListItem = (props: BookListItemProps) => {
     dispatch(openEditDialog(book.path));
   };
 
+  const handleClickRemove = () => {
+    dispatch(removeBook({ path: book.path }));
+  };
+
   const thumbnailPath =
     book.thumbnailPath !== ""
       ? book.thumbnailPath
@@ -31,6 +36,7 @@ const BookListItem = (props: BookListItemProps) => {
       <div>
         <div>{book.title}</div>
         <button onClick={handleClickEdit}>edit</button>
+        <button onClick={handleClickRemove}>remove</button>
       </div>
     </div>
   );

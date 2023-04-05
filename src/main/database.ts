@@ -117,6 +117,20 @@ function addBook(path: string): Promise<Book> {
   });
 }
 
+function removeBook(path: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    db.run(
+      "DELETE FROM books WHERE path = ?",
+      path,
+      (result: sqlite3.RunResult, err: Error | null) => {
+        if (err) reject(err);
+
+        resolve(path);
+      }
+    );
+  });
+}
+
 export default {
   initialize,
   finalize,
@@ -124,4 +138,5 @@ export default {
   updateBook,
   updateBookThumbnail,
   addBook,
+  removeBook,
 };

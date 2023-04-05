@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   updateBookThumbnail: (path: string, thumbnailPath: string) =>
     ipcRenderer.invoke("update-book-thumbnail", path, thumbnailPath),
   addBook: (path: string) => ipcRenderer.invoke("add-book", path),
+  removeBook: (path: string) => ipcRenderer.invoke("remove-book", path),
   createThumbnail: (path: string) =>
     ipcRenderer.invoke("create-thumbnail", path),
   openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),
