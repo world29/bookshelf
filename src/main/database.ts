@@ -18,7 +18,7 @@ type Row = {
 function initialize() {
   db.serialize(() => {
     db.run(
-      "CREATE TABLE IF NOT EXISTS books(path TEXT, title TEXT, author TEXT DEFAULT '')"
+      "CREATE TABLE IF NOT EXISTS books(path TEXT UNIQUE, title TEXT, author TEXT DEFAULT '')"
     );
     // カラムを追加する。すでにカラムが存在する場合はエラーになるためコールバックを渡しておく。
     db.run(
