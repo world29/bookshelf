@@ -1,10 +1,8 @@
 ﻿import { useEffect } from "react";
 
 import { useAppDispatch, useAppSelector } from "./app/hooks";
-import { fetchBooks } from "./features/books/booksSlice";
-import BookAddDialog from "./features/editor/BookAddDialog";
+import { addBook, fetchBooks } from "./features/books/booksSlice";
 import BookEditorDialog from "./features/editor/BookEditorDialog";
-import { openAddDialog } from "./features/editor/editorSlice";
 import Pagination from "./Pagination";
 import "./styles/App.css";
 
@@ -18,7 +16,10 @@ export default function App() {
   }, []);
 
   const handleClickAdd = () => {
-    dispatch(openAddDialog());
+    window.electronAPI.openFileDialog().then((result) => {
+      if (result.canceled) return;
+      dispatch(addBook({ path: result.filePaths[0] }));
+    });
   };
 
   return (
@@ -26,7 +27,6 @@ export default function App() {
       <button onClick={handleClickAdd}>Add book</button>
       <Pagination books={books} />
       <BookEditorDialog />
-      <BookAddDialog />
     </div>
   );
 }
