@@ -35,6 +35,7 @@ const BookListItem = (props: BookListItemProps) => {
       <img src={thumbnailPath} alt="album" />
       <div>
         <div>{book.title}</div>
+        <div>{book.author}</div>
         <button onClick={handleClickEdit}>edit</button>
         <button onClick={handleClickRemove}>remove</button>
       </div>
