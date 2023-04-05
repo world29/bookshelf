@@ -23,7 +23,7 @@ function initialize() {
     // カラムを追加する。すでにカラムが存在する場合はエラーになるためコールバックを渡しておく。
     db.run(
       "ALTER TABLE books ADD COLUMN thumbnailPath TEXT DEFAULT ''",
-      (result: sqlite3.RunResult, err: Error | null) => {
+      (err: Error | null) => {
         if (err) console.error(err);
       }
     );
@@ -61,11 +61,15 @@ function updateBook(
         author,
         path
       );
-      db.get("SELECT * FROM books WHERE path = ?", path, (err, row: Row) => {
-        if (err) reject(err);
+      db.get(
+        "SELECT * FROM books WHERE path = ?",
+        path,
+        (err: Error | null, row: Row) => {
+          if (err) reject(err);
 
-        resolve(row);
-      });
+          resolve(row);
+        }
+      );
     });
   });
 }
@@ -112,15 +116,11 @@ function addBook(path: string): Promise<Book> {
 
 function removeBook(path: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    db.run(
-      "DELETE FROM books WHERE path = ?",
-      path,
-      (result: sqlite3.RunResult, err: Error | null) => {
-        if (err) reject(err);
+    db.run("DELETE FROM books WHERE path = ?", path, (err: Error | null) => {
+      if (err) reject(err);
 
-        resolve(path);
-      }
-    );
+      resolve(path);
+    });
   });
 }
 
