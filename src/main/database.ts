@@ -1,6 +1,6 @@
 ﻿import { app } from "electron";
 import sqlite3 from "sqlite3";
-import { join, parse } from "path";
+import { join, basename, extname } from "path";
 import { Book } from "../models/book";
 
 const databasePath: string = join(app.getPath("userData"), "books.db");
@@ -96,7 +96,8 @@ function updateBookThumbnail(
 
 function addBook(path: string): Promise<Book> {
   return new Promise((resolve, reject) => {
-    const title = parse(path).base;
+    // 拡張子を除外したファイル名をデフォルトのタイトルとする。
+    const title = basename(path, extname(path));
 
     db.serialize(() => {
       db.run("INSERT INTO books (path, title) VALUES(?, ?)", path, title);
