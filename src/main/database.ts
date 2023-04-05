@@ -112,11 +112,15 @@ function addBook(path: string): Promise<Book> {
           if (err) reject(err);
         }
       );
-      db.get("SELECT * FROM books WHERE path = ?", path, (err, row: Row) => {
-        if (err) reject(err);
+      db.get(
+        "SELECT * FROM books WHERE path = ?",
+        path,
+        (err: Error | null, row: Row) => {
+          if (err) reject(err);
 
-        resolve(row);
-      });
+          resolve(row);
+        }
+      );
     });
   });
 }
