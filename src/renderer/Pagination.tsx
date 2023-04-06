@@ -7,12 +7,11 @@ import { Book } from "../models/book";
 
 type Props = {
   books: Book[];
+  itemsPerPage: number;
 };
 
 const Pagination = (props: Props) => {
-  const { books } = props;
-
-  const itemsPerPage = 3;
+  const { books, itemsPerPage } = props;
 
   const [itemOffset, setItemOffset] = useState(0);
 

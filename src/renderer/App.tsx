@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+﻿import { ChangeEvent, useEffect, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { SearchBox } from "./common/SearchBox";
@@ -14,6 +14,7 @@ export default function App() {
 
   const [currentBooks, setCurrentBooks] = useState(books);
   const [queryString, setQueryString] = useState("");
+  const [itemsPerPage, setItemsPerPage] = useState(3);
 
   useEffect(() => {
     dispatch(fetchBooks());
@@ -42,13 +43,23 @@ export default function App() {
     setQueryString(query);
   };
 
+  const handleChangeSelect = (e: ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(parseInt(e.target.value));
+  };
+
   return (
     <div>
       <div className="header">
         <SearchBox onSearch={handleSearch} />
         <button onClick={handleClickAdd}>Add book</button>
+        <select onChange={handleChangeSelect}>
+          <option value="3">3</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+        </select>
       </div>
-      <Pagination books={currentBooks} />
+      <Pagination books={currentBooks} itemsPerPage={itemsPerPage} />
       <BookEditorDialog />
     </div>
   );
