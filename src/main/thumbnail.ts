@@ -47,7 +47,7 @@ const createThumbnailFromZip = async (filePath: string) => {
     throw new Error(`failed to AdmZip.readFile(${imageEntryName}`);
   }
 
-  await sharp(inBuffer).webp().toFile(outPath);
+  await sharp(inBuffer).webp().resize(256).toFile(outPath);
 
   return outPath;
 };
