@@ -36,6 +36,10 @@ export const addBook = createAction<{
   path: string;
 }>("books/addBook");
 
+export const addBooks = createAction<{
+  filePaths: string[];
+}>("books/addBooks");
+
 export const removeBook = createAction<{
   path: string;
 }>("books/removeBook");

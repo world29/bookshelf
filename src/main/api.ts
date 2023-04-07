@@ -63,7 +63,7 @@ const setupAPIs = (mainWindow: BrowserWindow) => {
 
   ipcMain.handle("open-file-dialog", () =>
     dialog.showOpenDialog(mainWindow, {
-      properties: ["openFile"],
+      properties: ["openFile", "multiSelections"],
       title: "ファイルを選択",
       filters: [
         /*

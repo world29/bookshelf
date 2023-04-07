@@ -10,6 +10,7 @@ import {
   selectBook,
   updateBook,
   addBook,
+  addBooks,
   removeBook,
 } from "./booksSlice";
 
@@ -49,6 +50,20 @@ function* handleAddBook(action: { payload: { path: string } }) {
   yield put(bookAdded(newBook));
 }
 
+function* handleAddBooks(action: { payload: { filePaths: string[] } }) {
+  const { filePaths } = action.payload;
+
+  for (const path of filePaths) {
+    try {
+      const newBook: Book = yield call(window.electronAPI.addBook, path);
+
+      yield put(bookAdded(newBook));
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
 function* handleRemoveBook(action: { payload: { path: string } }) {
   const { path } = action.payload;
 
@@ -81,6 +96,7 @@ export default [
   takeLatest(updateBook, handleUpdateBook),
   takeLatest(fetchBooks, handleFetchBooks),
   takeLatest(addBook, handleAddBook),
+  takeLatest(addBooks, handleAddBooks),
   takeLatest(removeBook, handleRemoveBook),
   // ファイルが追加されたらサムネイル生成を行う
   takeEvery(bookAdded, updateBookThumbnail),

@@ -2,7 +2,7 @@
 
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { SearchBox } from "./common/SearchBox";
-import { addBook, fetchBooks } from "./features/books/booksSlice";
+import { addBooks, fetchBooks } from "./features/books/booksSlice";
 import BookEditorDialog from "./features/editor/BookEditorDialog";
 import { openSettingsDialog } from "./features/editor/editorSlice";
 import SettingsDialog from "./features/editor/SettingsDialog";
@@ -43,7 +43,7 @@ export default function App() {
   const handleClickAdd = () => {
     window.electronAPI.openFileDialog().then((result) => {
       if (result.canceled) return;
-      dispatch(addBook({ path: result.filePaths[0] }));
+      dispatch(addBooks({ filePaths: result.filePaths }));
     });
   };
 
