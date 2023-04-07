@@ -5,12 +5,18 @@ interface EditorState {
     isOpen: boolean;
     bookPath: string;
   };
+  settingsDialog: {
+    isOpen: boolean;
+  };
 }
 
 const initialState: EditorState = {
   editDialog: {
     isOpen: false,
     bookPath: "",
+  },
+  settingsDialog: {
+    isOpen: false,
   },
 };
 
@@ -30,9 +36,20 @@ export const editorSlice = createSlice({
         bookPath: "",
       };
     },
+    openSettingsDialog: (state) => {
+      state.settingsDialog.isOpen = true;
+    },
+    closeSettingsDialog: (state) => {
+      state.settingsDialog.isOpen = false;
+    },
   },
 });
 
-export const { openEditDialog, closeEditDialog } = editorSlice.actions;
+export const {
+  openEditDialog,
+  closeEditDialog,
+  openSettingsDialog,
+  closeSettingsDialog,
+} = editorSlice.actions;
 
 export default editorSlice.reducer;

@@ -1,6 +1,7 @@
 ﻿import { BrowserWindow, dialog, ipcMain, IpcMainInvokeEvent } from "electron";
 
 import db from "./database";
+import settingsStore from "./settings";
 import { createThumbnailFromFile } from "./thumbnail";
 
 const setupAPIs = (mainWindow: BrowserWindow) => {
@@ -38,6 +39,21 @@ const setupAPIs = (mainWindow: BrowserWindow) => {
     "create-thumbnail",
     (_event: IpcMainInvokeEvent, filePath: string) =>
       createThumbnailFromFile(filePath)
+  );
+
+  ipcMain.handle("get-settings", () => {
+    console.log("get-settings invoked");
+    console.dir(settingsStore.store);
+    return Promise.resolve(settingsStore.store);
+  });
+
+  ipcMain.handle(
+    "set-settings-viewer",
+    (_event: IpcMainInvokeEvent, viewerPath: string) =>
+      new Promise<void>((resolve) => {
+        settingsStore.set("viewer", viewerPath);
+        resolve();
+      })
   );
 
   ipcMain.handle("open-file-dialog", () =>

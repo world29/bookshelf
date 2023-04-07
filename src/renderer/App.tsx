@@ -4,6 +4,8 @@ import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { SearchBox } from "./common/SearchBox";
 import { addBook, fetchBooks } from "./features/books/booksSlice";
 import BookEditorDialog from "./features/editor/BookEditorDialog";
+import { openSettingsDialog } from "./features/editor/editorSlice";
+import SettingsDialog from "./features/editor/SettingsDialog";
 import Pagination from "./Pagination";
 import "./styles/App.css";
 
@@ -17,6 +19,12 @@ export default function App() {
   const [itemsPerPage, setItemsPerPage] = useState(3);
 
   useEffect(() => {
+    // メニューから設定ダイアログを開く
+    // memo: dispatch を使いたいため App コンポーネントの中でコールバックを登録している。
+    window.electronAPI.handleOpenSettings(() => {
+      dispatch(openSettingsDialog());
+    });
+
     dispatch(fetchBooks());
   }, []);
 
@@ -61,6 +69,7 @@ export default function App() {
       </div>
       <Pagination books={currentBooks} itemsPerPage={itemsPerPage} />
       <BookEditorDialog />
+      <SettingsDialog />
     </div>
   );
 }

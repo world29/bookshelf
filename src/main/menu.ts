@@ -7,6 +7,7 @@ export function createMenu(mainWindow: BrowserWindow) {
       submenu: [
         {
           label: "Settings",
+          click: () => mainWindow.webContents.send("open-settings"),
         },
         {
           type: "separator",
