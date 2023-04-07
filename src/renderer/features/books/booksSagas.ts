@@ -1,4 +1,4 @@
-﻿import { takeLatest, put, select, call } from "redux-saga/effects";
+﻿import { takeLatest, put, select, call, takeEvery } from "redux-saga/effects";
 
 import { Book } from "../../../models/book";
 import {
@@ -44,11 +44,21 @@ function* handleFetchBooks() {
 function* handleAddBook(action: { payload: { path: string } }) {
   const { path } = action.payload;
 
-  {
-    const newBook: Book = yield call(window.electronAPI.addBook, path);
+  const newBook: Book = yield call(window.electronAPI.addBook, path);
 
-    yield put(bookAdded(newBook));
-  }
+  yield put(bookAdded(newBook));
+}
+
+function* handleRemoveBook(action: { payload: { path: string } }) {
+  const { path } = action.payload;
+
+  const removedPath: string = yield call(window.electronAPI.removeBook, path);
+
+  yield put(bookRemoved(removedPath));
+}
+
+function* updateBookThumbnail(action: { payload: Book }) {
+  const { path } = action.payload;
 
   // アーカイブファイルなら、先頭の画像ファイルをサムネイルに設定する。
   if (path.endsWith(".zip")) {
@@ -65,25 +75,6 @@ function* handleAddBook(action: { payload: { path: string } }) {
 
     yield put(bookUpdated(newBook));
   }
-
-  // 画像ファイルなら、それをサムネイルに設定する。
-  if (path.endsWith(".png")) {
-    const newBook: Book = yield call(
-      window.electronAPI.updateBookThumbnail,
-      path,
-      path
-    );
-
-    yield put(bookUpdated(newBook));
-  }
-}
-
-function* handleRemoveBook(action: { payload: { path: string } }) {
-  const { path } = action.payload;
-
-  const removedPath: string = yield call(window.electronAPI.removeBook, path);
-
-  yield put(bookRemoved(removedPath));
 }
 
 export default [
@@ -91,4 +82,6 @@ export default [
   takeLatest(fetchBooks, handleFetchBooks),
   takeLatest(addBook, handleAddBook),
   takeLatest(removeBook, handleRemoveBook),
+  // ファイルが追加されたらサムネイル生成を行う
+  takeEvery(bookAdded, updateBookThumbnail),
 ];
