@@ -2,6 +2,7 @@
 
 import db from "./database";
 import settingsStore from "./settings";
+import { openFile } from "./shell";
 import { createThumbnailFromFile } from "./thumbnail";
 
 const setupAPIs = (mainWindow: BrowserWindow) => {
@@ -39,6 +40,10 @@ const setupAPIs = (mainWindow: BrowserWindow) => {
     "create-thumbnail",
     (_event: IpcMainInvokeEvent, filePath: string) =>
       createThumbnailFromFile(filePath)
+  );
+
+  ipcMain.handle("open-file", (_event: IpcMainInvokeEvent, filePath: string) =>
+    openFile(filePath)
   );
 
   ipcMain.handle("get-settings", () => {

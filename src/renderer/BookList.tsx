@@ -25,6 +25,10 @@ const BookListItem = (props: BookListItemProps) => {
     dispatch(removeBook({ path: book.path }));
   };
 
+  const handleClickOpen = () => {
+    window.electronAPI.openFile(book.path);
+  };
+
   const thumbnailPath =
     book.thumbnailPath !== ""
       ? book.thumbnailPath
@@ -36,6 +40,7 @@ const BookListItem = (props: BookListItemProps) => {
       <div>
         <div>{book.title}</div>
         <div>{book.author}</div>
+        <button onClick={handleClickOpen}>open</button>
         <button onClick={handleClickEdit}>edit</button>
         <button onClick={handleClickRemove}>remove</button>
       </div>

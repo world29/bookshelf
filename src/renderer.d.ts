@@ -9,6 +9,7 @@ export interface IElectronAPI {
   addBook: (path: string) => Promise<Book>;
   removeBook: (path: string) => Promise<string>;
   createThumbnail: (path: string) => Promise<string>;
+  openFile: (path: string) => Promise<void>;
   getSettings: () => Promise<Settings>;
   setSettingsViewer: (path: sting) => Promise<void>;
   openFileDialog: () => Promise<Electron.OpenDialogReturnValue>;

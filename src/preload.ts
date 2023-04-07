@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   removeBook: (path: string) => ipcRenderer.invoke("remove-book", path),
   createThumbnail: (path: string) =>
     ipcRenderer.invoke("create-thumbnail", path),
+  openFile: (path: string) => ipcRenderer.invoke("open-file", path),
   getSettings: () => ipcRenderer.invoke("get-settings"),
   setSettingsViewer: (path: string) =>
     ipcRenderer.invoke("set-settings-viewer", path),
