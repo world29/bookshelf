@@ -1,5 +1,6 @@
 ﻿import { BrowserWindow, dialog, ipcMain, IpcMainInvokeEvent } from "electron";
 
+import { OpenFileType } from "../models/dialog";
 import db from "./database";
 import settingsStore from "./settings";
 import { openFile } from "./shell";
@@ -61,23 +62,25 @@ const setupAPIs = (mainWindow: BrowserWindow) => {
       })
   );
 
-  ipcMain.handle("open-file-dialog", () =>
-    dialog.showOpenDialog(mainWindow, {
-      properties: ["openFile", "multiSelections"],
-      title: "ファイルを選択",
-      filters: [
-        /*
+  ipcMain.handle(
+    "open-file-dialog",
+    (_event: IpcMainInvokeEvent, fileType: OpenFileType) =>
+      dialog.showOpenDialog(mainWindow, {
+        properties: [fileType, "multiSelections"],
+        title: "ファイルを選択",
+        filters: [
+          /*
         {
           name: "画像ファイル",
           extensions: ["png", "jpg", "jpeg"],
         },
         */
-        {
-          name: "アーカイブファイル",
-          extensions: ["zip"],
-        },
-      ],
-    })
+          {
+            name: "アーカイブファイル",
+            extensions: ["zip"],
+          },
+        ],
+      })
   );
 };
 

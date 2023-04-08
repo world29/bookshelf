@@ -40,8 +40,15 @@ export default function App() {
     setCurrentBooks(filteredBooks);
   };
 
-  const handleClickAdd = () => {
-    window.electronAPI.openFileDialog().then((result) => {
+  const handleClickAddZip = () => {
+    window.electronAPI.openFileDialog("openFile").then((result) => {
+      if (result.canceled) return;
+      dispatch(addBooks({ filePaths: result.filePaths }));
+    });
+  };
+
+  const handleClickAddFolder = () => {
+    window.electronAPI.openFileDialog("openDirectory").then((result) => {
       if (result.canceled) return;
       dispatch(addBooks({ filePaths: result.filePaths }));
     });
@@ -59,7 +66,8 @@ export default function App() {
     <div>
       <div className="header">
         <SearchBox onSearch={handleSearch} />
-        <button onClick={handleClickAdd}>Add book</button>
+        <button onClick={handleClickAddZip}>Add zip</button>
+        <button onClick={handleClickAddFolder}>Add folder</button>
         <select onChange={handleChangeSelect}>
           <option value="3">3</option>
           <option value="10">10</option>

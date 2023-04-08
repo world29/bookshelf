@@ -1,6 +1,7 @@
 ﻿import { app } from "electron";
 import { join, extname, basename } from "path";
-import { mkdir } from "node:fs/promises";
+import { mkdir, readdir } from "node:fs/promises";
+import { statSync, Dirent } from "fs";
 import AdmZip from "adm-zip";
 import { v4 as uuidv4 } from "uuid";
 import sharp from "sharp";
@@ -52,12 +53,61 @@ const createThumbnailFromZip = async (filePath: string) => {
   return outPath;
 };
 
-export function createThumbnailFromFile(filePath: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    if (extname(filePath) !== ".zip") {
-      reject(`unsupported file format: ${filePath}`);
+function isImageFile(fileName: string): boolean {
+  const extensionsRenderableImgTag = [".png", ".jpg", ".jpeg", ".gif", ".webp"];
+
+  return extensionsRenderableImgTag.includes(extname(fileName));
+}
+
+async function findFirstImage(dir: string): Promise<string> {
+  const entries = await readdir(dir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    let foundImage = "";
+    if (entry.isFile()) {
+      if (isImageFile(entry.name)) {
+        foundImage = join(dir, entry.name);
+      }
+    } else if (entry.isDirectory()) {
+      foundImage = await findFirstImage(join(dir, entry.name));
     }
 
-    createThumbnailFromZip(filePath).then((outPath) => resolve(outPath));
+    if (foundImage) {
+      return foundImage;
+    }
+  }
+
+  return "";
+}
+
+// フォルダパスからサムネイル画像を生成する
+const createThumbnailFromFolder = async (dirPath: string) => {
+  const imageFilePath = await findFirstImage(dirPath);
+  if (imageFilePath === "") {
+    throw new Error(`supported image not found: ${dirPath}`);
+  }
+
+  // webp に変換して出力する
+  const uid = uuidv4();
+  const outDir = join(thumbnailsDir, uid);
+  const outFile = basename(imageFilePath, extname(imageFilePath));
+  const outPath = join(outDir, outFile) + ".webp";
+
+  await mkdir(outDir, { recursive: true });
+
+  await sharp(imageFilePath).webp().resize(256).toFile(outPath);
+
+  return outPath;
+};
+
+export function createThumbnailFromFile(filePath: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (extname(filePath) === ".zip") {
+      createThumbnailFromZip(filePath).then((outPath) => resolve(outPath));
+    } else if (statSync(filePath).isDirectory()) {
+      createThumbnailFromFolder(filePath).then((outPath) => resolve(outPath));
+    } else {
+      reject(`unsupported file format: ${filePath}`);
+    }
   });
 }

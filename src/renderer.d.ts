@@ -1,4 +1,5 @@
 ﻿import { Book } from "./models/book";
+import { OpenFileType } from "./models/dialog";
 import { Settings } from "./models/settings";
 
 export interface IElectronAPI {
@@ -12,7 +13,9 @@ export interface IElectronAPI {
   openFile: (path: string) => Promise<void>;
   getSettings: () => Promise<Settings>;
   setSettingsViewer: (path: sting) => Promise<void>;
-  openFileDialog: () => Promise<Electron.OpenDialogReturnValue>;
+  openFileDialog: (
+    fileType: OpenFileType
+  ) => Promise<Electron.OpenDialogReturnValue>;
   handleOpenSettings: (callback: () => void) => void;
 }
 

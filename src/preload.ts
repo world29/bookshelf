@@ -1,5 +1,7 @@
 ﻿import { contextBridge, ipcRenderer } from "electron";
 
+import { OpenFileType } from "./models/dialog";
+
 contextBridge.exposeInMainWorld("electronAPI", {
   doThing: () => ipcRenderer.invoke("do-a-thing"),
   findBooks: (searchQuery: string) =>
@@ -16,7 +18,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getSettings: () => ipcRenderer.invoke("get-settings"),
   setSettingsViewer: (path: string) =>
     ipcRenderer.invoke("set-settings-viewer", path),
-  openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),
+  openFileDialog: (fileType: OpenFileType) =>
+    ipcRenderer.invoke("open-file-dialog", fileType),
   handleOpenSettings: (callback: () => void) =>
     ipcRenderer.on("open-settings", callback),
 });

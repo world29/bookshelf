@@ -75,8 +75,7 @@ function* handleRemoveBook(action: { payload: { path: string } }) {
 function* updateBookThumbnail(action: { payload: Book }) {
   const { path } = action.payload;
 
-  // アーカイブファイルなら、先頭の画像ファイルをサムネイルに設定する。
-  if (path.endsWith(".zip")) {
+  try {
     const thumbnailPath: string = yield call(
       window.electronAPI.createThumbnail,
       path
@@ -89,6 +88,8 @@ function* updateBookThumbnail(action: { payload: Book }) {
     );
 
     yield put(bookUpdated(newBook));
+  } catch (err) {
+    console.error(err);
   }
 }
 
