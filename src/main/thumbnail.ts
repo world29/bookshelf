@@ -1,12 +1,18 @@
 ﻿import { app } from "electron";
 import { join, extname, basename } from "path";
 import { mkdir, readdir } from "node:fs/promises";
-import { statSync, Dirent } from "fs";
+import { statSync } from "fs";
 import AdmZip from "adm-zip";
 import { v4 as uuidv4 } from "uuid";
 import sharp from "sharp";
 
 const thumbnailsDir = join(app.getPath("userData"), "thumbnails");
+
+function isImageFile(fileName: string): boolean {
+  const extensionsRenderableImgTag = [".png", ".jpg", ".jpeg", ".gif", ".webp"];
+
+  return extensionsRenderableImgTag.includes(extname(fileName));
+}
 
 // サムネイル画像を生成する
 const createThumbnailFromZip = async (filePath: string) => {
@@ -18,13 +24,10 @@ const createThumbnailFromZip = async (filePath: string) => {
     throw new Error(`empty zip: ${filePath}`);
   }
 
-  // img タグで表示できる最初の画像ファイルをサムネイルとして抜き出す。
-  const extensionsRenderableImgTag = [".png", ".jpg", ".jpeg", ".gif", ".webp"];
-
   let imageEntryName = "";
 
   for (const entry of entries) {
-    if (extensionsRenderableImgTag.includes(extname(entry.entryName))) {
+    if (isImageFile(entry.entryName)) {
       imageEntryName = entry.entryName;
       break;
     }
@@ -52,12 +55,6 @@ const createThumbnailFromZip = async (filePath: string) => {
 
   return outPath;
 };
-
-function isImageFile(fileName: string): boolean {
-  const extensionsRenderableImgTag = [".png", ".jpg", ".jpeg", ".gif", ".webp"];
-
-  return extensionsRenderableImgTag.includes(extname(fileName));
-}
 
 async function findFirstImage(dir: string): Promise<string> {
   const entries = await readdir(dir, { withFileTypes: true });
