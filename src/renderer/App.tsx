@@ -1,8 +1,11 @@
 ﻿import { ChangeEvent, useEffect, useState } from "react";
+import { Book } from "../models/book";
+import { FilterByTag, FILTER_BY_TAG } from "../models/filter";
 
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { SearchBox } from "./common/SearchBox";
 import { addBooks, fetchBooks } from "./features/books/booksSlice";
+import RadioFilterByTag from "./features/books/radioFilterByTag";
 import BookEditorDialog from "./features/editor/BookEditorDialog";
 import { openSettingsDialog } from "./features/editor/editorSlice";
 import SettingsDialog from "./features/editor/SettingsDialog";
@@ -16,6 +19,9 @@ export default function App() {
 
   const [currentBooks, setCurrentBooks] = useState(books);
   const [queryString, setQueryString] = useState("");
+  const [filterByTag, setFilterByTag] = useState<FilterByTag>(
+    FILTER_BY_TAG.ALL
+  );
   const [itemsPerPage, setItemsPerPage] = useState(3);
 
   useEffect(() => {
@@ -31,12 +37,29 @@ export default function App() {
   // 検索文字列か books が更新されたら再度フィルタリング
   useEffect(() => {
     filterBooks();
-  }, [books, queryString]);
+  }, [books, queryString, filterByTag]);
 
   const filterBooks = () => {
-    const filteredBooks = books.filter((book) =>
-      (book.title + book.author).toLowerCase().includes(queryString)
+    // 文字列でフィルタリング
+    const matchQueryString = (book: Book) =>
+      (book.title + book.author).toLowerCase().includes(queryString);
+
+    // タグの有無でフィルタリング
+    const matchFilterByTag = (book: Book) => {
+      switch (filterByTag) {
+        case FILTER_BY_TAG.ALL:
+          return true;
+        case FILTER_BY_TAG.TAGGED:
+          return book.author !== "";
+        case FILTER_BY_TAG.UNTAGGED:
+          return book.author === "";
+      }
+    };
+
+    const filteredBooks = books.filter(
+      (book) => matchQueryString(book) && matchFilterByTag(book)
     );
+
     setCurrentBooks(filteredBooks);
   };
 
@@ -62,10 +85,18 @@ export default function App() {
     setItemsPerPage(parseInt(e.target.value));
   };
 
+  const handleChangeFilter = (filter: FilterByTag) => {
+    setFilterByTag(filter);
+  };
+
   return (
     <div>
       <div className="header">
         <SearchBox onSearch={handleSearch} />
+        <RadioFilterByTag
+          defaultValue={filterByTag}
+          onChange={handleChangeFilter}
+        />
         <button onClick={handleClickAddZip}>Add zip</button>
         <button onClick={handleClickAddFolder}>Add folder</button>
         <select onChange={handleChangeSelect}>
