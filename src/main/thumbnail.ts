@@ -14,6 +14,25 @@ function isImageFile(fileName: string): boolean {
   return extensionsRenderableImgTag.includes(extname(fileName));
 }
 
+async function writeThumbnail(
+  origFile: string | Buffer,
+  fileName: string
+): Promise<string> {
+  // webp に変換して出力する
+  const uid = uuidv4();
+  const outDir = join(thumbnailsDir, uid);
+  const outFile = basename(fileName, extname(fileName));
+  const outPath = join(outDir, outFile) + ".webp";
+
+  await mkdir(outDir, { recursive: true });
+
+  const outInfo = await sharp(origFile).webp().resize(256).toFile(outPath);
+
+  console.dir(outInfo);
+
+  return outPath;
+}
+
 // サムネイル画像を生成する
 const createThumbnailFromZip = async (filePath: string) => {
   const zip = new AdmZip(filePath);
@@ -37,23 +56,13 @@ const createThumbnailFromZip = async (filePath: string) => {
     throw new Error(`supported image not found: ${filePath}`);
   }
 
-  // webp に変換して出力する
-  const uid = uuidv4();
-  const outDir = join(thumbnailsDir, uid);
-  const outFile = basename(imageEntryName, extname(imageEntryName));
-  const outPath = join(outDir, outFile) + ".webp";
-
-  await mkdir(outDir, { recursive: true });
-
   const inBuffer = zip.readFile(imageEntryName);
 
   if (!inBuffer) {
     throw new Error(`failed to AdmZip.readFile(${imageEntryName}`);
   }
 
-  await sharp(inBuffer).webp().resize(256).toFile(outPath);
-
-  return outPath;
+  return await writeThumbnail(inBuffer, imageEntryName);
 };
 
 async function findFirstImage(dir: string): Promise<string> {
@@ -84,17 +93,7 @@ const createThumbnailFromFolder = async (dirPath: string) => {
     throw new Error(`supported image not found: ${dirPath}`);
   }
 
-  // webp に変換して出力する
-  const uid = uuidv4();
-  const outDir = join(thumbnailsDir, uid);
-  const outFile = basename(imageFilePath, extname(imageFilePath));
-  const outPath = join(outDir, outFile) + ".webp";
-
-  await mkdir(outDir, { recursive: true });
-
-  await sharp(imageFilePath).webp().resize(256).toFile(outPath);
-
-  return outPath;
+  return await writeThumbnail(imageFilePath, imageFilePath);
 };
 
 export function createThumbnailFromFile(filePath: string): Promise<string> {
