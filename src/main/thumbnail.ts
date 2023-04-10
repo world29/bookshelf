@@ -16,17 +16,16 @@ function isImageFile(fileName: string): boolean {
 
 async function writeThumbnail(
   origFile: string | Buffer,
-  fileName: string
+  size: number
 ): Promise<string> {
   // webp に変換して出力する
   const uid = uuidv4();
   const outDir = join(thumbnailsDir, uid);
-  const outFile = basename(fileName, extname(fileName));
-  const outPath = join(outDir, outFile) + ".webp";
+  const outPath = join(outDir, `${size}.webp`);
 
   await mkdir(outDir, { recursive: true });
 
-  const outInfo = await sharp(origFile).webp().resize(256).toFile(outPath);
+  const outInfo = await sharp(origFile).webp().resize(size).toFile(outPath);
 
   console.dir(outInfo);
 
@@ -62,7 +61,7 @@ const createThumbnailFromZip = async (filePath: string) => {
     throw new Error(`failed to AdmZip.readFile(${imageEntryName}`);
   }
 
-  return await writeThumbnail(inBuffer, imageEntryName);
+  return await writeThumbnail(inBuffer, 256);
 };
 
 async function findFirstImage(dir: string): Promise<string> {
@@ -93,7 +92,7 @@ const createThumbnailFromFolder = async (dirPath: string) => {
     throw new Error(`supported image not found: ${dirPath}`);
   }
 
-  return await writeThumbnail(imageFilePath, imageFilePath);
+  return await writeThumbnail(imageFilePath, 256);
 };
 
 export function createThumbnailFromFile(filePath: string): Promise<string> {
