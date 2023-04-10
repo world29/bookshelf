@@ -1,4 +1,10 @@
-﻿import { BrowserWindow, dialog, ipcMain, IpcMainInvokeEvent } from "electron";
+﻿import {
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  IpcMainInvokeEvent,
+  shell,
+} from "electron";
 
 import { OpenFileType } from "../models/dialog";
 import db from "./database";
@@ -81,6 +87,11 @@ const setupAPIs = (mainWindow: BrowserWindow) => {
           },
         ],
       })
+  );
+
+  ipcMain.handle(
+    "show-item-in-folder",
+    (_event: IpcMainInvokeEvent, path: string) => shell.showItemInFolder(path)
   );
 };
 

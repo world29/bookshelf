@@ -20,6 +20,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("set-settings-viewer", path),
   openFileDialog: (fileType: OpenFileType) =>
     ipcRenderer.invoke("open-file-dialog", fileType),
+  showItemInFolder: (path: string) =>
+    ipcRenderer.invoke("show-item-in-folder", path),
   handleOpenSettings: (callback: () => void) =>
     ipcRenderer.on("open-settings", callback),
 });

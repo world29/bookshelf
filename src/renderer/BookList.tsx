@@ -19,24 +19,48 @@ type ContextMenuProps = {
   top: number;
   left: number;
   onClose: () => void;
+  book: Book;
 };
 
 const ContextMenu = (props: ContextMenuProps) => {
-  const { top, left, onClose } = props;
+  const { top, left, onClose, book } = props;
+
+  const handleClickShowInFolder = () => {
+    window.electronAPI.showItemInFolder(book.path);
+  };
 
   const styles = {
     position: "absolute",
     top: `${top}px`,
     left: `${left}px`,
-    width: "30%",
-    height: "50%",
-    backgroundColor: "slategray",
     zIndex: 999,
   } as React.CSSProperties;
 
   return (
     <ClickAwayListener onClick={onClose}>
-      <div style={styles}>ContextMenu</div>
+      <div style={styles}>
+        <div className="list-group">
+          <a
+            href="#"
+            className="list-group-item list-group-item-action"
+            onClick={handleClickShowInFolder}
+          >
+            Reveal in File Explorer
+          </a>
+          <a
+            href="#"
+            className="list-group-item list-group-item-action disabled"
+          >
+            Copy Path
+          </a>
+          <a
+            href="#"
+            className="list-group-item list-group-item-action disabled"
+          >
+            Move to Trash
+          </a>
+        </div>
+      </div>
     </ClickAwayListener>
   );
 };
@@ -90,6 +114,7 @@ const BookListItem = (props: BookListItemProps) => {
           top={position.y}
           left={position.x}
           onClose={() => setIsOpenMenu(false)}
+          book={book}
         />
       )}
     </div>
