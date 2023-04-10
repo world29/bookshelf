@@ -97,11 +97,11 @@ const BookListItem = (props: BookListItemProps) => {
   const thumbnailPath =
     book.thumbnailPath !== ""
       ? book.thumbnailPath
-      : "https://via.placeholder.com/150/92c952";
+      : "https://via.placeholder.com/256x362/92c952";
 
   return (
-    <div onContextMenu={handleContextMenu}>
-      <img src={thumbnailPath} alt="album" />
+    <div className="bookWrapper" onContextMenu={handleContextMenu}>
+      <img src={thumbnailPath} alt="thumbnail" />
       <div>
         <div>{book.title}</div>
         <div>{book.author}</div>

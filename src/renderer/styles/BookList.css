@@ -4,6 +4,8 @@
   grid-gap: 2rem;
 }
 
-.bookGridWrapper img {
-  width: 200px;
+.bookWrapper img {
+  width: 256px;
+  height: 362px;
+  object-fit: contain;
 }
