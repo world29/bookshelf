@@ -29,10 +29,14 @@ const ContextMenu = (props: ContextMenuProps) => {
 
   const handleClickShowInFolder = () => {
     window.electronAPI.showItemInFolder(book.path);
+
+    onClose();
   };
 
   const handleClickCreateThumbnail = () => {
     dispatch(updateBookThumbnail({ path: book.path }));
+
+    onClose();
   };
 
   const styles = {
