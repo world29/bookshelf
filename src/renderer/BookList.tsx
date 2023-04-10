@@ -3,7 +3,7 @@
 import { Book } from "../models/book";
 import { useAppDispatch } from "./app/hooks";
 import ClickAwayListener from "./common/ClickAwayListener";
-import { removeBook } from "./features/books/booksSlice";
+import { removeBook, updateBookThumbnail } from "./features/books/booksSlice";
 import { openEditDialog } from "./features/editor/editorSlice";
 import "./styles/BookList.css";
 
@@ -25,8 +25,14 @@ type ContextMenuProps = {
 const ContextMenu = (props: ContextMenuProps) => {
   const { top, left, onClose, book } = props;
 
+  const dispatch = useAppDispatch();
+
   const handleClickShowInFolder = () => {
     window.electronAPI.showItemInFolder(book.path);
+  };
+
+  const handleClickCreateThumbnail = () => {
+    dispatch(updateBookThumbnail({ path: book.path }));
   };
 
   const styles = {
@@ -52,6 +58,13 @@ const ContextMenu = (props: ContextMenuProps) => {
             className="list-group-item list-group-item-action disabled"
           >
             Copy Path
+          </a>
+          <a
+            href="#"
+            className="list-group-item list-group-item-action"
+            onClick={handleClickCreateThumbnail}
+          >
+            Create Thumbnail
           </a>
           <a
             href="#"

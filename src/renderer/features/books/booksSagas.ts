@@ -12,6 +12,7 @@ import {
   addBook,
   addBooks,
   removeBook,
+  updateBookThumbnail,
 } from "./booksSlice";
 
 function* handleUpdateBook(action: {
@@ -72,7 +73,7 @@ function* handleRemoveBook(action: { payload: { path: string } }) {
   yield put(bookRemoved(removedPath));
 }
 
-function* updateBookThumbnail(action: { payload: Book }) {
+function* handleUpdateBookThumbnail(action: { payload: { path: string } }) {
   const { path } = action.payload;
 
   try {
@@ -99,6 +100,7 @@ export default [
   takeLatest(addBook, handleAddBook),
   takeLatest(addBooks, handleAddBooks),
   takeLatest(removeBook, handleRemoveBook),
-  // ファイルが追加されたらサムネイル生成を行う
-  takeEvery(bookAdded, updateBookThumbnail),
+  takeEvery(updateBookThumbnail, handleUpdateBookThumbnail),
+  // ファイルが追加されたら(自動的に)サムネイル生成を行う
+  takeEvery(bookAdded, handleUpdateBookThumbnail),
 ];

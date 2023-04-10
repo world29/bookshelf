@@ -44,6 +44,10 @@ export const removeBook = createAction<{
   path: string;
 }>("books/removeBook");
 
+export const updateBookThumbnail = createAction<{
+  path: string;
+}>("books/updateBookThumbnail");
+
 export const selectBook = (path: string) => (state: RootState) =>
   state.books.find((book) => book.path === path);
 
