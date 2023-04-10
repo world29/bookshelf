@@ -120,8 +120,8 @@ const BookListItem = (props: BookListItemProps) => {
     <div className="bookWrapper" onContextMenu={handleContextMenu}>
       <img src={thumbnailPath} alt="thumbnail" />
       <div>
-        <div>{book.title}</div>
-        <div>{book.author}</div>
+        <div className="bookText">{book.title}</div>
+        <div className="bookText">{book.author}</div>
         <button onClick={handleClickOpen}>open</button>
         <button onClick={handleClickEdit}>edit</button>
         <button onClick={handleClickRemove}>remove</button>

@@ -26,7 +26,7 @@ const Pagination = (props: Props) => {
   };
 
   return (
-    <div className="bookWrapper">
+    <div className="booksWrapper">
       <BookList books={currentBooks} />
       <div className="paginateWrapper">
         <ReactPaginate

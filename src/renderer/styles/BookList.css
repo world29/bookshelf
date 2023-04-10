@@ -4,8 +4,18 @@
   grid-gap: 2rem;
 }
 
+.bookWrapper {
+  width: 256px;
+}
+
 .bookWrapper img {
   width: 256px;
   height: 362px;
   object-fit: contain;
+}
+
+.bookText {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
