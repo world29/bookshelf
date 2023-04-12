@@ -25,34 +25,39 @@ const Pagination = (props: Props) => {
     setItemOffset(newOffset);
   };
 
+  const renderPagination = () => (
+    <div className="paginateWrapper">
+      <ReactPaginate
+        nextLabel="next >"
+        onPageChange={handlePageClick}
+        pageRangeDisplayed={3}
+        marginPagesDisplayed={2}
+        pageCount={pageCount}
+        previousLabel="< previous"
+        pageClassName="page-item"
+        pageLinkClassName="page-link"
+        previousClassName="page-item"
+        previousLinkClassName="page-link"
+        nextClassName="page-item"
+        nextLinkClassName="page-link"
+        breakLabel="..."
+        breakClassName="page-item"
+        breakLinkClassName="page-link"
+        containerClassName="pagination"
+        activeClassName="active"
+      />
+    </div>
+  );
+
   return (
     <div className="booksWrapper">
       <div>
         {itemOffset + 1}-{Math.min(endOffset, books.length)} of {books.length}{" "}
         results
       </div>
+      {renderPagination()}
       <BookList books={currentBooks} />
-      <div className="paginateWrapper">
-        <ReactPaginate
-          nextLabel="next >"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={3}
-          marginPagesDisplayed={2}
-          pageCount={pageCount}
-          previousLabel="< previous"
-          pageClassName="page-item"
-          pageLinkClassName="page-link"
-          previousClassName="page-item"
-          previousLinkClassName="page-link"
-          nextClassName="page-item"
-          nextLinkClassName="page-link"
-          breakLabel="..."
-          breakClassName="page-item"
-          breakLinkClassName="page-link"
-          containerClassName="pagination"
-          activeClassName="active"
-        />
-      </div>
+      {renderPagination()}
     </div>
   );
 };
