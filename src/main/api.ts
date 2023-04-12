@@ -10,6 +10,7 @@ import { OpenFileType } from "../models/dialog";
 import db from "./database";
 import settingsStore from "./settings";
 import { openFile } from "./shell";
+import { getBookFileInfo } from "./book";
 import { createThumbnailFromFile } from "./thumbnail";
 
 const setupAPIs = (mainWindow: BrowserWindow) => {
@@ -36,7 +37,9 @@ const setupAPIs = (mainWindow: BrowserWindow) => {
   );
 
   ipcMain.handle("add-book", (_event: IpcMainInvokeEvent, path: string) =>
-    db.addBook(path)
+    getBookFileInfo(path).then(({ path, title, modifiedTime }) =>
+      db.addBook(path, title, modifiedTime)
+    )
   );
 
   ipcMain.handle("remove-book", (_event: IpcMainInvokeEvent, path: string) =>

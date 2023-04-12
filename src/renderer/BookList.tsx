@@ -116,12 +116,15 @@ const BookListItem = (props: BookListItemProps) => {
       ? book.thumbnailPath
       : "https://via.placeholder.com/256x362/92c952";
 
+  const modifiedTimeString = new Date(book.modifiedTime).toLocaleDateString();
+
   return (
     <div className="bookWrapper" onContextMenu={handleContextMenu}>
       <img src={thumbnailPath} alt="thumbnail" />
       <div>
         <div className="bookText">{book.title}</div>
         <div className="bookText">{book.author}</div>
+        <div className="bookText">{modifiedTimeString}</div>
         <button onClick={handleClickOpen}>open</button>
         <button onClick={handleClickEdit}>edit</button>
         <button onClick={handleClickRemove}>remove</button>

@@ -1,6 +1,6 @@
 ﻿import { app } from "electron";
 import sqlite3 from "sqlite3";
-import { join, basename, extname } from "path";
+import { join } from "path";
 import { Book } from "../models/book";
 
 const databasePath: string = join(app.getPath("userData"), "books.db");
@@ -12,6 +12,7 @@ type Row = {
   title: string;
   author: string;
   thumbnailPath: string;
+  modifiedTime: string;
 };
 
 // データベース初期化
@@ -23,6 +24,12 @@ function initialize() {
     // カラムを追加する。すでにカラムが存在する場合はエラーになるためコールバックを渡しておく。
     db.run(
       "ALTER TABLE books ADD COLUMN thumbnailPath TEXT DEFAULT ''",
+      (err: Error | null) => {
+        if (err) console.error(err);
+      }
+    );
+    db.run(
+      "ALTER TABLE books ADD COLUMN modifiedTime TEXT DEFAULT ''",
       (err: Error | null) => {
         if (err) console.error(err);
       }
@@ -98,16 +105,18 @@ function updateBookThumbnail(
   });
 }
 
-function addBook(path: string): Promise<Book> {
+function addBook(
+  path: string,
+  title: string,
+  modifiedTime: string
+): Promise<Book> {
   return new Promise((resolve, reject) => {
-    // 拡張子を除外したファイル名をデフォルトのタイトルとする。
-    const title = basename(path, extname(path));
-
     db.serialize(() => {
       db.run(
-        "INSERT OR FAIL INTO books (path, title) VALUES(?, ?)",
+        "INSERT OR FAIL INTO books (path, title, modifiedTime) VALUES(?, ?, ?)",
         path,
         title,
+        modifiedTime,
         (err: Error | null) => {
           if (err) reject(err);
         }
