@@ -5,7 +5,7 @@ import { FilterByTag, FILTER_BY_TAG } from "../models/filter";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { SearchBox } from "./common/SearchBox";
 import { addBooks, fetchBooks } from "./features/books/booksSlice";
-import RadioFilterByTag from "./features/books/radioFilterByTag";
+import SelectFilterByTag from "./features/books/SelectFilterByTag";
 import BookEditorDialog from "./features/editor/BookEditorDialog";
 import { openSettingsDialog } from "./features/editor/editorSlice";
 import SettingsDialog from "./features/editor/SettingsDialog";
@@ -93,7 +93,7 @@ export default function App() {
     <div>
       <div className="header">
         <SearchBox onSearch={handleSearch} />
-        <RadioFilterByTag
+        <SelectFilterByTag
           defaultValue={filterByTag}
           onChange={handleChangeFilter}
         />
