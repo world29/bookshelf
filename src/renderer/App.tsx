@@ -64,13 +64,13 @@ export default function App() {
       switch (sortBy) {
         case SORT_BY.MODIFIED_DESC:
           return (
-            new Date(a.modifiedTime).getTime() -
-            new Date(b.modifiedTime).getTime()
+            new Date(b.modifiedTime).getTime() -
+            new Date(a.modifiedTime).getTime()
           );
         case SORT_BY.MODIFIED_ASC:
           return (
-            new Date(b.modifiedTime).getTime() -
-            new Date(a.modifiedTime).getTime()
+            new Date(a.modifiedTime).getTime() -
+            new Date(b.modifiedTime).getTime()
           );
       }
     };
