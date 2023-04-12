@@ -1,11 +1,13 @@
 ﻿import { ChangeEvent, useEffect, useState } from "react";
 import { Book } from "../models/book";
 import { FilterByTag, FILTER_BY_TAG } from "../models/filter";
+import { SortBy, SORT_BY } from "../models/sort";
 
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { SearchBox } from "./common/SearchBox";
 import { addBooks, fetchBooks } from "./features/books/booksSlice";
 import SelectFilterByTag from "./features/books/SelectFilterByTag";
+import SelectSortBy from "./features/books/SelectSortBy";
 import BookEditorDialog from "./features/editor/BookEditorDialog";
 import { openSettingsDialog } from "./features/editor/editorSlice";
 import SettingsDialog from "./features/editor/SettingsDialog";
@@ -22,6 +24,7 @@ export default function App() {
   const [filterByTag, setFilterByTag] = useState<FilterByTag>(
     FILTER_BY_TAG.ALL
   );
+  const [sortBy, setSortBy] = useState<SortBy>(SORT_BY.MODIFIED_DESC);
   const [itemsPerPage, setItemsPerPage] = useState(3);
 
   useEffect(() => {
@@ -37,7 +40,7 @@ export default function App() {
   // 検索文字列か books が更新されたら再度フィルタリング
   useEffect(() => {
     filterBooks();
-  }, [books, queryString, filterByTag]);
+  }, [books, queryString, filterByTag, sortBy]);
 
   const filterBooks = () => {
     // 文字列でフィルタリング
@@ -56,9 +59,25 @@ export default function App() {
       }
     };
 
-    const filteredBooks = books.filter(
-      (book) => matchQueryString(book) && matchFilterByTag(book)
-    );
+    // 並べ替え
+    const sortBooks = (a: Book, b: Book) => {
+      switch (sortBy) {
+        case SORT_BY.MODIFIED_DESC:
+          return (
+            new Date(a.modifiedTime).getTime() -
+            new Date(b.modifiedTime).getTime()
+          );
+        case SORT_BY.MODIFIED_ASC:
+          return (
+            new Date(b.modifiedTime).getTime() -
+            new Date(a.modifiedTime).getTime()
+          );
+      }
+    };
+
+    const filteredBooks = books
+      .filter((book) => matchQueryString(book) && matchFilterByTag(book))
+      .sort(sortBooks);
 
     setCurrentBooks(filteredBooks);
   };
@@ -89,22 +108,29 @@ export default function App() {
     setFilterByTag(filter);
   };
 
+  const handleChangeSortBy = (newSortBy: SortBy) => {
+    setSortBy(newSortBy);
+  };
+
   return (
     <div>
       <button onClick={handleClickAddZip}>Add zip</button>
       <button onClick={handleClickAddFolder}>Add folder</button>
-      <select onChange={handleChangeSelect}>
-        <option value="3">3</option>
-        <option value="10">10</option>
-        <option value="20">20</option>
-        <option value="30">30</option>
-      </select>
       <div className="searchForm">
         <SearchBox onSearch={handleSearch} />
         <SelectFilterByTag
           defaultValue={filterByTag}
           onChange={handleChangeFilter}
         />
+      </div>
+      <div className="viewOptions">
+        <select onChange={handleChangeSelect}>
+          <option value="3">3</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+        </select>
+        <SelectSortBy defaultValue={sortBy} onChange={handleChangeSortBy} />
       </div>
       <Pagination books={currentBooks} itemsPerPage={itemsPerPage} />
       <BookEditorDialog />
