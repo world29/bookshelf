@@ -91,20 +91,20 @@ export default function App() {
 
   return (
     <div>
-      <div className="header">
+      <button onClick={handleClickAddZip}>Add zip</button>
+      <button onClick={handleClickAddFolder}>Add folder</button>
+      <select onChange={handleChangeSelect}>
+        <option value="3">3</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+      </select>
+      <div className="searchForm">
         <SearchBox onSearch={handleSearch} />
         <SelectFilterByTag
           defaultValue={filterByTag}
           onChange={handleChangeFilter}
         />
-        <button onClick={handleClickAddZip}>Add zip</button>
-        <button onClick={handleClickAddFolder}>Add folder</button>
-        <select onChange={handleChangeSelect}>
-          <option value="3">3</option>
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="30">30</option>
-        </select>
       </div>
       <Pagination books={currentBooks} itemsPerPage={itemsPerPage} />
       <BookEditorDialog />

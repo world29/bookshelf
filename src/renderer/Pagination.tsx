@@ -27,6 +27,10 @@ const Pagination = (props: Props) => {
 
   return (
     <div className="booksWrapper">
+      <div>
+        {itemOffset + 1}-{Math.min(endOffset, books.length)} of {books.length}{" "}
+        results
+      </div>
       <BookList books={currentBooks} />
       <div className="paginateWrapper">
         <ReactPaginate
