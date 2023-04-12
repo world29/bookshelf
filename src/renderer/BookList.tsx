@@ -50,32 +50,24 @@ const ContextMenu = (props: ContextMenuProps) => {
     <ClickAwayListener onClick={onClose}>
       <div style={styles}>
         <div className="list-group">
-          <a
-            href="#"
+          <button
             className="list-group-item list-group-item-action"
             onClick={handleClickShowInFolder}
           >
             Reveal in File Explorer
-          </a>
-          <a
-            href="#"
-            className="list-group-item list-group-item-action disabled"
-          >
+          </button>
+          <button className="list-group-item list-group-item-action disabled">
             Copy Path
-          </a>
-          <a
-            href="#"
+          </button>
+          <button
             className="list-group-item list-group-item-action"
             onClick={handleClickCreateThumbnail}
           >
             Create Thumbnail
-          </a>
-          <a
-            href="#"
-            className="list-group-item list-group-item-action disabled"
-          >
+          </button>
+          <button className="list-group-item list-group-item-action disabled">
             Move to Trash
-          </a>
+          </button>
         </div>
       </div>
     </ClickAwayListener>
