@@ -22,6 +22,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("open-file-dialog", fileType),
   showItemInFolder: (path: string) =>
     ipcRenderer.invoke("show-item-in-folder", path),
+  moveToTrash: (path: string) => ipcRenderer.invoke("move-to-trash", path),
   handleOpenSettings: (callback: () => void) =>
     ipcRenderer.on("open-settings", callback),
 });

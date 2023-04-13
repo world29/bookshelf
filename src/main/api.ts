@@ -96,6 +96,10 @@ const setupAPIs = (mainWindow: BrowserWindow) => {
     "show-item-in-folder",
     (_event: IpcMainInvokeEvent, path: string) => shell.showItemInFolder(path)
   );
+
+  ipcMain.handle("move-to-trash", (_event: IpcMainInvokeEvent, path: string) =>
+    shell.trashItem(path)
+  );
 };
 
 export default setupAPIs;

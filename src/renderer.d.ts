@@ -17,6 +17,7 @@ export interface IElectronAPI {
     fileType: OpenFileType
   ) => Promise<Electron.OpenDialogReturnValue>;
   showItemInFolder: (path: string) => Promise<void>;
+  moveToTrash: (path: string) => Promise<void>;
   handleOpenSettings: (callback: () => void) => void;
 }
 

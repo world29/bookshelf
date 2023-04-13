@@ -39,6 +39,13 @@ const ContextMenu = (props: ContextMenuProps) => {
     onClose();
   };
 
+  const handleClickMoveToTrash = () => {
+    window.electronAPI
+      .moveToTrash(book.path)
+      .then(() => dispatch(removeBook({ path: book.path })))
+      .then(() => onClose());
+  };
+
   const styles = {
     position: "absolute",
     top: `${top}px`,
@@ -65,7 +72,10 @@ const ContextMenu = (props: ContextMenuProps) => {
           >
             Create Thumbnail
           </button>
-          <button className="list-group-item list-group-item-action disabled">
+          <button
+            className="list-group-item list-group-item-action"
+            onClick={handleClickMoveToTrash}
+          >
             Move to Trash
           </button>
         </div>
