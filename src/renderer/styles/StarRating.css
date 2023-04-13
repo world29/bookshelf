@@ -1,0 +1,7 @@
+﻿.starRatingWrapper button {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 2px;
+}
