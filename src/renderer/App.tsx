@@ -1,11 +1,17 @@
 ﻿import { ChangeEvent, useEffect, useState } from "react";
 import { Book } from "../models/book";
-import { FilterByTag, FILTER_BY_TAG } from "../models/filter";
+import {
+  FilterByRating,
+  FilterByTag,
+  FILTER_BY_RATING,
+  FILTER_BY_TAG,
+} from "../models/filter";
 import { SortBy, SORT_BY } from "../models/sort";
 
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { SearchBox } from "./common/SearchBox";
 import { addBooks, fetchBooks } from "./features/books/booksSlice";
+import SelectFilterByRating from "./features/books/SelectFilterByRating";
 import SelectFilterByTag from "./features/books/SelectFilterByTag";
 import SelectSortBy from "./features/books/SelectSortBy";
 import BookEditorDialog from "./features/editor/BookEditorDialog";
@@ -24,6 +30,9 @@ export default function App() {
   const [filterByTag, setFilterByTag] = useState<FilterByTag>(
     FILTER_BY_TAG.ALL
   );
+  const [filterByRating, setFilterByRating] = useState<FilterByRating>(
+    FILTER_BY_RATING.ALL
+  );
   const [sortBy, setSortBy] = useState<SortBy>(SORT_BY.MODIFIED_DESC);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
@@ -40,7 +49,7 @@ export default function App() {
   // 検索文字列か books が更新されたら再度フィルタリング
   useEffect(() => {
     filterBooks();
-  }, [books, queryString, filterByTag, sortBy]);
+  }, [books, queryString, filterByTag, filterByRating, sortBy]);
 
   const filterBooks = () => {
     // 文字列でフィルタリング
@@ -56,6 +65,26 @@ export default function App() {
           return book.author !== "";
         case FILTER_BY_TAG.UNTAGGED:
           return book.author === "";
+      }
+    };
+
+    // レーティングでフィルタリング
+    const matchFilterByRating = (book: Book) => {
+      switch (filterByRating) {
+        case FILTER_BY_RATING.ALL:
+          return true;
+        case FILTER_BY_RATING.EXCELLENT:
+          return book.rating === 5;
+        case FILTER_BY_RATING.GOOD:
+          return book.rating === 4;
+        case FILTER_BY_RATING.OK:
+          return book.rating === 3;
+        case FILTER_BY_RATING.POOR:
+          return book.rating === 2;
+        case FILTER_BY_RATING.VERY_BAD:
+          return book.rating === 1;
+        case FILTER_BY_RATING.UNRATED:
+          return book.rating === 0;
       }
     };
 
@@ -86,7 +115,12 @@ export default function App() {
     };
 
     const filteredBooks = books
-      .filter((book) => matchQueryString(book) && matchFilterByTag(book))
+      .filter(
+        (book) =>
+          matchQueryString(book) &&
+          matchFilterByTag(book) &&
+          matchFilterByRating(book)
+      )
       .sort(sortBooks);
 
     setCurrentBooks(filteredBooks);
@@ -118,6 +152,10 @@ export default function App() {
     setFilterByTag(filter);
   };
 
+  const handleChangeFilterByRating = (filter: FilterByRating) => {
+    setFilterByRating(filter);
+  };
+
   const handleChangeSortBy = (newSortBy: SortBy) => {
     setSortBy(newSortBy);
   };
@@ -131,6 +169,10 @@ export default function App() {
         <SelectFilterByTag
           defaultValue={filterByTag}
           onChange={handleChangeFilter}
+        />
+        <SelectFilterByRating
+          defaultValue={filterByRating}
+          onChange={handleChangeFilterByRating}
         />
       </div>
       <div className="viewOptions">

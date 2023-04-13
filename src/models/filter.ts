@@ -14,3 +14,16 @@ export const FILTER_BY_TAG = {
 } as const;
 
 export type FilterByTag = typeof FILTER_BY_TAG[keyof typeof FILTER_BY_TAG];
+
+export const FILTER_BY_RATING = {
+  ALL: "All",
+  EXCELLENT: "Excellent", // 5
+  GOOD: "Good", // 4
+  OK: "Ok", // 3
+  POOR: "Poor", // 2
+  VERY_BAD: "VeryBad", // 1
+  UNRATED: "Unrated", // 0
+} as const;
+
+export type FilterByRating =
+  typeof FILTER_BY_RATING[keyof typeof FILTER_BY_RATING];
