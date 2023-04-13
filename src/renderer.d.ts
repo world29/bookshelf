@@ -7,6 +7,7 @@ export interface IElectronAPI {
   findBooks: (searchQuery: string) => Promise<Book[]>;
   updateBook: (path: string, title: string, author: string) => Promise<Book>;
   updateBookThumbnail: (path: string, thumbnailPath: string) => Promise<Book>;
+  updateBookRating: (path: string, rating: number) => Promise<Book>;
   addBook: (path: string) => Promise<Book>;
   removeBook: (path: string) => Promise<string>;
   createThumbnail: (path: string) => Promise<string>;

@@ -48,6 +48,11 @@ export const updateBookThumbnail = createAction<{
   path: string;
 }>("books/updateBookThumbnail");
 
+export const updateBookRating = createAction<{
+  path: string;
+  rating: number;
+}>("books/updateBookRating");
+
 export const selectBook = (path: string) => (state: RootState) =>
   state.books.find((book) => book.path === path);
 

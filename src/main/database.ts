@@ -14,6 +14,7 @@ type Row = {
   thumbnailPath: string;
   modifiedTime: string;
   registeredTime: string;
+  rating: number;
 };
 
 // データベース初期化
@@ -25,12 +26,13 @@ function initialize() {
         title TEXT,
         author TEXT DEFAULT '',
         thumbnailPath TEXT DEFAULT '',
-        modifiedTime TEXT DEFAULT ''
+        modifiedTime TEXT DEFAULT '',
+        registeredTime TEXT DEFAULT ''
       )`
     );
     // カラムを追加する。すでにカラムが存在する場合はエラーになるためコールバックを渡しておく。
     db.run(
-      "ALTER TABLE books ADD COLUMN registeredTime TEXT DEFAULT ''",
+      "ALTER TABLE books ADD COLUMN rating INTEGER DEFAULT 0",
       (err: Error | null) => {
         if (err) console.error(err);
       }
@@ -106,6 +108,23 @@ function updateBookThumbnail(
   });
 }
 
+function updateBookRating(path: string, rating: number): Promise<Book> {
+  return new Promise((resolve, reject) => {
+    db.serialize(() => {
+      db.run("UPDATE books SET rating = ? WHERE path = ?", rating, path);
+      db.get(
+        "SELECT * FROM books WHERE path = ?",
+        path,
+        (err: Error | null, row: Row) => {
+          if (err) reject(err);
+
+          resolve(row);
+        }
+      );
+    });
+  });
+}
+
 function addBook(
   path: string,
   title: string,
@@ -154,6 +173,7 @@ export default {
   findBooks,
   updateBook,
   updateBookThumbnail,
+  updateBookRating,
   addBook,
   removeBook,
 };

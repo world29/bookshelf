@@ -4,7 +4,11 @@ import { Book } from "../models/book";
 import { useAppDispatch } from "./app/hooks";
 import ClickAwayListener from "./common/ClickAwayListener";
 import StarRating from "./common/StarRating";
-import { removeBook, updateBookThumbnail } from "./features/books/booksSlice";
+import {
+  removeBook,
+  updateBookRating,
+  updateBookThumbnail,
+} from "./features/books/booksSlice";
 import { openEditDialog } from "./features/editor/editorSlice";
 import "./styles/BookList.css";
 
@@ -115,7 +119,7 @@ const BookListItem = (props: BookListItemProps) => {
   };
 
   const handleChangeRating = (newRating: number) => {
-    console.log(`Rating: ${newRating}`);
+    dispatch(updateBookRating({ path: book.path, rating: newRating }));
   };
 
   const thumbnailPath =
@@ -132,7 +136,7 @@ const BookListItem = (props: BookListItemProps) => {
         <div className="bookText">{book.title}</div>
         <div className="bookText">{book.author}</div>
         <div className="bookText">{modifiedTimeString}</div>
-        <StarRating defaultRating={0} onChange={handleChangeRating} />
+        <StarRating defaultRating={book.rating} onChange={handleChangeRating} />
         <button onClick={handleClickOpen}>open</button>
         <button onClick={handleClickEdit}>edit</button>
         <button onClick={handleClickRemove}>remove</button>

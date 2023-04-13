@@ -36,6 +36,12 @@ const setupAPIs = (mainWindow: BrowserWindow) => {
       db.updateBookThumbnail(path, thumbnailPath)
   );
 
+  ipcMain.handle(
+    "update-book-rating",
+    (_event: IpcMainInvokeEvent, path: string, rating: number) =>
+      db.updateBookRating(path, rating)
+  );
+
   ipcMain.handle("add-book", (_event: IpcMainInvokeEvent, path: string) =>
     getBookFileInfo(path).then(({ path, title, modifiedTime }) =>
       db.addBook(path, title, modifiedTime)

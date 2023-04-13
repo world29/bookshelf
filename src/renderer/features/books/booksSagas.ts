@@ -13,6 +13,7 @@ import {
   addBooks,
   removeBook,
   updateBookThumbnail,
+  updateBookRating,
 } from "./booksSlice";
 
 function* handleUpdateBook(action: {
@@ -94,6 +95,24 @@ function* handleUpdateBookThumbnail(action: { payload: { path: string } }) {
   }
 }
 
+function* handleUpdateBookRating(action: {
+  payload: { path: string; rating: number };
+}) {
+  const { path, rating } = action.payload;
+
+  try {
+    const newBook: Book = yield call(
+      window.electronAPI.updateBookRating,
+      path,
+      rating
+    );
+
+    yield put(bookUpdated(newBook));
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 export default [
   takeLatest(updateBook, handleUpdateBook),
   takeLatest(fetchBooks, handleFetchBooks),
@@ -101,6 +120,7 @@ export default [
   takeLatest(addBooks, handleAddBooks),
   takeLatest(removeBook, handleRemoveBook),
   takeEvery(updateBookThumbnail, handleUpdateBookThumbnail),
+  takeLatest(updateBookRating, handleUpdateBookRating),
   // ファイルが追加されたら(自動的に)サムネイル生成を行う
   takeEvery(bookAdded, handleUpdateBookThumbnail),
 ];

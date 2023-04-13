@@ -10,6 +10,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("update-book", path, title, author),
   updateBookThumbnail: (path: string, thumbnailPath: string) =>
     ipcRenderer.invoke("update-book-thumbnail", path, thumbnailPath),
+  updateBookRating: (path: string, rating: number) =>
+    ipcRenderer.invoke("update-book-rating", path, rating),
   addBook: (path: string) => ipcRenderer.invoke("add-book", path),
   removeBook: (path: string) => ipcRenderer.invoke("remove-book", path),
   createThumbnail: (path: string) =>
