@@ -1,6 +1,7 @@
 ﻿import { ChangeEvent, useState } from "react";
 
 import { SortBy, SORT_BY } from "../../../models/sort";
+import "../../styles/SelectSortBy.css";
 
 type Props = {
   defaultValue: SortBy;
@@ -22,13 +23,18 @@ function SelectSortBy(props: Props) {
   };
 
   return (
-    <select onChange={handleChange}>
-      {Object.values(SORT_BY).map((value) => (
-        <option key={value} value={value}>
-          Sort by: {value}
-        </option>
-      ))}
-    </select>
+    <div className="sortWrapper">
+      <div className="label">Sort by:</div>
+      <div>
+        <select onChange={handleChange}>
+          {Object.values(SORT_BY).map((value) => (
+            <option key={value} value={value}>
+              {value}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
   );
 }
 

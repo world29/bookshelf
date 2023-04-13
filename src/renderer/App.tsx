@@ -25,7 +25,7 @@ export default function App() {
     FILTER_BY_TAG.ALL
   );
   const [sortBy, setSortBy] = useState<SortBy>(SORT_BY.MODIFIED_DESC);
-  const [itemsPerPage, setItemsPerPage] = useState(3);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     // メニューから設定ダイアログを開く
@@ -134,12 +134,14 @@ export default function App() {
         />
       </div>
       <div className="viewOptions">
-        <select onChange={handleChangeSelect}>
-          <option value="3">3</option>
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="30">30</option>
-        </select>
+        <div className="label">Items per page:</div>
+        <div>
+          <select onChange={handleChangeSelect}>
+            <option value="10">10</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
         <SelectSortBy defaultValue={sortBy} onChange={handleChangeSortBy} />
       </div>
       <Pagination books={currentBooks} itemsPerPage={itemsPerPage} />
