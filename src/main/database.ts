@@ -13,23 +13,18 @@ type Row = {
   author: string;
   thumbnailPath: string;
   modifiedTime: string;
+  registeredTime: string;
 };
 
 // データベース初期化
 function initialize() {
   db.serialize(() => {
     db.run(
-      "CREATE TABLE IF NOT EXISTS books(path TEXT UNIQUE, title TEXT, author TEXT DEFAULT '')"
+      "CREATE TABLE IF NOT EXISTS books(path TEXT UNIQUE, title TEXT, author TEXT DEFAULT '', thumbnailPath TEXT DEFAULT '', modifiedTime TEXT DEFAULT '')"
     );
     // カラムを追加する。すでにカラムが存在する場合はエラーになるためコールバックを渡しておく。
     db.run(
-      "ALTER TABLE books ADD COLUMN thumbnailPath TEXT DEFAULT ''",
-      (err: Error | null) => {
-        if (err) console.error(err);
-      }
-    );
-    db.run(
-      "ALTER TABLE books ADD COLUMN modifiedTime TEXT DEFAULT ''",
+      "ALTER TABLE books ADD COLUMN registeredTime TEXT DEFAULT ''",
       (err: Error | null) => {
         if (err) console.error(err);
       }
@@ -110,13 +105,16 @@ function addBook(
   title: string,
   modifiedTime: string
 ): Promise<Book> {
+  const registeredTime = new Date(Date.now()).toISOString();
+
   return new Promise((resolve, reject) => {
     db.serialize(() => {
       db.run(
-        "INSERT OR FAIL INTO books (path, title, modifiedTime) VALUES(?, ?, ?)",
+        "INSERT OR FAIL INTO books (path, title, modifiedTime, registeredTime) VALUES(?, ?, ?, ?)",
         path,
         title,
         modifiedTime,
+        registeredTime,
         (err: Error | null) => {
           if (err) reject(err);
         }

@@ -72,6 +72,16 @@ export default function App() {
             new Date(a.modifiedTime).getTime() -
             new Date(b.modifiedTime).getTime()
           );
+        case SORT_BY.REGISTERED_DESC:
+          return (
+            new Date(b.registeredTime).getTime() -
+            new Date(a.registeredTime).getTime()
+          );
+        case SORT_BY.REGISTERED_ASC:
+          return (
+            new Date(a.registeredTime).getTime() -
+            new Date(b.registeredTime).getTime()
+          );
       }
     };
 
