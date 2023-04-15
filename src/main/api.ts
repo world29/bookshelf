@@ -12,119 +12,162 @@ import settingsStore from "./settings";
 import { openFile } from "./shell";
 import { BookFileInfo, getBookFileInfo } from "./book";
 import { createThumbnailFromFile } from "./thumbnail";
+import { Book } from "../models/book";
 
-const setupAPIs = (mainWindow: BrowserWindow) => {
-  ipcMain.handle("do-a-thing", () =>
-    Promise.resolve("hello from main process.")
-  );
+// レンダラープロセスとの IPC 通信のセットアップ
+// レンダラープロセスへイベントを送信するための API を公開
+class Bridge {
+  private window: BrowserWindow | null;
 
-  ipcMain.handle(
-    "find-books",
-    (_event: IpcMainInvokeEvent, searchQuery: string) =>
-      db.findBooks(searchQuery)
-  );
+  constructor() {
+    this.window = null;
+  }
 
-  ipcMain.handle(
-    "update-book",
-    (_event: IpcMainInvokeEvent, path: string, title: string, author: string) =>
-      db.updateBook(path, title, author)
-  );
+  emitBooksAdded(books: Book[]) {
+    this.window?.webContents.send("progress:booksAdded", books);
+  }
 
-  ipcMain.handle(
-    "update-book-thumbnail",
-    (_event: IpcMainInvokeEvent, path: string, thumbnailPath: string) =>
-      db.updateBookThumbnail(path, thumbnailPath)
-  );
+  emitBookUpdated(book: Book) {
+    this.window?.webContents.send("progress:bookUpdated", book);
+  }
 
-  ipcMain.handle(
-    "update-book-rating",
-    (_event: IpcMainInvokeEvent, path: string, rating: number) =>
-      db.updateBookRating(path, rating)
-  );
+  setupAPIs(mainWindow: BrowserWindow) {
+    this.window = mainWindow;
 
-  ipcMain.handle("add-book", (_event: IpcMainInvokeEvent, path: string) =>
-    getBookFileInfo(path).then(({ path, title, modifiedTime }) =>
-      db.addBook(path, title, modifiedTime)
-    )
-  );
+    ipcMain.handle("do-a-thing", () =>
+      Promise.resolve("hello from main process.")
+    );
 
-  ipcMain.handle(
-    "add-books",
-    async (_event: IpcMainInvokeEvent, paths: string[]) => {
-      const promises = paths.map((path) => getBookFileInfo(path));
+    ipcMain.handle(
+      "find-books",
+      (_event: IpcMainInvokeEvent, searchQuery: string) =>
+        db.findBooks(searchQuery)
+    );
 
-      const results: PromiseSettledResult<BookFileInfo>[] =
-        await Promise.allSettled(promises);
+    ipcMain.handle(
+      "update-book",
+      (
+        _event: IpcMainInvokeEvent,
+        path: string,
+        title: string,
+        author: string
+      ) => db.updateBook(path, title, author)
+    );
 
-      // ファイル情報の取得に成功したものだけデータベースに登録する
-      const fullfilledResults = results.filter(
-        (result) => result.status === "fulfilled"
-      ) as PromiseFulfilledResult<BookFileInfo>[];
+    ipcMain.handle(
+      "update-book-thumbnail",
+      (_event: IpcMainInvokeEvent, path: string, thumbnailPath: string) =>
+        db.updateBookThumbnail(path, thumbnailPath)
+    );
 
-      const bookInfos = fullfilledResults.map((result) => result.value);
+    ipcMain.handle(
+      "update-book-rating",
+      (_event: IpcMainInvokeEvent, path: string, rating: number) =>
+        db.updateBookRating(path, rating)
+    );
 
-      return db.addBooks(bookInfos);
-    }
-  );
+    ipcMain.handle("add-book", (_event: IpcMainInvokeEvent, path: string) =>
+      getBookFileInfo(path).then(({ path, title, modifiedTime }) =>
+        db.addBook(path, title, modifiedTime)
+      )
+    );
 
-  ipcMain.handle("remove-book", (_event: IpcMainInvokeEvent, path: string) =>
-    db.removeBook(path)
-  );
+    ipcMain.handle(
+      "add-books",
+      async (_event: IpcMainInvokeEvent, paths: string[]): Promise<void> => {
+        const promises = paths.map((path) => getBookFileInfo(path));
 
-  ipcMain.handle(
-    "create-thumbnail",
-    (_event: IpcMainInvokeEvent, filePath: string) =>
-      createThumbnailFromFile(filePath)
-  );
+        const results = await Promise.allSettled(promises);
 
-  ipcMain.handle("open-file", (_event: IpcMainInvokeEvent, filePath: string) =>
-    openFile(filePath)
-  );
+        // ファイル情報の取得に成功したものだけデータベースに登録する
+        const fullfilledResults = results.filter(
+          (result) => result.status === "fulfilled"
+        ) as PromiseFulfilledResult<BookFileInfo>[];
 
-  ipcMain.handle("get-settings", () => {
-    console.log("get-settings invoked");
-    console.dir(settingsStore.store);
-    return Promise.resolve(settingsStore.store);
-  });
+        const bookInfos = fullfilledResults.map((result) => result.value);
 
-  ipcMain.handle(
-    "set-settings-viewer",
-    (_event: IpcMainInvokeEvent, viewerPath: string) =>
-      new Promise<void>((resolve) => {
-        settingsStore.set("viewer", viewerPath);
-        resolve();
-      })
-  );
+        const books = await db.addBooks(bookInfos);
+        // ファイル一括登録イベント
+        this.emitBooksAdded(books);
 
-  ipcMain.handle(
-    "open-file-dialog",
-    (_event: IpcMainInvokeEvent, fileType: OpenFileType) =>
-      dialog.showOpenDialog(mainWindow, {
-        properties: [fileType, "multiSelections"],
-        title: "ファイルを選択",
-        filters: [
-          /*
-        {
-          name: "画像ファイル",
-          extensions: ["png", "jpg", "jpeg"],
-        },
-        */
+        // サムネイルを一つずつ作成する
+        for (const book of books) {
+          try {
+            const thumbnailPath = await createThumbnailFromFile(book.path);
+            const newBook = await db.updateBookThumbnail(
+              book.path,
+              thumbnailPath
+            );
+            // サムネイル更新イベント
+            this.emitBookUpdated(newBook);
+          } catch (err) {
+            console.error(err);
+          }
+        }
+      }
+    );
+
+    ipcMain.handle("remove-book", (_event: IpcMainInvokeEvent, path: string) =>
+      db.removeBook(path)
+    );
+
+    ipcMain.handle(
+      "create-thumbnail",
+      (_event: IpcMainInvokeEvent, filePath: string) =>
+        createThumbnailFromFile(filePath)
+    );
+
+    ipcMain.handle(
+      "open-file",
+      (_event: IpcMainInvokeEvent, filePath: string) => openFile(filePath)
+    );
+
+    ipcMain.handle("get-settings", () => {
+      console.log("get-settings invoked");
+      console.dir(settingsStore.store);
+      return Promise.resolve(settingsStore.store);
+    });
+
+    ipcMain.handle(
+      "set-settings-viewer",
+      (_event: IpcMainInvokeEvent, viewerPath: string) =>
+        new Promise<void>((resolve) => {
+          settingsStore.set("viewer", viewerPath);
+          resolve();
+        })
+    );
+
+    ipcMain.handle(
+      "open-file-dialog",
+      (_event: IpcMainInvokeEvent, fileType: OpenFileType) =>
+        dialog.showOpenDialog(mainWindow, {
+          properties: [fileType, "multiSelections"],
+          title: "ファイルを選択",
+          filters: [
+            /*
           {
-            name: "アーカイブファイル",
-            extensions: ["zip"],
+            name: "画像ファイル",
+            extensions: ["png", "jpg", "jpeg"],
           },
-        ],
-      })
-  );
+          */
+            {
+              name: "アーカイブファイル",
+              extensions: ["zip"],
+            },
+          ],
+        })
+    );
 
-  ipcMain.handle(
-    "show-item-in-folder",
-    (_event: IpcMainInvokeEvent, path: string) => shell.showItemInFolder(path)
-  );
+    ipcMain.handle(
+      "show-item-in-folder",
+      (_event: IpcMainInvokeEvent, path: string) => shell.showItemInFolder(path)
+    );
 
-  ipcMain.handle("move-to-trash", (_event: IpcMainInvokeEvent, path: string) =>
-    shell.trashItem(path)
-  );
-};
+    ipcMain.handle(
+      "move-to-trash",
+      (_event: IpcMainInvokeEvent, path: string) => shell.trashItem(path)
+    );
+  }
+}
 
-export default setupAPIs;
+export const bridge = new Bridge();

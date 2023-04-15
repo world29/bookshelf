@@ -1,4 +1,4 @@
-﻿import { ChangeEvent, useEffect, useState } from "react";
+﻿import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Book } from "../models/book";
 import {
   FilterByRating,
@@ -10,7 +10,12 @@ import { SortBy, SORT_BY } from "../models/sort";
 
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { SearchBox } from "./common/SearchBox";
-import { addBooks, fetchBooks } from "./features/books/booksSlice";
+import {
+  addBooks,
+  booksAdded,
+  bookUpdated,
+  fetchBooks,
+} from "./features/books/booksSlice";
 import SelectFilterByRating from "./features/books/SelectFilterByRating";
 import SelectFilterByTag from "./features/books/SelectFilterByTag";
 import SelectSortBy from "./features/books/SelectSortBy";
@@ -25,6 +30,8 @@ export default function App() {
 
   const dispatch = useAppDispatch();
 
+  const calledRef = useRef(false);
+
   const [currentBooks, setCurrentBooks] = useState(books);
   const [queryString, setQueryString] = useState("");
   const [filterByTag, setFilterByTag] = useState<FilterByTag>(
@@ -37,10 +44,26 @@ export default function App() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
+    // devServer が有効なときは useEffect が２回呼ばれるので、１度だけ実行したい処理はフラグでチェックする
+    if (calledRef.current) return;
+    calledRef.current = true;
+
+    console.log("App:useEffect()");
+
     // メニューから設定ダイアログを開く
     // memo: dispatch を使いたいため App コンポーネントの中でコールバックを登録している。
     window.electronAPI.handleOpenSettings(() => {
       dispatch(openSettingsDialog());
+    });
+
+    window.electronAPI.handleProgressBooksAdded((_event, books) => {
+      if (books) {
+        dispatch(booksAdded(books));
+      }
+    });
+
+    window.electronAPI.handleProgressBookUpdated((_event, book) => {
+      dispatch(bookUpdated(book));
     });
 
     dispatch(fetchBooks());

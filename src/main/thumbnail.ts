@@ -96,13 +96,13 @@ const createThumbnailFromFolder = async (dirPath: string) => {
 };
 
 export function createThumbnailFromFile(filePath: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    if (extname(filePath) === ".zip") {
-      createThumbnailFromZip(filePath).then((outPath) => resolve(outPath));
-    } else if (statSync(filePath).isDirectory()) {
-      createThumbnailFromFolder(filePath).then((outPath) => resolve(outPath));
-    } else {
-      reject(`unsupported file format: ${filePath}`);
-    }
-  });
+  if (extname(filePath) === ".zip") {
+    return createThumbnailFromZip(filePath);
+  }
+
+  if (statSync(filePath).isDirectory()) {
+    return createThumbnailFromFolder(filePath);
+  }
+
+  return Promise.reject(`unsupported file format: ${filePath}`);
 }

@@ -57,9 +57,7 @@ function* handleAddBooks(action: { payload: { filePaths: string[] } }) {
   const { filePaths } = action.payload;
 
   try {
-    const newBooks: Book[] = yield call(window.electronAPI.addBooks, filePaths);
-
-    yield put(booksAdded(newBooks));
+    yield call(window.electronAPI.addBooks, filePaths);
   } catch (err) {
     console.error(err);
   }

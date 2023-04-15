@@ -1,6 +1,6 @@
 ﻿import { app, BrowserWindow, Menu, session } from "electron";
 import { join } from "path";
-import setupAPIs from "./api";
+import { bridge } from "./api";
 import db from "./database";
 import { createMenu } from "./menu";
 
@@ -14,7 +14,7 @@ const createWindow = () => {
       preload: join(__dirname, "preload.js"),
     },
   });
-  setupAPIs(mainWindow);
+  bridge.setupAPIs(mainWindow);
   mainWindow.loadFile("index.html");
 
   const menu = createMenu(mainWindow);

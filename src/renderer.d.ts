@@ -1,4 +1,5 @@
-﻿import { Book } from "./models/book";
+﻿import { IpcRendererEvent } from "electron";
+import { Book } from "./models/book";
 import { OpenFileType } from "./models/dialog";
 import { Settings } from "./models/settings";
 
@@ -9,7 +10,7 @@ export interface IElectronAPI {
   updateBookThumbnail: (path: string, thumbnailPath: string) => Promise<Book>;
   updateBookRating: (path: string, rating: number) => Promise<Book>;
   addBook: (path: string) => Promise<Book>;
-  addBooks: (paths: string[]) => Promise<Book[]>;
+  addBooks: (paths: string[]) => Promise<void>;
   removeBook: (path: string) => Promise<string>;
   createThumbnail: (path: string) => Promise<string>;
   openFile: (path: string) => Promise<void>;
@@ -20,7 +21,14 @@ export interface IElectronAPI {
   ) => Promise<Electron.OpenDialogReturnValue>;
   showItemInFolder: (path: string) => Promise<void>;
   moveToTrash: (path: string) => Promise<void>;
+  // メインからレンダラープロセス
   handleOpenSettings: (callback: () => void) => void;
+  handleProgressBooksAdded: (
+    callback: (_event: IpcRendererEvent, books: Book[]) => void
+  ) => void;
+  handleProgressBookUpdated: (
+    callback: (_event: IpcRendererEvent, book: Book) => void
+  ) => void;
 }
 
 declare global {

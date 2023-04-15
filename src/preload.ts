@@ -1,4 +1,5 @@
-﻿import { contextBridge, ipcRenderer } from "electron";
+﻿import { contextBridge, ipcRenderer, IpcRendererEvent } from "electron";
+import { Book } from "./models/book";
 
 import { OpenFileType } from "./models/dialog";
 
@@ -26,6 +27,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
   showItemInFolder: (path: string) =>
     ipcRenderer.invoke("show-item-in-folder", path),
   moveToTrash: (path: string) => ipcRenderer.invoke("move-to-trash", path),
+  // メインからレンダラープロセス
   handleOpenSettings: (callback: () => void) =>
     ipcRenderer.on("open-settings", callback),
+  handleProgressBooksAdded: (
+    callback: (_event: IpcRendererEvent, books: Book[]) => void
+  ) => ipcRenderer.on("progress:booksAdded", callback),
+  handleProgressBookUpdated: (
+    callback: (_event: IpcRendererEvent, book: Book) => void
+  ) => ipcRenderer.on("progress:bookUpdated", callback),
 });
