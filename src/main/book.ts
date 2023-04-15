@@ -1,7 +1,7 @@
 ﻿import { stat } from "node:fs/promises";
 import { basename, extname } from "path";
 
-type BookFileInfo = {
+export type BookFileInfo = {
   path: string;
   title: string;
   modifiedTime: string;

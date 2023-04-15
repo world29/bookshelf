@@ -2,6 +2,7 @@
 import sqlite3 from "sqlite3";
 import { join } from "path";
 import { Book } from "../models/book";
+import { BookFileInfo } from "./book";
 
 const databasePath: string = join(app.getPath("userData"), "books.db");
 
@@ -157,6 +158,38 @@ function addBook(
   });
 }
 
+function addBooks(bookInfos: BookFileInfo[]): Promise<Book[]> {
+  return new Promise((resolve, reject) => {
+    const registeredTime = new Date(Date.now()).toISOString();
+
+    db.serialize(() => {
+      const stmt = db.prepare(
+        "INSERT OR FAIL INTO books (path, title, modifiedTime, registeredTime) VALUES(?, ?, ?, ?)"
+      );
+
+      for (const info of bookInfos) {
+        stmt.run(info.path, info.title, info.modifiedTime, registeredTime);
+      }
+
+      stmt.finalize();
+
+      db.each("SELECT * FROM books", (err: Error | null, row: Row) => {
+        console.log(row);
+      });
+
+      db.all(
+        "SELECT * FROM books WHERE registeredTime = ?",
+        registeredTime,
+        (err: Error | null, rows: Row[]) => {
+          if (err) reject(err);
+
+          resolve(rows);
+        }
+      );
+    });
+  });
+}
+
 function removeBook(path: string): Promise<string> {
   return new Promise((resolve, reject) => {
     db.run("DELETE FROM books WHERE path = ?", path, (err: Error | null) => {
@@ -175,5 +208,6 @@ export default {
   updateBookThumbnail,
   updateBookRating,
   addBook,
+  addBooks,
   removeBook,
 };

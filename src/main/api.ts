@@ -10,7 +10,7 @@ import { OpenFileType } from "../models/dialog";
 import db from "./database";
 import settingsStore from "./settings";
 import { openFile } from "./shell";
-import { getBookFileInfo } from "./book";
+import { BookFileInfo, getBookFileInfo } from "./book";
 import { createThumbnailFromFile } from "./thumbnail";
 
 const setupAPIs = (mainWindow: BrowserWindow) => {
@@ -46,6 +46,25 @@ const setupAPIs = (mainWindow: BrowserWindow) => {
     getBookFileInfo(path).then(({ path, title, modifiedTime }) =>
       db.addBook(path, title, modifiedTime)
     )
+  );
+
+  ipcMain.handle(
+    "add-books",
+    async (_event: IpcMainInvokeEvent, paths: string[]) => {
+      const promises = paths.map((path) => getBookFileInfo(path));
+
+      const results: PromiseSettledResult<BookFileInfo>[] =
+        await Promise.allSettled(promises);
+
+      // ファイル情報の取得に成功したものだけデータベースに登録する
+      const fullfilledResults = results.filter(
+        (result) => result.status === "fulfilled"
+      ) as PromiseFulfilledResult<BookFileInfo>[];
+
+      const bookInfos = fullfilledResults.map((result) => result.value);
+
+      return db.addBooks(bookInfos);
+    }
   );
 
   ipcMain.handle("remove-book", (_event: IpcMainInvokeEvent, path: string) =>

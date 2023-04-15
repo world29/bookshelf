@@ -9,6 +9,7 @@ export interface IElectronAPI {
   updateBookThumbnail: (path: string, thumbnailPath: string) => Promise<Book>;
   updateBookRating: (path: string, rating: number) => Promise<Book>;
   addBook: (path: string) => Promise<Book>;
+  addBooks: (paths: string[]) => Promise<Book[]>;
   removeBook: (path: string) => Promise<string>;
   createThumbnail: (path: string) => Promise<string>;
   openFile: (path: string) => Promise<void>;

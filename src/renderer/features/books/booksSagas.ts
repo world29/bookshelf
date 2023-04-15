@@ -14,6 +14,7 @@ import {
   removeBook,
   updateBookThumbnail,
   updateBookRating,
+  booksAdded,
 } from "./booksSlice";
 
 function* handleUpdateBook(action: {
@@ -55,14 +56,12 @@ function* handleAddBook(action: { payload: { path: string } }) {
 function* handleAddBooks(action: { payload: { filePaths: string[] } }) {
   const { filePaths } = action.payload;
 
-  for (const path of filePaths) {
-    try {
-      const newBook: Book = yield call(window.electronAPI.addBook, path);
+  try {
+    const newBooks: Book[] = yield call(window.electronAPI.addBooks, filePaths);
 
-      yield put(bookAdded(newBook));
-    } catch (err) {
-      console.error(err);
-    }
+    yield put(booksAdded(newBooks));
+  } catch (err) {
+    console.error(err);
   }
 }
 

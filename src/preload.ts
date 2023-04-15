@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   updateBookRating: (path: string, rating: number) =>
     ipcRenderer.invoke("update-book-rating", path, rating),
   addBook: (path: string) => ipcRenderer.invoke("add-book", path),
+  addBooks: (paths: string[]) => ipcRenderer.invoke("add-books", paths),
   removeBook: (path: string) => ipcRenderer.invoke("remove-book", path),
   createThumbnail: (path: string) =>
     ipcRenderer.invoke("create-thumbnail", path),
