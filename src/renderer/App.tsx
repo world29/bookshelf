@@ -9,10 +9,12 @@ import {
 import { SortBy, SORT_BY } from "../models/sort";
 
 import { useAppDispatch, useAppSelector } from "./app/hooks";
+import { BookList } from "./BookList";
 import { SearchBox } from "./common/SearchBox";
 import {
   addBooks,
   booksAdded,
+  booksFetched,
   bookUpdated,
   fetchBooks,
 } from "./features/books/booksSlice";
@@ -26,14 +28,13 @@ import Pagination from "./Pagination";
 import "./styles/App.css";
 
 export default function App() {
-  const books = useAppSelector((state) => state.books);
+  const currentBooks = useAppSelector((state) => state.books);
 
   const dispatch = useAppDispatch();
 
   const calledRef = useRef(false);
 
-  const [currentBooks, setCurrentBooks] = useState(books);
-  const [queryString, setQueryString] = useState("");
+  const [keyword, setKeyword] = useState("");
   const [filterByTag, setFilterByTag] = useState<FilterByTag>(
     FILTER_BY_TAG.ALL
   );
@@ -41,7 +42,15 @@ export default function App() {
     FILTER_BY_RATING.ALL
   );
   const [sortBy, setSortBy] = useState<SortBy>(SORT_BY.MODIFIED_DESC);
+
+  // 登録済みのファイル数
+  const [bookTotal, setBookTotal] = useState(0);
+  // 現在のフィルタ条件にマッチしたファイル数
+  const [bookCount, setBookCount] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const pageCount = Math.ceil(bookCount / itemsPerPage);
 
   useEffect(() => {
     // devServer が有効なときは useEffect が２回呼ばれるので、１度だけ実行したい処理はフラグでチェックする
@@ -66,87 +75,38 @@ export default function App() {
       dispatch(bookUpdated(book));
     });
 
-    dispatch(fetchBooks());
+    window.electronAPI.getBookCount().then((count) => {
+      setBookTotal(count);
+    });
   }, []);
 
-  // 検索文字列か books が更新されたら再度フィルタリング
   useEffect(() => {
-    filterBooks();
-  }, [books, queryString, filterByTag, filterByRating, sortBy]);
+    fetchBooks();
+  }, [keyword, filterByTag, filterByRating, currentPage]);
 
-  const filterBooks = () => {
-    // 文字列でフィルタリング
-    const matchQueryString = (book: Book) =>
-      (book.title + book.author).toLowerCase().includes(queryString);
+  useEffect(() => {
+    // 1ページあたりのファイル数が増加したとき、現在のページ番号が正しい範囲に収まるよう修正する。
+    // ページ番号を更新するとエフェクトにより結果も更新されるため、そうでない場合だけ明示的に結果取得を行う。
+    if (currentPage >= pageCount) {
+      setCurrentPage(pageCount - 1);
+    } else {
+      fetchBooks();
+    }
+  }, [itemsPerPage]);
 
-    // タグの有無でフィルタリング
-    const matchFilterByTag = (book: Book) => {
-      switch (filterByTag) {
-        case FILTER_BY_TAG.ALL:
-          return true;
-        case FILTER_BY_TAG.TAGGED:
-          return book.author !== "";
-        case FILTER_BY_TAG.UNTAGGED:
-          return book.author === "";
-      }
-    };
-
-    // レーティングでフィルタリング
-    const matchFilterByRating = (book: Book) => {
-      switch (filterByRating) {
-        case FILTER_BY_RATING.ALL:
-          return true;
-        case FILTER_BY_RATING.EXCELLENT:
-          return book.rating === 5;
-        case FILTER_BY_RATING.GOOD:
-          return book.rating === 4;
-        case FILTER_BY_RATING.OK:
-          return book.rating === 3;
-        case FILTER_BY_RATING.POOR:
-          return book.rating === 2;
-        case FILTER_BY_RATING.VERY_BAD:
-          return book.rating === 1;
-        case FILTER_BY_RATING.UNRATED:
-          return book.rating === 0;
-      }
-    };
-
-    // 並べ替え
-    const sortBooks = (a: Book, b: Book) => {
-      switch (sortBy) {
-        case SORT_BY.MODIFIED_DESC:
-          return (
-            new Date(b.modifiedTime).getTime() -
-            new Date(a.modifiedTime).getTime()
-          );
-        case SORT_BY.MODIFIED_ASC:
-          return (
-            new Date(a.modifiedTime).getTime() -
-            new Date(b.modifiedTime).getTime()
-          );
-        case SORT_BY.REGISTERED_DESC:
-          return (
-            new Date(b.registeredTime).getTime() -
-            new Date(a.registeredTime).getTime()
-          );
-        case SORT_BY.REGISTERED_ASC:
-          return (
-            new Date(a.registeredTime).getTime() -
-            new Date(b.registeredTime).getTime()
-          );
-      }
-    };
-
-    const filteredBooks = books
-      .filter(
-        (book) =>
-          matchQueryString(book) &&
-          matchFilterByTag(book) &&
-          matchFilterByRating(book)
+  const fetchBooks = () => {
+    window.electronAPI
+      .fetchBooks(
+        keyword,
+        filterByTag,
+        filterByRating,
+        itemsPerPage,
+        currentPage * itemsPerPage
       )
-      .sort(sortBooks);
-
-    setCurrentBooks(filteredBooks);
+      .then(({ books, total }) => {
+        setBookCount(total);
+        dispatch(booksFetched(books));
+      });
   };
 
   const handleClickAddZip = () => {
@@ -164,7 +124,7 @@ export default function App() {
   };
 
   const handleSearch = (query: string) => {
-    setQueryString(query);
+    setKeyword(query);
   };
 
   const handleChangeSelect = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -183,8 +143,13 @@ export default function App() {
     setSortBy(newSortBy);
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
     <div>
+      <div>{bookTotal}</div>
       <button onClick={handleClickAddZip}>Add zip</button>
       <button onClick={handleClickAddFolder}>Add folder</button>
       <div className="searchForm">
@@ -209,7 +174,24 @@ export default function App() {
         </div>
         <SelectSortBy defaultValue={sortBy} onChange={handleChangeSortBy} />
       </div>
-      <Pagination books={currentBooks} itemsPerPage={itemsPerPage} />
+      <div className="booksWrapper">
+        <div>
+          {currentPage * itemsPerPage + 1}-
+          {Math.min((currentPage + 1) * itemsPerPage, bookCount)} of {bookCount}{" "}
+          results
+        </div>
+        <Pagination
+          page={currentPage}
+          pageCount={pageCount}
+          onPageChange={handlePageChange}
+        />
+        <BookList books={currentBooks} />
+        <Pagination
+          page={currentPage}
+          pageCount={pageCount}
+          onPageChange={handlePageChange}
+        />
+      </div>
       <BookEditorDialog />
       <SettingsDialog />
     </div>

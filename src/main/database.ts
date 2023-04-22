@@ -3,6 +3,12 @@ import sqlite3 from "sqlite3";
 import { join } from "path";
 import { Book } from "../models/book";
 import { BookFileInfo } from "./book";
+import {
+  FilterByRating,
+  FilterByTag,
+  FILTER_BY_RATING,
+  FILTER_BY_TAG,
+} from "../models/filter";
 
 const databasePath: string = join(app.getPath("userData"), "books.db");
 
@@ -56,6 +62,72 @@ function findBooks(searchQuery: string): Promise<Book[]> {
         resolve(rows);
       }
     );
+  });
+}
+
+function getBookCount(): Promise<number> {
+  return new Promise((resolve, reject) => {
+    db.get(
+      "SELECT COUNT(*) AS count FROM books",
+      (err: Error | null, row: { count: number }) => {
+        if (err) reject(err);
+        console.log(row);
+
+        resolve(row.count);
+      }
+    );
+  });
+}
+
+function fetchBooks(
+  keyword: string,
+  tag: FilterByTag,
+  rating: FilterByRating,
+  count: number,
+  offset: number
+): Promise<{ books: Book[]; total: number }> {
+  return new Promise((resolve, reject) => {
+    let query = `FROM books WHERE (title LIKE '%${keyword}%' OR author LIKE '%${keyword}%')`;
+
+    if (tag === FILTER_BY_TAG.TAGGED) {
+      query += " AND (author <> '')";
+    } else if (tag === FILTER_BY_TAG.UNTAGGED) {
+      query += " AND (author == '')";
+    }
+
+    if (rating === FILTER_BY_RATING.EXCELLENT) {
+      query += " AND (rating == 5)";
+    } else if (rating === FILTER_BY_RATING.GOOD) {
+      query += " AND (rating == 4)";
+    } else if (rating === FILTER_BY_RATING.OK) {
+      query += " AND (rating == 3)";
+    } else if (rating === FILTER_BY_RATING.POOR) {
+      query += " AND (rating == 2)";
+    } else if (rating === FILTER_BY_RATING.VERY_BAD) {
+      query += " AND (rating == 1)";
+    } else if (rating === FILTER_BY_RATING.UNRATED) {
+      query += " AND (rating == 0)";
+    }
+
+    db.serialize(() => {
+      let totalCount = 0;
+      db.get(
+        `SELECT COUNT(*) AS count ${query}`,
+        (err: Error | null, row: { count: number }) => {
+          if (err) reject(err);
+
+          totalCount = row.count;
+        }
+      );
+
+      query += ` LIMIT ${count} OFFSET ${offset}`;
+
+      db.all(`SELECT * ${query}`, (err: Error, rows: Row[]) => {
+        if (err) reject(err);
+
+        resolve({ books: rows, total: totalCount });
+      });
+    });
   });
 }
 
@@ -204,6 +276,8 @@ export default {
   initialize,
   finalize,
   findBooks,
+  getBookCount,
+  fetchBooks,
   updateBook,
   updateBookThumbnail,
   updateBookRating,

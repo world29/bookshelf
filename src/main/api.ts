@@ -13,6 +13,7 @@ import { openFile } from "./shell";
 import { BookFileInfo, getBookFileInfo } from "./book";
 import { createThumbnailFromFile } from "./thumbnail";
 import { Book } from "../models/book";
+import { FilterByRating, FilterByTag } from "../models/filter";
 
 // レンダラープロセスとの IPC 通信のセットアップ
 // レンダラープロセスへイベントを送信するための API を公開
@@ -42,6 +43,20 @@ class Bridge {
       "find-books",
       (_event: IpcMainInvokeEvent, searchQuery: string) =>
         db.findBooks(searchQuery)
+    );
+
+    ipcMain.handle("get-book-count", () => db.getBookCount());
+
+    ipcMain.handle(
+      "fetch-books",
+      (
+        _event: IpcMainInvokeEvent,
+        keyword: string,
+        tag: FilterByTag,
+        rating: FilterByRating,
+        count: number,
+        offset: number
+      ) => db.fetchBooks(keyword, tag, rating, count, offset)
     );
 
     ipcMain.handle(

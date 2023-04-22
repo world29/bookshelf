@@ -2,10 +2,19 @@
 import { Book } from "./models/book";
 import { OpenFileType } from "./models/dialog";
 import { Settings } from "./models/settings";
+import { FilterByRating, FilterByTag } from "./models/filter";
 
 export interface IElectronAPI {
   doThing: () => Promise<string>;
   findBooks: (searchQuery: string) => Promise<Book[]>;
+  getBookCount: () => Promise<number>;
+  fetchBooks: (
+    keyword: string,
+    tag: FilterByTag,
+    rating: FilterByRating,
+    count: number,
+    offset: number
+  ) => Promise<{ books: Book[]; total: number }>;
   updateBook: (path: string, title: string, author: string) => Promise<Book>;
   updateBookThumbnail: (path: string, thumbnailPath: string) => Promise<Book>;
   updateBookRating: (path: string, rating: number) => Promise<Book>;

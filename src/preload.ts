@@ -2,11 +2,20 @@
 import { Book } from "./models/book";
 
 import { OpenFileType } from "./models/dialog";
+import { FilterByRating, FilterByTag } from "./models/filter";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   doThing: () => ipcRenderer.invoke("do-a-thing"),
   findBooks: (searchQuery: string) =>
     ipcRenderer.invoke("find-books", searchQuery),
+  getBookCount: () => ipcRenderer.invoke("get-book-count"),
+  fetchBooks: (
+    keyword: string,
+    tag: FilterByTag,
+    rating: FilterByRating,
+    count: number,
+    offset: number
+  ) => ipcRenderer.invoke("fetch-books", keyword, tag, rating, count, offset),
   updateBook: (path: string, title: string, author: string) =>
     ipcRenderer.invoke("update-book", path, title, author),
   updateBookThumbnail: (path: string, thumbnailPath: string) =>

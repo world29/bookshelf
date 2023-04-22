@@ -1,37 +1,28 @@
-﻿import { useState } from "react";
-import ReactPaginate from "react-paginate";
+﻿import ReactPaginate from "react-paginate";
 
 import "./styles/Pagination.css";
-import { BookList } from "./BookList";
-import { Book } from "../models/book";
 
 type Props = {
-  books: Book[];
-  itemsPerPage: number;
+  page: number;
+  pageCount: number;
+  onPageChange: (page: number) => void;
 };
 
 const Pagination = (props: Props) => {
-  const { books, itemsPerPage } = props;
+  const { page, pageCount, onPageChange } = props;
 
-  const [itemOffset, setItemOffset] = useState(0);
-
-  const endOffset = itemOffset + itemsPerPage;
-  const currentBooks = books.slice(itemOffset, endOffset);
-
-  const pageCount = Math.ceil(books.length / itemsPerPage);
-
-  const handlePageClick = (e: { selected: number }) => {
-    const newOffset = (e.selected * itemsPerPage) % books.length;
-    setItemOffset(newOffset);
+  const handlePageChange = (e: { selected: number }) => {
+    onPageChange(e.selected);
   };
 
-  const renderPagination = () => (
+  return (
     <div className="paginateWrapper">
       <ReactPaginate
         nextLabel="next >"
-        onPageChange={handlePageClick}
+        onPageChange={handlePageChange}
         pageRangeDisplayed={3}
         marginPagesDisplayed={2}
+        forcePage={page}
         pageCount={pageCount}
         previousLabel="< previous"
         pageClassName="page-item"
@@ -46,18 +37,6 @@ const Pagination = (props: Props) => {
         containerClassName="pagination"
         activeClassName="active"
       />
-    </div>
-  );
-
-  return (
-    <div className="booksWrapper">
-      <div>
-        {itemOffset + 1}-{Math.min(endOffset, books.length)} of {books.length}{" "}
-        results
-      </div>
-      {renderPagination()}
-      <BookList books={currentBooks} />
-      {renderPagination()}
     </div>
   );
 };
