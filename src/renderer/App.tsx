@@ -1,5 +1,4 @@
 ﻿import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { Book } from "../models/book";
 import {
   FilterByRating,
   FilterByTag,
@@ -16,7 +15,6 @@ import {
   booksAdded,
   booksFetched,
   bookUpdated,
-  fetchBooks,
 } from "./features/books/booksSlice";
 import SelectFilterByRating from "./features/books/SelectFilterByRating";
 import SelectFilterByTag from "./features/books/SelectFilterByTag";
