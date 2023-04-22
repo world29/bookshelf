@@ -48,7 +48,7 @@ class Bridge {
     ipcMain.handle("get-book-count", () => db.getBookCount());
 
     ipcMain.handle(
-      "fetch-books",
+      "filter-and-fetch-books",
       (
         _event: IpcMainInvokeEvent,
         keyword: string,
@@ -56,7 +56,7 @@ class Bridge {
         rating: FilterByRating,
         count: number,
         offset: number
-      ) => db.fetchBooks(keyword, tag, rating, count, offset)
+      ) => db.filterAndFetchBooks(keyword, tag, rating, count, offset)
     );
 
     ipcMain.handle(

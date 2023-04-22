@@ -44,13 +44,13 @@ export default function App() {
   const [sortBy, setSortBy] = useState<SortBy>(SORT_BY.MODIFIED_DESC);
 
   // 登録済みのファイル数
-  const [bookTotal, setBookTotal] = useState(0);
-  // 現在のフィルタ条件にマッチしたファイル数
   const [bookCount, setBookCount] = useState(0);
+  // 現在のフィルタ条件にマッチしたファイル数
+  const [filterResults, setFilterResults] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(0);
 
-  const pageCount = Math.ceil(bookCount / itemsPerPage);
+  const pageCount = Math.ceil(filterResults / itemsPerPage);
 
   useEffect(() => {
     // devServer が有効なときは useEffect が２回呼ばれるので、１度だけ実行したい処理はフラグでチェックする
@@ -76,7 +76,7 @@ export default function App() {
     });
 
     window.electronAPI.getBookCount().then((count) => {
-      setBookTotal(count);
+      setBookCount(count);
     });
   }, []);
 
@@ -96,16 +96,16 @@ export default function App() {
 
   const fetchBooks = () => {
     window.electronAPI
-      .fetchBooks(
+      .filterAndFetchBooks(
         keyword,
         filterByTag,
         filterByRating,
         itemsPerPage,
         currentPage * itemsPerPage
       )
-      .then(({ books, total }) => {
-        setBookCount(total);
-        dispatch(booksFetched(books));
+      .then(({ filterResult, fetchResult }) => {
+        setFilterResults(filterResult.count);
+        dispatch(booksFetched(fetchResult.books));
       });
   };
 
@@ -149,7 +149,7 @@ export default function App() {
 
   return (
     <div>
-      <div>{bookTotal}</div>
+      <div>{bookCount}</div>
       <button onClick={handleClickAddZip}>Add zip</button>
       <button onClick={handleClickAddFolder}>Add folder</button>
       <div className="searchForm">
@@ -177,8 +177,8 @@ export default function App() {
       <div className="booksWrapper">
         <div>
           {currentPage * itemsPerPage + 1}-
-          {Math.min((currentPage + 1) * itemsPerPage, bookCount)} of {bookCount}{" "}
-          results
+          {Math.min((currentPage + 1) * itemsPerPage, filterResults)} of{" "}
+          {filterResults} results
         </div>
         <Pagination
           page={currentPage}

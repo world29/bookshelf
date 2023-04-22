@@ -24,6 +24,15 @@ type Row = {
   rating: number;
 };
 
+type FilterAndFetchResult = {
+  filterResult: {
+    count: number;
+  };
+  fetchResult: {
+    books: Book[];
+  };
+};
+
 // データベース初期化
 function initialize() {
   db.serialize(() => {
@@ -71,7 +80,6 @@ function getBookCount(): Promise<number> {
       "SELECT COUNT(*) AS count FROM books",
       (err: Error | null, row: { count: number }) => {
         if (err) reject(err);
-        console.log(row);
 
         resolve(row.count);
       }
@@ -79,53 +87,56 @@ function getBookCount(): Promise<number> {
   });
 }
 
-function fetchBooks(
-  keyword: string,
-  tag: FilterByTag,
-  rating: FilterByRating,
-  count: number,
-  offset: number
-): Promise<{ books: Book[]; total: number }> {
+function filterAndFetchBooks(
+  filterKeyword: string,
+  filterTag: FilterByTag,
+  filterRating: FilterByRating,
+  fetchCount: number,
+  fetchOffset: number
+): Promise<FilterAndFetchResult> {
   return new Promise((resolve, reject) => {
-    let query = `FROM books WHERE (title LIKE '%${keyword}%' OR author LIKE '%${keyword}%')`;
+    let query = `FROM books WHERE (title LIKE '%${filterKeyword}%' OR author LIKE '%${filterKeyword}%')`;
 
-    if (tag === FILTER_BY_TAG.TAGGED) {
+    if (filterTag === FILTER_BY_TAG.TAGGED) {
       query += " AND (author <> '')";
-    } else if (tag === FILTER_BY_TAG.UNTAGGED) {
+    } else if (filterTag === FILTER_BY_TAG.UNTAGGED) {
       query += " AND (author == '')";
     }
 
-    if (rating === FILTER_BY_RATING.EXCELLENT) {
+    if (filterRating === FILTER_BY_RATING.EXCELLENT) {
       query += " AND (rating == 5)";
-    } else if (rating === FILTER_BY_RATING.GOOD) {
+    } else if (filterRating === FILTER_BY_RATING.GOOD) {
       query += " AND (rating == 4)";
-    } else if (rating === FILTER_BY_RATING.OK) {
+    } else if (filterRating === FILTER_BY_RATING.OK) {
       query += " AND (rating == 3)";
-    } else if (rating === FILTER_BY_RATING.POOR) {
+    } else if (filterRating === FILTER_BY_RATING.POOR) {
       query += " AND (rating == 2)";
-    } else if (rating === FILTER_BY_RATING.VERY_BAD) {
+    } else if (filterRating === FILTER_BY_RATING.VERY_BAD) {
       query += " AND (rating == 1)";
-    } else if (rating === FILTER_BY_RATING.UNRATED) {
+    } else if (filterRating === FILTER_BY_RATING.UNRATED) {
       query += " AND (rating == 0)";
     }
 
     db.serialize(() => {
-      let totalCount = 0;
+      let filterResultCount = 0;
       db.get(
         `SELECT COUNT(*) AS count ${query}`,
         (err: Error | null, row: { count: number }) => {
           if (err) reject(err);
 
-          totalCount = row.count;
+          filterResultCount = row.count;
         }
       );
 
-      query += ` LIMIT ${count} OFFSET ${offset}`;
+      query += ` LIMIT ${fetchCount} OFFSET ${fetchOffset}`;
 
       db.all(`SELECT * ${query}`, (err: Error, rows: Row[]) => {
         if (err) reject(err);
 
-        resolve({ books: rows, total: totalCount });
+        resolve({
+          filterResult: { count: filterResultCount },
+          fetchResult: { books: rows },
+        });
       });
     });
   });
@@ -277,7 +288,7 @@ export default {
   finalize,
   findBooks,
   getBookCount,
-  fetchBooks,
+  filterAndFetchBooks,
   updateBook,
   updateBookThumbnail,
   updateBookRating,

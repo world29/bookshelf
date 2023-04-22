@@ -8,13 +8,16 @@ export interface IElectronAPI {
   doThing: () => Promise<string>;
   findBooks: (searchQuery: string) => Promise<Book[]>;
   getBookCount: () => Promise<number>;
-  fetchBooks: (
+  filterAndFetchBooks: (
     keyword: string,
     tag: FilterByTag,
     rating: FilterByRating,
     count: number,
     offset: number
-  ) => Promise<{ books: Book[]; total: number }>;
+  ) => Promise<{
+    filterResult: { count: number };
+    fetchResult: { books: Book[] };
+  }>;
   updateBook: (path: string, title: string, author: string) => Promise<Book>;
   updateBookThumbnail: (path: string, thumbnailPath: string) => Promise<Book>;
   updateBookRating: (path: string, rating: number) => Promise<Book>;

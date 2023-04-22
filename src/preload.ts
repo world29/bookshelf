@@ -9,13 +9,21 @@ contextBridge.exposeInMainWorld("electronAPI", {
   findBooks: (searchQuery: string) =>
     ipcRenderer.invoke("find-books", searchQuery),
   getBookCount: () => ipcRenderer.invoke("get-book-count"),
-  fetchBooks: (
+  filterAndFetchBooks: (
     keyword: string,
     tag: FilterByTag,
     rating: FilterByRating,
     count: number,
     offset: number
-  ) => ipcRenderer.invoke("fetch-books", keyword, tag, rating, count, offset),
+  ) =>
+    ipcRenderer.invoke(
+      "filter-and-fetch-books",
+      keyword,
+      tag,
+      rating,
+      count,
+      offset
+    ),
   updateBook: (path: string, title: string, author: string) =>
     ipcRenderer.invoke("update-book", path, title, author),
   updateBookThumbnail: (path: string, thumbnailPath: string) =>
