@@ -10,12 +10,7 @@ import { SortOrder, SORT_ORDER } from "../models/sortOrder";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { BookList } from "./BookList";
 import { SearchBox } from "./common/SearchBox";
-import {
-  addBooks,
-  booksAdded,
-  booksFetched,
-  bookUpdated,
-} from "./features/books/booksSlice";
+import { addBooks, booksFetched } from "./features/books/booksSlice";
 import SelectFilterByRating from "./features/books/SelectFilterByRating";
 import SelectFilterByTag from "./features/books/SelectFilterByTag";
 import SelectSortBy from "./features/books/SelectSortBy";
