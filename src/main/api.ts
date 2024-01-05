@@ -109,8 +109,12 @@ class Bridge {
 
         const { succeeded, failed } = await db.addBooks(bookInfos);
         // ファイル一括登録イベント
-        this.emitBooksAdded(succeeded);
-        this.emitBooksAddFailed(failed);
+        if (succeeded.length > 0) {
+          this.emitBooksAdded(succeeded);
+        }
+        if (failed.length > 0) {
+          this.emitBooksAddFailed(failed);
+        }
 
         // サムネイルを一つずつ作成する
         for (const book of succeeded) {
