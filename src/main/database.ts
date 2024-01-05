@@ -34,6 +34,11 @@ type FilterAndFetchResult = {
   };
 };
 
+type AddBooksResult = {
+  succeeded: Book[];
+  failed: BookFileInfo[];
+};
+
 // データベース初期化
 function initialize() {
   db.serialize(() => {
@@ -255,11 +260,13 @@ function addBook(
   });
 }
 
-function addBooks(bookInfos: BookFileInfo[]): Promise<Book[]> {
+function addBooks(bookInfos: BookFileInfo[]): Promise<AddBooksResult> {
   return new Promise((resolve, reject) => {
     const registeredTime = new Date(Date.now()).toISOString();
 
     db.serialize(() => {
+      const failedEntries: BookFileInfo[] = [];
+
       const stmt = db.prepare(
         "INSERT OR FAIL INTO books (path, title, modifiedTime, registeredTime) VALUES(?, ?, ?, ?)",
         (err: Error | null) => {
@@ -271,7 +278,9 @@ function addBooks(bookInfos: BookFileInfo[]): Promise<Book[]> {
         stmt.run(
           [info.path, info.title, info.modifiedTime, registeredTime],
           (err: Error | null) => {
-            if (err) reject(err);
+            if (err) {
+              failedEntries.push(info);
+            }
           }
         );
       }
@@ -286,7 +295,7 @@ function addBooks(bookInfos: BookFileInfo[]): Promise<Book[]> {
         (err: Error | null, rows: Row[]) => {
           if (err) reject(err);
 
-          resolve(rows);
+          resolve({ succeeded: rows, failed: failedEntries });
         }
       );
     });

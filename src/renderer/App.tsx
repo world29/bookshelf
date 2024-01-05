@@ -25,6 +25,7 @@ import SettingsDialog from "./features/editor/SettingsDialog";
 import ErrorDialog from "./features/common/ErrorDialog";
 import Pagination from "./Pagination";
 import "./styles/App.css";
+import { openErrorDialog } from "./features/common/errorSlice";
 
 export default function App() {
   const currentBooks = useAppSelector((state) => state.books);
@@ -68,12 +69,22 @@ export default function App() {
 
     window.electronAPI.handleProgressBooksAdded((_event, books) => {
       if (books) {
-        dispatch(booksAdded(books));
+        fetchBooks();
       }
     });
 
-    window.electronAPI.handleProgressBookUpdated((_event, book) => {
-      dispatch(bookUpdated(book));
+    window.electronAPI.handleProgressBooksAddFailed((_event, fileInfos) => {
+      if (fileInfos) {
+        // 登録失敗したファイルのパスを連結する
+        // TODO: 失敗した複数のファイルをリスト形式で表示する専用ダイアログを用意する
+        console.dir(fileInfos);
+        const errorMessage = fileInfos.map((info) => info.path).join();
+        dispatch(openErrorDialog(errorMessage));
+      }
+    });
+
+    window.electronAPI.handleProgressBookUpdated((_event, _book) => {
+      fetchBooks();
     });
 
     window.electronAPI.getBookCount().then((count) => {

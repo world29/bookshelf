@@ -29,6 +29,10 @@ class Bridge {
     this.window?.webContents.send("progress:booksAdded", books);
   }
 
+  emitBooksAddFailed(fileInfos: BookFileInfo[]) {
+    this.window?.webContents.send("progress:booksAddFailed", fileInfos);
+  }
+
   emitBookUpdated(book: Book) {
     this.window?.webContents.send("progress:bookUpdated", book);
   }
@@ -103,12 +107,13 @@ class Bridge {
 
         const bookInfos = fullfilledResults.map((result) => result.value);
 
-        const books = await db.addBooks(bookInfos);
+        const { succeeded, failed } = await db.addBooks(bookInfos);
         // ファイル一括登録イベント
-        this.emitBooksAdded(books);
+        this.emitBooksAdded(succeeded);
+        this.emitBooksAddFailed(failed);
 
         // サムネイルを一つずつ作成する
-        for (const book of books) {
+        for (const book of succeeded) {
           try {
             const thumbnailPath = await createThumbnailFromFile(book.path);
             const newBook = await db.updateBookThumbnail(
