@@ -1,5 +1,5 @@
 ﻿import { app } from "electron";
-import { join, extname, basename } from "path";
+import { join, extname } from "path";
 import { mkdir, readdir } from "node:fs/promises";
 import { statSync } from "fs";
 import AdmZip from "adm-zip";

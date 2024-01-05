@@ -14,7 +14,6 @@ import {
   removeBook,
   updateBookThumbnail,
   updateBookRating,
-  booksAdded,
 } from "./booksSlice";
 
 function* handleUpdateBook(action: {
