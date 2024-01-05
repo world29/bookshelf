@@ -83,8 +83,13 @@ export default function App() {
   }, [keyword, filterByTag, filterByRating, sortBy, currentPage]);
 
   useEffect(() => {
+    // HACK: ロード直後に呼ばれるがフェッチ前のため無視する。
+    if (pageCount === 0) {
+      return;
+    }
+
     // 1ページあたりのファイル数が増加したとき、現在のページ番号が正しい範囲に収まるよう修正する。
-    // ページ番号を更新するとエフェクトにより結果も更新されるため、そうでない場合だけ明示的に結果取得を行う。
+    // ページ番号を更新すると useEffect でフェッチされるためそちらに任せる。そうでない場合は明示的にフェッチする。
     if (currentPage >= pageCount) {
       setCurrentPage(pageCount - 1);
     } else {
