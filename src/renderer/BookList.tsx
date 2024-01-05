@@ -139,9 +139,15 @@ const BookListItem = (props: BookListItemProps) => {
         <div className="bookText">{book.author}</div>
         <div className="bookText">{modifiedTimeString}</div>
         <StarRating defaultRating={book.rating} onChange={handleChangeRating} />
-        <button onClick={handleClickOpen}>open</button>
-        <button onClick={handleClickEdit}>edit</button>
-        <button onClick={handleClickRemove}>remove</button>
+        <button onClick={handleClickOpen} className="btn btn-primary">
+          open
+        </button>
+        <button onClick={handleClickEdit} className="btn btn-secondary">
+          edit
+        </button>
+        <button onClick={handleClickRemove} className="btn btn-secondary">
+          remove
+        </button>
       </div>
       {isOpenMenu && (
         <ContextMenu

@@ -9,11 +9,7 @@ import { SortOrder, SORT_ORDER } from "../models/sortOrder";
 
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { BookList } from "./BookList";
-import { SearchBox } from "./common/SearchBox";
 import { addBooks, booksFetched } from "./features/books/booksSlice";
-import SelectFilterByRating from "./features/books/SelectFilterByRating";
-import SelectFilterByTag from "./features/books/SelectFilterByTag";
-import SelectSortBy from "./features/books/SelectSortBy";
 import BookEditorDialog from "./features/editor/BookEditorDialog";
 import { openSettingsDialog } from "./features/editor/editorSlice";
 import SettingsDialog from "./features/editor/SettingsDialog";
@@ -21,6 +17,7 @@ import ErrorDialog from "./features/common/ErrorDialog";
 import Pagination from "./Pagination";
 import "./styles/App.css";
 import { openErrorDialog } from "./features/common/errorSlice";
+import { Form } from "./Form";
 
 export default function App() {
   const currentBooks = useAppSelector((state) => state.books);
@@ -136,24 +133,8 @@ export default function App() {
     });
   };
 
-  const handleSearch = (query: string) => {
-    setKeyword(query);
-  };
-
   const handleChangeSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     setItemsPerPage(parseInt(e.target.value));
-  };
-
-  const handleChangeFilter = (filter: FilterByTag) => {
-    setFilterByTag(filter);
-  };
-
-  const handleChangeFilterByRating = (filter: FilterByRating) => {
-    setFilterByRating(filter);
-  };
-
-  const handleChangeSortBy = (newSortBy: SortOrder) => {
-    setSortOrder(newSortBy);
   };
 
   const handlePageChange = (page: number) => {
@@ -163,19 +144,21 @@ export default function App() {
   return (
     <div>
       <div>{bookCount}</div>
-      <button onClick={handleClickAddZip}>Add zip</button>
-      <button onClick={handleClickAddFolder}>Add folder</button>
-      <div className="searchForm">
-        <SearchBox onSearch={handleSearch} />
-        <SelectFilterByTag
-          defaultValue={filterByTag}
-          onChange={handleChangeFilter}
-        />
-        <SelectFilterByRating
-          defaultValue={filterByRating}
-          onChange={handleChangeFilterByRating}
-        />
-      </div>
+      <button onClick={handleClickAddZip} className="btn btn-secondary">
+        Add zip
+      </button>
+      <button onClick={handleClickAddFolder} className="btn btn-secondary">
+        Add folder
+      </button>
+      <Form
+        onChangeString={(value) => setKeyword(value)}
+        onChangeTag={(value) => setFilterByTag(value)}
+        onChangeRating={(value) => setFilterByRating(value)}
+        onChangeSortOrder={(value) => setSortOrder(value)}
+        defaultTag={filterByTag}
+        defaultRating={filterByRating}
+        defaultSortOrder={sortOrder}
+      />
       <div className="viewOptions">
         <div className="label">Items per page:</div>
         <div>
@@ -184,7 +167,6 @@ export default function App() {
             <option value="100">100</option>
           </select>
         </div>
-        <SelectSortBy defaultValue={sortOrder} onChange={handleChangeSortBy} />
       </div>
       <div className="booksWrapper">
         <div>
