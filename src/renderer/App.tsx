@@ -49,7 +49,7 @@ export default function App() {
   const [bookCount, setBookCount] = useState(0);
   // 現在のフィルタ条件にマッチしたファイル数
   const [filterResults, setFilterResults] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(0);
 
   const pageCount = Math.ceil(filterResults / itemsPerPage);
@@ -184,8 +184,7 @@ export default function App() {
       <div className="viewOptions">
         <div className="label">Items per page:</div>
         <div>
-          <select onChange={handleChangeSelect}>
-            <option value="10">10</option>
+          <select onChange={handleChangeSelect} defaultValue={50}>
             <option value="50">50</option>
             <option value="100">100</option>
           </select>
