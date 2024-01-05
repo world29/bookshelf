@@ -1,11 +1,11 @@
 ﻿import { ChangeEvent, useState } from "react";
 
-import { SortBy, SORT_BY } from "../../../models/sort";
+import { SortOrder, SORT_ORDER } from "../../../models/sortOrder";
 import "../../styles/SelectSortBy.css";
 
 type Props = {
-  defaultValue: SortBy;
-  onChange: (sortBy: SortBy) => void;
+  defaultValue: SortOrder;
+  onChange: (sortBy: SortOrder) => void;
 };
 
 function SelectSortBy(props: Props) {
@@ -14,7 +14,7 @@ function SelectSortBy(props: Props) {
   const [currentValue, setCurrentValue] = useState(defaultValue);
 
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const newValue = e.target.value as SortBy;
+    const newValue = e.target.value as SortOrder;
 
     if (currentValue !== newValue) {
       setCurrentValue(newValue);
@@ -27,7 +27,7 @@ function SelectSortBy(props: Props) {
       <div className="label">Sort by:</div>
       <div>
         <select onChange={handleChange} defaultValue={currentValue}>
-          {Object.values(SORT_BY).map((value) => (
+          {Object.values(SORT_ORDER).map((value) => (
             <option key={value} value={value}>
               {value}
             </option>

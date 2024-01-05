@@ -5,7 +5,7 @@ import {
   FILTER_BY_RATING,
   FILTER_BY_TAG,
 } from "../models/filter";
-import { SortBy, SORT_BY } from "../models/sort";
+import { SortOrder, SORT_ORDER } from "../models/sortOrder";
 
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { BookList } from "./BookList";
@@ -39,7 +39,9 @@ export default function App() {
   const [filterByRating, setFilterByRating] = useState<FilterByRating>(
     FILTER_BY_RATING.ALL
   );
-  const [sortBy, setSortBy] = useState<SortBy>(SORT_BY.REGISTERED_DESC);
+  const [sortOrder, setSortOrder] = useState<SortOrder>(
+    SORT_ORDER.REGISTERED_DESC
+  );
 
   // 登録済みのファイル数
   const [bookCount, setBookCount] = useState(0);
@@ -80,7 +82,7 @@ export default function App() {
 
   useEffect(() => {
     fetchBooks();
-  }, [keyword, filterByTag, filterByRating, sortBy, currentPage]);
+  }, [keyword, filterByTag, filterByRating, sortOrder, currentPage]);
 
   useEffect(() => {
     // HACK: ロード直後に呼ばれるがフェッチ前のため無視する。
@@ -103,7 +105,7 @@ export default function App() {
         keyword,
         filterByTag,
         filterByRating,
-        sortBy,
+        sortOrder,
         itemsPerPage,
         currentPage * itemsPerPage
       )
@@ -143,8 +145,8 @@ export default function App() {
     setFilterByRating(filter);
   };
 
-  const handleChangeSortBy = (newSortBy: SortBy) => {
-    setSortBy(newSortBy);
+  const handleChangeSortBy = (newSortBy: SortOrder) => {
+    setSortOrder(newSortBy);
   };
 
   const handlePageChange = (page: number) => {
@@ -176,7 +178,7 @@ export default function App() {
             <option value="100">100</option>
           </select>
         </div>
-        <SelectSortBy defaultValue={sortBy} onChange={handleChangeSortBy} />
+        <SelectSortBy defaultValue={sortOrder} onChange={handleChangeSortBy} />
       </div>
       <div className="booksWrapper">
         <div>

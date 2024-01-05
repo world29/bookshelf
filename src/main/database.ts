@@ -9,7 +9,7 @@ import {
   FILTER_BY_RATING,
   FILTER_BY_TAG,
 } from "../models/filter";
-import { SORT_BY, SortBy } from "../models/sort";
+import { SortOrder, SORT_ORDER } from "../models/sortOrder";
 
 const databasePath: string = join(app.getPath("userData"), "books.db");
 
@@ -92,7 +92,7 @@ function filterAndFetchBooks(
   filterKeyword: string,
   filterTag: FilterByTag,
   filterRating: FilterByRating,
-  sortOrder: SortBy,
+  sortOrder: SortOrder,
   fetchCount: number,
   fetchOffset: number
 ): Promise<FilterAndFetchResult> {
@@ -119,15 +119,13 @@ function filterAndFetchBooks(
       query += " AND (rating == 0)";
     }
 
-    console.log(sortOrder);
-
-    if (sortOrder === SORT_BY.MODIFIED_DESC) {
+    if (sortOrder === SORT_ORDER.MODIFIED_DESC) {
       query += " ORDER BY modifiedTime desc";
-    } else if (sortOrder === SORT_BY.MODIFIED_ASC) {
+    } else if (sortOrder === SORT_ORDER.MODIFIED_ASC) {
       query += " ORDER BY modifiedTime asc";
-    } else if (sortOrder === SORT_BY.REGISTERED_DESC) {
+    } else if (sortOrder === SORT_ORDER.REGISTERED_DESC) {
       query += " ORDER BY registeredTime desc";
-    } else if (sortOrder === SORT_BY.REGISTERED_ASC) {
+    } else if (sortOrder === SORT_ORDER.REGISTERED_ASC) {
       query += " ORDER BY registeredTime asc";
     }
 
