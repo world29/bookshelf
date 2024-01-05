@@ -131,7 +131,9 @@ const BookListItem = (props: BookListItemProps) => {
 
   return (
     <div className="bookWrapper" onContextMenu={handleContextMenu}>
-      <img src={thumbnailPath} alt="thumbnail" />
+      <div className="thumbnail">
+        <img src={thumbnailPath} alt="thumbnail" />
+      </div>
       <div>
         <div className="bookText">{book.title}</div>
         <div className="bookText">{book.author}</div>

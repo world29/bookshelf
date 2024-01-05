@@ -1,16 +1,21 @@
 ﻿.bookGridWrapper {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(256px, 1fr));
+  grid-gap: 1rem;
 }
 
 .bookWrapper {
-  width: 256px;
+  border-radius: 10px;
+  background-color: #edf;
 }
 
-.bookWrapper img {
-  width: 256px;
+.bookWrapper > .thumbnail {
   height: 362px;
+  display: flex;
+}
+
+.thumbnail img {
+  width: 100%;
   object-fit: contain;
 }
 
