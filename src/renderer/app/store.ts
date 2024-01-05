@@ -4,6 +4,7 @@ import logger from "redux-logger";
 
 import booksReducer from "../features/books/booksSlice";
 import editorReducer from "../features/editor/editorSlice";
+import errorReducer from "../features/common/errorSlice";
 import rootSaga from "./rootSaga";
 
 const sagaMiddleware = createSagaMiddleware();
@@ -12,6 +13,7 @@ const store = configureStore({
   reducer: {
     books: booksReducer,
     editor: editorReducer,
+    error: errorReducer,
   },
   middleware: (getDefaultMiddleware) => [
     ...getDefaultMiddleware(),

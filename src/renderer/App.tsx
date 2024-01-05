@@ -22,6 +22,7 @@ import SelectSortBy from "./features/books/SelectSortBy";
 import BookEditorDialog from "./features/editor/BookEditorDialog";
 import { openSettingsDialog } from "./features/editor/editorSlice";
 import SettingsDialog from "./features/editor/SettingsDialog";
+import ErrorDialog from "./features/common/ErrorDialog";
 import Pagination from "./Pagination";
 import "./styles/App.css";
 
@@ -200,6 +201,7 @@ export default function App() {
       </div>
       <BookEditorDialog />
       <SettingsDialog />
+      <ErrorDialog />
     </div>
   );
 }
