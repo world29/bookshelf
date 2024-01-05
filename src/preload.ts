@@ -3,6 +3,7 @@ import { Book } from "./models/book";
 
 import { OpenFileType } from "./models/dialog";
 import { FilterByRating, FilterByTag } from "./models/filter";
+import { SortBy } from "./models/sort";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   doThing: () => ipcRenderer.invoke("do-a-thing"),
@@ -13,6 +14,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
     keyword: string,
     tag: FilterByTag,
     rating: FilterByRating,
+    order: SortBy,
     count: number,
     offset: number
   ) =>
@@ -21,6 +23,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
       keyword,
       tag,
       rating,
+      order,
       count,
       offset
     ),

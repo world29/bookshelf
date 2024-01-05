@@ -12,6 +12,7 @@ export interface IElectronAPI {
     keyword: string,
     tag: FilterByTag,
     rating: FilterByRating,
+    order: SortBy,
     count: number,
     offset: number
   ) => Promise<{

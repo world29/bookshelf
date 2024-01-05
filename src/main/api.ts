@@ -14,6 +14,7 @@ import { BookFileInfo, getBookFileInfo } from "./book";
 import { createThumbnailFromFile } from "./thumbnail";
 import { Book } from "../models/book";
 import { FilterByRating, FilterByTag } from "../models/filter";
+import { SortBy } from "../models/sort";
 
 // レンダラープロセスとの IPC 通信のセットアップ
 // レンダラープロセスへイベントを送信するための API を公開
@@ -54,9 +55,10 @@ class Bridge {
         keyword: string,
         tag: FilterByTag,
         rating: FilterByRating,
+        order: SortBy,
         count: number,
         offset: number
-      ) => db.filterAndFetchBooks(keyword, tag, rating, count, offset)
+      ) => db.filterAndFetchBooks(keyword, tag, rating, order, count, offset)
     );
 
     ipcMain.handle(

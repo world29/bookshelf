@@ -9,6 +9,7 @@ import {
   FILTER_BY_RATING,
   FILTER_BY_TAG,
 } from "../models/filter";
+import { SORT_BY, SortBy } from "../models/sort";
 
 const databasePath: string = join(app.getPath("userData"), "books.db");
 
@@ -91,6 +92,7 @@ function filterAndFetchBooks(
   filterKeyword: string,
   filterTag: FilterByTag,
   filterRating: FilterByRating,
+  sortOrder: SortBy,
   fetchCount: number,
   fetchOffset: number
 ): Promise<FilterAndFetchResult> {
@@ -116,6 +118,20 @@ function filterAndFetchBooks(
     } else if (filterRating === FILTER_BY_RATING.UNRATED) {
       query += " AND (rating == 0)";
     }
+
+    console.log(sortOrder);
+
+    if (sortOrder === SORT_BY.MODIFIED_DESC) {
+      query += " ORDER BY modifiedTime desc";
+    } else if (sortOrder === SORT_BY.MODIFIED_ASC) {
+      query += " ORDER BY modifiedTime asc";
+    } else if (sortOrder === SORT_BY.REGISTERED_DESC) {
+      query += " ORDER BY registeredTime desc";
+    } else if (sortOrder === SORT_BY.REGISTERED_ASC) {
+      query += " ORDER BY registeredTime asc";
+    }
+
+    console.log(query);
 
     db.serialize(() => {
       let filterResultCount = 0;

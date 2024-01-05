@@ -80,7 +80,7 @@ export default function App() {
 
   useEffect(() => {
     fetchBooks();
-  }, [keyword, filterByTag, filterByRating, currentPage]);
+  }, [keyword, filterByTag, filterByRating, sortBy, currentPage]);
 
   useEffect(() => {
     // 1ページあたりのファイル数が増加したとき、現在のページ番号が正しい範囲に収まるよう修正する。
@@ -98,6 +98,7 @@ export default function App() {
         keyword,
         filterByTag,
         filterByRating,
+        sortBy,
         itemsPerPage,
         currentPage * itemsPerPage
       )
