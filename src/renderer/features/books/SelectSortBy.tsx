@@ -26,7 +26,7 @@ function SelectSortBy(props: Props) {
     <div className="sortWrapper">
       <div className="label">Sort by:</div>
       <div>
-        <select onChange={handleChange}>
+        <select onChange={handleChange} defaultValue={currentValue}>
           {Object.values(SORT_BY).map((value) => (
             <option key={value} value={value}>
               {value}

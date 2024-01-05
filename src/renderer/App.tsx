@@ -39,7 +39,7 @@ export default function App() {
   const [filterByRating, setFilterByRating] = useState<FilterByRating>(
     FILTER_BY_RATING.ALL
   );
-  const [sortBy, setSortBy] = useState<SortBy>(SORT_BY.MODIFIED_DESC);
+  const [sortBy, setSortBy] = useState<SortBy>(SORT_BY.REGISTERED_DESC);
 
   // 登録済みのファイル数
   const [bookCount, setBookCount] = useState(0);
