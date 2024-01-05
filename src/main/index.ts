@@ -5,6 +5,7 @@ import db from "./database";
 import { createMenu } from "./menu";
 
 const reactDevTools = join(__dirname, "../externals/ReactDevTools");
+const reduxDevTools = join(__dirname, "../externals/ReduxDevTools");
 
 const createWindow = () => {
   const mainWindow: BrowserWindow = new BrowserWindow({
@@ -23,6 +24,9 @@ const createWindow = () => {
   mainWindow.webContents.openDevTools();
 
   session.defaultSession.loadExtension(reactDevTools, {
+    allowFileAccess: true,
+  });
+  session.defaultSession.loadExtension(reduxDevTools, {
     allowFileAccess: true,
   });
 };
