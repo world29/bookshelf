@@ -261,17 +261,23 @@ function addBooks(bookInfos: BookFileInfo[]): Promise<Book[]> {
 
     db.serialize(() => {
       const stmt = db.prepare(
-        "INSERT OR FAIL INTO books (path, title, modifiedTime, registeredTime) VALUES(?, ?, ?, ?)"
+        "INSERT OR FAIL INTO books (path, title, modifiedTime, registeredTime) VALUES(?, ?, ?, ?)",
+        (err: Error | null) => {
+          if (err) reject(err);
+        }
       );
 
       for (const info of bookInfos) {
-        stmt.run(info.path, info.title, info.modifiedTime, registeredTime);
+        stmt.run(
+          [info.path, info.title, info.modifiedTime, registeredTime],
+          (err: Error | null) => {
+            if (err) reject(err);
+          }
+        );
       }
 
-      stmt.finalize();
-
-      db.each("SELECT * FROM books", (err: Error | null, row: Row) => {
-        console.log(row);
+      stmt.finalize((err: Error | null) => {
+        if (err) reject(err);
       });
 
       db.all(
