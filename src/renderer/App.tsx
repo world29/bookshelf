@@ -37,8 +37,6 @@ export default function App() {
     SORT_ORDER.REGISTERED_DESC
   );
 
-  // 登録済みのファイル数
-  const [bookCount, setBookCount] = useState(0);
   // 現在のフィルタ条件にマッチしたファイル数
   const [filterResults, setFilterResults] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(50);
@@ -77,10 +75,6 @@ export default function App() {
 
     window.electronAPI.handleProgressBookUpdated((_event, _book) => {
       fetchBooks();
-    });
-
-    window.electronAPI.getBookCount().then((count) => {
-      setBookCount(count);
     });
   }, []);
 
@@ -143,7 +137,6 @@ export default function App() {
 
   return (
     <div>
-      <div>{bookCount}</div>
       <button onClick={handleClickAddZip} className="btn btn-secondary">
         Add zip
       </button>
