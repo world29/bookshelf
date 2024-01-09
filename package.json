@@ -4,11 +4,9 @@
   "description": "",
   "main": "dist/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rm -rf dist",
-    "build": "webpack --mode=development",
-    "dev": "electron dist",
-    "start": "run-s build dev",
+    "start": "rimraf dist && run-p dev:webpack dev:electron",
+    "dev:webpack": "cross-env NODE_ENV=\"development\" webpack --progress",
+    "dev:electron": "wait-on ./dist/index.html ./dist/main.js && electronmon ./dist",
     "package:install-deps": "npm --prefix ./dist install ./dist",
     "package:pack": "electron-packager ./dist --platform=win32 --arch=x64 --overwrite --out=out",
     "package": "run-s package:*",
@@ -37,9 +35,11 @@
     "@typescript-eslint/parser": "^5.27.1",
     "babel-loader": "^8.2.5",
     "copy-webpack-plugin": "^11.0.0",
+    "cross-env": "^7.0.3",
     "css-loader": "^6.7.3",
     "electron": "^19.0.3",
     "electron-packager": "^15.5.1",
+    "electronmon": "^2.0.2",
     "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
@@ -48,8 +48,10 @@
     "html-webpack-plugin": "^5.5.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.6.2",
+    "rimraf": "^5.0.5",
     "style-loader": "^3.3.2",
     "typescript": "^4.7.3",
+    "wait-on": "^7.2.0",
     "webpack": "^5.73.0",
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.9.2"
@@ -66,5 +68,10 @@
     "sharp": "^0.32.0",
     "sqlite3": "^5.0.8",
     "uuid": "^9.0.0"
+  },
+  "electronmon": {
+    "patterns": [
+      "dist/**/*"
+    ]
   }
 }

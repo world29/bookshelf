@@ -3,8 +3,9 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ESLintWebpackPlugin = require("eslint-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
+const isDev = process.env.NODE_ENV === "development";
+
 const common = {
-  mode: "development",
   output: {
     path: path.resolve(__dirname, "dist"),
     publicPath: "./",
@@ -48,6 +49,8 @@ const common = {
       },
     ],
   },
+  watch: isDev,
+  devtool: isDev ? "source-map" : undefined,
 };
 
 const main = {
@@ -84,9 +87,6 @@ const renderer = {
       extensions: ["ts", "tsx", "js"],
     }),
   ],
-  devServer: {
-    static: path.resolve(__dirname, "dist"),
-  },
 };
 
 const preload = {
