@@ -1,11 +1,12 @@
-﻿import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useRef, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import Modal from "../../common/Modal";
 import { closeSettingsDialog } from "./editorSlice";
 
 export default function SettingsDialog() {
   const { isOpen } = useAppSelector((state) => state.editor.settingsDialog);
+
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   const dispatch = useAppDispatch();
 
@@ -17,6 +18,14 @@ export default function SettingsDialog() {
       window.electronAPI
         .getSettings()
         .then((settings) => setViewer(settings.viewer));
+    }
+
+    if (dialogRef.current) {
+      if (isOpen) {
+        dialogRef.current.showModal();
+      } else {
+        dialogRef.current.close();
+      }
     }
   }, [isOpen]);
 
@@ -39,20 +48,22 @@ export default function SettingsDialog() {
   };
 
   return (
-    <Modal open={isOpen}>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          defaultValue={viewer}
-          onChange={handleChangeViewer}
-        />
-        <div>
-          <button type="submit">apply</button>
-          <button type="button" onClick={closeModal}>
-            close
-          </button>
-        </div>
-      </form>
-    </Modal>
+    <dialog ref={dialogRef} onClick={closeModal}>
+      <div onClick={(e) => e.stopPropagation()}>
+        <form onSubmit={handleSubmit} method="dialog">
+          <input
+            type="text"
+            defaultValue={viewer}
+            onChange={handleChangeViewer}
+          />
+          <div>
+            <button type="submit">apply</button>
+            <button type="button" onClick={closeModal}>
+              close
+            </button>
+          </div>
+        </form>
+      </div>
+    </dialog>
   );
 }

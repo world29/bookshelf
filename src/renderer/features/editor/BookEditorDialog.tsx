@@ -1,7 +1,6 @@
-﻿import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useRef, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import Modal from "../../common/Modal";
 import { selectBook, updateBook } from "../books/booksSlice";
 import { closeEditDialog } from "./editorSlice";
 
@@ -13,6 +12,18 @@ export default function BookEditorDialog() {
   const book = useAppSelector(selectBook(bookPath));
 
   const dispatch = useAppDispatch();
+
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    if (dialogRef.current) {
+      if (isOpen) {
+        dialogRef.current.showModal();
+      } else {
+        dialogRef.current.close();
+      }
+    }
+  }, [isOpen]);
 
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -47,8 +58,8 @@ export default function BookEditorDialog() {
   }
 
   return (
-    <Modal open={isOpen}>
-      <>
+    <dialog ref={dialogRef} onClick={closeModal}>
+      <div onClick={(e) => e.stopPropagation()}>
         <p>dialog test</p>
         <form onSubmit={handleSubmit}>
           <input
@@ -68,7 +79,7 @@ export default function BookEditorDialog() {
             </button>
           </div>
         </form>
-      </>
-    </Modal>
+      </div>
+    </dialog>
   );
 }
