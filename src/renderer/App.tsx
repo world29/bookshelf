@@ -17,7 +17,7 @@ import ErrorDialog from "./features/common/ErrorDialog";
 import Pagination from "./Pagination";
 import "./styles/App.css";
 import { openErrorDialog } from "./features/common/errorSlice";
-import { Form } from "./Form";
+import { Nav } from "./Nav";
 
 export default function App() {
   const currentBooks = useAppSelector((state) => state.books);
@@ -27,9 +27,7 @@ export default function App() {
   const calledRef = useRef(false);
 
   const [keyword, setKeyword] = useState("");
-  const [filterByTag, setFilterByTag] = useState<FilterByTag>(
-    FILTER_BY_TAG.ALL
-  );
+  const [filterByTag] = useState<FilterByTag>(FILTER_BY_TAG.ALL);
   const [filterByRating, setFilterByRating] = useState<FilterByRating>(
     FILTER_BY_RATING.ALL
   );
@@ -113,20 +111,6 @@ export default function App() {
       });
   };
 
-  const handleClickAddZip = () => {
-    window.electronAPI.openFileDialog("openFile").then((result) => {
-      if (result.canceled) return;
-      dispatch(addBooks({ filePaths: result.filePaths }));
-    });
-  };
-
-  const handleClickAddFolder = () => {
-    window.electronAPI.openFileDialog("openDirectory").then((result) => {
-      if (result.canceled) return;
-      dispatch(addBooks({ filePaths: result.filePaths }));
-    });
-  };
-
   const handleChangeSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     setItemsPerPage(parseInt(e.target.value));
   };
@@ -137,18 +121,10 @@ export default function App() {
 
   return (
     <div>
-      <button onClick={handleClickAddZip} className="btn btn-secondary">
-        Add zip
-      </button>
-      <button onClick={handleClickAddFolder} className="btn btn-secondary">
-        Add folder
-      </button>
-      <Form
+      <Nav
         onChangeString={(value) => setKeyword(value)}
-        onChangeTag={(value) => setFilterByTag(value)}
         onChangeRating={(value) => setFilterByRating(value)}
         onChangeSortOrder={(value) => setSortOrder(value)}
-        defaultTag={filterByTag}
         defaultRating={filterByRating}
         defaultSortOrder={sortOrder}
       />
