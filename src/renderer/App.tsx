@@ -9,7 +9,7 @@ import { SortOrder, SORT_ORDER } from "../models/sortOrder";
 
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { BookList } from "./BookList";
-import { addBooks, booksFetched } from "./features/books/booksSlice";
+import { booksFetched } from "./features/books/booksSlice";
 import BookEditorDialog from "./features/editor/BookEditorDialog";
 import { openSettingsDialog } from "./features/editor/editorSlice";
 import SettingsDialog from "./features/editor/SettingsDialog";
