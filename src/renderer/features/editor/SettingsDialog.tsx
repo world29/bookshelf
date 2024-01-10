@@ -33,9 +33,7 @@ export default function SettingsDialog() {
     setViewer(e.target.value);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const handleApply = () => {
     // メインプロセスに新しい設定値を送り、バリデーションする
     window.electronAPI
       .setSettingsViewer(viewer)
@@ -50,19 +48,31 @@ export default function SettingsDialog() {
   return (
     <dialog ref={dialogRef} onClick={closeModal}>
       <div onClick={(e) => e.stopPropagation()}>
-        <form onSubmit={handleSubmit} method="dialog">
-          <input
-            type="text"
-            defaultValue={viewer}
-            onChange={handleChangeViewer}
-          />
-          <div>
-            <button type="submit">apply</button>
-            <button type="button" onClick={closeModal}>
-              close
-            </button>
+        <div className="form-group row mb-3">
+          <label className="col-form-label col-sm-2">Viewer</label>
+          <div className="col-sm-10">
+            <input
+              type="text"
+              className="form-control"
+              onChange={handleChangeViewer}
+              defaultValue={viewer}
+            />
           </div>
-        </form>
+        </div>
+        <button
+          type="submit"
+          className="btn btn-primary me-2"
+          onClick={handleApply}
+        >
+          Apply
+        </button>
+        <button
+          type="button"
+          className="btn btn-outline-secondary"
+          onClick={closeModal}
+        >
+          Close
+        </button>
       </div>
     </dialog>
   );
