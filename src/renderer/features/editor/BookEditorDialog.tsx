@@ -59,8 +59,7 @@ export default function BookEditorDialog() {
 
   return (
     <dialog ref={dialogRef} onClick={closeModal}>
-      <div onClick={(e) => e.stopPropagation()}>
-        <p>dialog test</p>
+      <div className="dialogInner" onClick={(e) => e.stopPropagation()}>
         <form onSubmit={handleSubmit}>
           <input
             type="text"

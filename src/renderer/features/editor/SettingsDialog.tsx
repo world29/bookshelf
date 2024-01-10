@@ -47,7 +47,7 @@ export default function SettingsDialog() {
 
   return (
     <dialog ref={dialogRef} onClick={closeModal}>
-      <div onClick={(e) => e.stopPropagation()}>
+      <div className="dialogInner" onClick={(e) => e.stopPropagation()}>
         <div className="form-group row mb-3">
           <label className="col-form-label col-sm-2">Viewer</label>
           <div className="col-sm-10">
