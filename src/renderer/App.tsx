@@ -118,6 +118,7 @@ export default function App() {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    scrollToTop();
   };
 
   const showToast = (
@@ -135,6 +136,13 @@ export default function App() {
 
   const closeToast = (id: string) => {
     setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   return (
