@@ -138,7 +138,7 @@ export default function App() {
   };
 
   return (
-    <div>
+    <>
       <Nav
         onChangeString={(value) => setKeyword(value)}
         onChangeRating={(value) => setFilterByRating(value)}
@@ -155,38 +155,41 @@ export default function App() {
           </select>
         </div>
       </div>
-      <div className="booksWrapper">
-        <div>
-          {currentPage * itemsPerPage + 1}-
-          {Math.min((currentPage + 1) * itemsPerPage, filterResults)} of{" "}
-          {filterResults} results
+      <div>
+        {`${currentPage * itemsPerPage + 1}-${Math.min(
+          (currentPage + 1) * itemsPerPage,
+          filterResults
+        )} of ${filterResults} results`}
+      </div>
+      <div>
+        <Pagination
+          page={currentPage}
+          pageCount={pageCount}
+          onPageChange={handlePageChange}
+        />
+        <div className="booksWrapper">
+          <BookList books={currentBooks} />
         </div>
         <Pagination
           page={currentPage}
           pageCount={pageCount}
           onPageChange={handlePageChange}
         />
-        <BookList books={currentBooks} />
-        <Pagination
-          page={currentPage}
-          pageCount={pageCount}
-          onPageChange={handlePageChange}
-        />
-      </div>
-      <div className="toasts-container">
-        {toasts.map((toast) => (
-          <Toast
-            key={toast.id}
-            id={toast.id}
-            message={toast.message}
-            type={toast.type}
-            onClose={closeToast}
-          />
-        ))}
-      </div>
-      <BookEditorDialog />
-      <SettingsDialog />
-      <ErrorDialog />
-    </div>
+        <div className="toasts-container">
+          {toasts.map((toast) => (
+            <Toast
+              key={toast.id}
+              id={toast.id}
+              message={toast.message}
+              type={toast.type}
+              onClose={closeToast}
+            />
+          ))}
+        </div>
+        <BookEditorDialog />
+        <SettingsDialog />
+        <ErrorDialog />
+      </div>{" "}
+    </>
   );
 }

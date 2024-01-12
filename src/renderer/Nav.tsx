@@ -68,13 +68,13 @@ export const Nav = (props: Props) => {
       <div className="container-fluid">
         <form className="d-flex align-items-start" role="search">
           <input
-            className="form-control"
+            className="form-control me-2"
             type="search"
             placeholder="Search"
             onChange={handleChangeString}
           ></input>
           <select
-            className="form-select"
+            className="form-select me-2"
             defaultValue={rating}
             onChange={handleChangeRating}
           >
@@ -85,7 +85,7 @@ export const Nav = (props: Props) => {
             ))}
           </select>
           <select
-            className="form-select"
+            className="form-select me-2"
             defaultValue={sortOrder}
             onChange={handleChangeSortOrder}
           >
@@ -98,7 +98,7 @@ export const Nav = (props: Props) => {
         </form>
         <form className="d-flex align-items-end">
           <button
-            className="btn btn-outline-success"
+            className="btn btn-outline-success me-2"
             type="button"
             onClick={handleClickAddZip}
           >
