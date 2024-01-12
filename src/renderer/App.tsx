@@ -1,4 +1,6 @@
 ﻿import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+
 import {
   FilterByRating,
   FilterByTag,
@@ -16,8 +18,8 @@ import SettingsDialog from "./features/editor/SettingsDialog";
 import ErrorDialog from "./features/common/ErrorDialog";
 import Pagination from "./Pagination";
 import "./styles/App.css";
-import { openErrorDialog } from "./features/common/errorSlice";
 import { Nav } from "./Nav";
+import { Toast } from "./features/common/Toast";
 
 export default function App() {
   const currentBooks = useAppSelector((state) => state.books);
@@ -34,6 +36,9 @@ export default function App() {
   const [sortOrder, setSortOrder] = useState<SortOrder>(
     SORT_ORDER.REGISTERED_DESC
   );
+  const [toasts, setToasts] = useState<
+    { id: string; message: string; type: "error" | "warning" | "default" }[]
+  >([]);
 
   // 現在のフィルタ条件にマッチしたファイル数
   const [filterResults, setFilterResults] = useState(0);
@@ -61,14 +66,10 @@ export default function App() {
       }
     });
 
-    window.electronAPI.handleProgressBooksAddFailed((_event, fileInfos) => {
-      if (fileInfos) {
-        // 登録失敗したファイルのパスを連結する
-        // TODO: 失敗した複数のファイルをリスト形式で表示する専用ダイアログを用意する
-        console.dir(fileInfos);
-        const errorMessage = fileInfos.map((info) => info.path).join();
-        dispatch(openErrorDialog(errorMessage));
-      }
+    window.electronAPI.handleProgressBookAddFailed((_event, fileInfo) => {
+      // 登録失敗したファイルをエラーとして表示する
+      const message = `Add failed: ${fileInfo.path}`;
+      showToast(message, "error");
     });
 
     window.electronAPI.handleProgressBookUpdated((_event, _book) => {
@@ -119,6 +120,23 @@ export default function App() {
     setCurrentPage(page);
   };
 
+  const showToast = (
+    message: string,
+    type: "error" | "warning" | "default"
+  ) => {
+    const newToast = {
+      id: uuidv4(),
+      message,
+      type,
+    };
+
+    setToasts((prevToasts) => [newToast, ...prevToasts]);
+  };
+
+  const closeToast = (id: string) => {
+    setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
+  };
+
   return (
     <div>
       <Nav
@@ -154,6 +172,17 @@ export default function App() {
           pageCount={pageCount}
           onPageChange={handlePageChange}
         />
+      </div>
+      <div className="toasts-container">
+        {toasts.map((toast) => (
+          <Toast
+            key={toast.id}
+            id={toast.id}
+            message={toast.message}
+            type={toast.type}
+            onClose={closeToast}
+          />
+        ))}
       </div>
       <BookEditorDialog />
       <SettingsDialog />

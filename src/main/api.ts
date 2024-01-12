@@ -29,8 +29,8 @@ class Bridge {
     this.window?.webContents.send("progress:booksAdded", books);
   }
 
-  emitBooksAddFailed(fileInfos: BookFileInfo[]) {
-    this.window?.webContents.send("progress:booksAddFailed", fileInfos);
+  emitBookAddFailed(fileInfo: BookFileInfo) {
+    this.window?.webContents.send("progress:bookAddFailed", fileInfo);
   }
 
   emitBookUpdated(book: Book) {
@@ -112,8 +112,8 @@ class Bridge {
         if (succeeded.length > 0) {
           this.emitBooksAdded(succeeded);
         }
-        if (failed.length > 0) {
-          this.emitBooksAddFailed(failed);
+        for (const fileInfo of failed) {
+          this.emitBookAddFailed(fileInfo);
         }
 
         // サムネイルを一つずつ作成する

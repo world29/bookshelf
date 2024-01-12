@@ -1,0 +1,22 @@
+﻿
+.toasts-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+
+.toast {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  margin-bottom: 10px; /* 各トーストのマージンを追加 */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.toast.show {
+  opacity: 1;
+  visibility: visible;
+}

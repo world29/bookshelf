@@ -40,8 +40,8 @@ export interface IElectronAPI {
   handleProgressBooksAdded: (
     callback: (_event: IpcRendererEvent, books: Book[]) => void
   ) => void;
-  handleProgressBooksAddFailed: (
-    callback: (_event: IpcRendererEvent, fileInfos: BookFileInfo[]) => void
+  handleProgressBookAddFailed: (
+    callback: (_event: IpcRendererEvent, fileInfo: BookFileInfo) => void
   ) => void;
   handleProgressBookUpdated: (
     callback: (_event: IpcRendererEvent, book: Book) => void

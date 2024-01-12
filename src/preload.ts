@@ -54,9 +54,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   handleProgressBooksAdded: (
     callback: (_event: IpcRendererEvent, books: Book[]) => void
   ) => ipcRenderer.on("progress:booksAdded", callback),
-  handleProgressBooksAddFailed: (
-    callback: (_event: IpcRendererEvent, fileInfos: BookFileInfo[]) => void
-  ) => ipcRenderer.on("progress:booksAddFailed", callback),
+  handleProgressBookAddFailed: (
+    callback: (_event: IpcRendererEvent, fileInfo: BookFileInfo) => void
+  ) => ipcRenderer.on("progress:bookAddFailed", callback),
   handleProgressBookUpdated: (
     callback: (_event: IpcRendererEvent, book: Book) => void
   ) => ipcRenderer.on("progress:bookUpdated", callback),
