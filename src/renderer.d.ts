@@ -46,6 +46,19 @@ export interface IElectronAPI {
   handleProgressBookUpdated: (
     callback: (_event: IpcRendererEvent, book: Book) => void
   ) => void;
+  handleProgressThumbnailGenerationStarted: (
+    callback: (_event: IpcRendererEvent, fileCount: number) => void
+  ) => void;
+  handleProgressThumbnailGenerationProgress: (
+    callback: (
+      _event: IpcRendererEvent,
+      generatedCount: number,
+      fileCount: number
+    ) => void
+  ) => void;
+  handleProgressThumbnailGenerationCompleted: (
+    callback: (_event: IpcRendererEvent) => void
+  ) => void;
 }
 
 declare global {

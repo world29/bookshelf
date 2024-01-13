@@ -60,4 +60,17 @@ contextBridge.exposeInMainWorld("electronAPI", {
   handleProgressBookUpdated: (
     callback: (_event: IpcRendererEvent, book: Book) => void
   ) => ipcRenderer.on("progress:bookUpdated", callback),
+  handleProgressThumbnailGenerationStarted: (
+    callback: (_event: IpcRendererEvent, fileCount: number) => void
+  ) => ipcRenderer.on("progress:thumbnailGenerationStarted", callback),
+  handleProgressThumbnailGenerationProgress: (
+    callback: (
+      _event: IpcRendererEvent,
+      generatedCount: number,
+      fileCount: number
+    ) => void
+  ) => ipcRenderer.on("progress:thumbnailGenerationProgress", callback),
+  handleProgressThumbnailGenerationCompleted: (
+    callback: (_event: IpcRendererEvent) => void
+  ) => ipcRenderer.on("progress:thumbnailGenerationCompleted", callback),
 });

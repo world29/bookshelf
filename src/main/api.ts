@@ -37,6 +37,25 @@ class Bridge {
     this.window?.webContents.send("progress:bookUpdated", book);
   }
 
+  emitThumbnailGenerationStarted(fileCount: number) {
+    this.window?.webContents.send(
+      "progress:thumbnailGenerationStarted",
+      fileCount
+    );
+  }
+
+  emitThumbnailGenerationProgress(generatedCount: number, fileCount: number) {
+    this.window?.webContents.send(
+      "progress:thumbnailGenerationProgress",
+      generatedCount,
+      fileCount
+    );
+  }
+
+  emitThumbnailGenerationCompleted() {
+    this.window?.webContents.send("progress:thumbnailGenerationCompleted");
+  }
+
   setupAPIs(mainWindow: BrowserWindow) {
     this.window = mainWindow;
 
@@ -117,18 +136,31 @@ class Bridge {
         }
 
         // サムネイルを一つずつ作成する
-        for (const book of succeeded) {
-          try {
-            const thumbnailPath = await createThumbnailFromFile(book.path);
-            const newBook = await db.updateBookThumbnail(
-              book.path,
-              thumbnailPath
-            );
-            // サムネイル更新イベント
-            this.emitBookUpdated(newBook);
-          } catch (err) {
-            console.error(err);
+        if (succeeded.length > 0) {
+          this.emitThumbnailGenerationStarted(succeeded.length);
+
+          let generatedCount = 0;
+          for (const book of succeeded) {
+            try {
+              const thumbnailPath = await createThumbnailFromFile(book.path);
+              const newBook = await db.updateBookThumbnail(
+                book.path,
+                thumbnailPath
+              );
+              // サムネイル更新イベント
+              this.emitBookUpdated(newBook);
+
+              generatedCount += 1;
+              this.emitThumbnailGenerationProgress(
+                generatedCount,
+                succeeded.length
+              );
+            } catch (err) {
+              console.error(err);
+            }
           }
+
+          this.emitThumbnailGenerationCompleted();
         }
       }
     );

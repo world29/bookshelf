@@ -20,6 +20,7 @@ import Pagination from "./Pagination";
 import "./styles/App.css";
 import { Nav } from "./Nav";
 import { Toast } from "./features/common/Toast";
+import Progress from "./features/common/Progress";
 
 export default function App() {
   const currentBooks = useAppSelector((state) => state.books);
@@ -39,6 +40,8 @@ export default function App() {
   const [toasts, setToasts] = useState<
     { id: string; message: string; type: "error" | "warning" | "default" }[]
   >([]);
+  const [progressActive, setProgressActive] = useState(false);
+  const [progressValue, setProgressValue] = useState(0);
 
   // 現在のフィルタ条件にマッチしたファイル数
   const [filterResults, setFilterResults] = useState(0);
@@ -74,6 +77,20 @@ export default function App() {
 
     window.electronAPI.handleProgressBookUpdated((_event, _book) => {
       fetchBooks();
+    });
+
+    window.electronAPI.handleProgressThumbnailGenerationStarted(
+      (_event, fileCount) => {
+        showProgress(0);
+      }
+    );
+    window.electronAPI.handleProgressThumbnailGenerationProgress(
+      (_event, generatedCount, fileCount) => {
+        showProgress(generatedCount / fileCount);
+      }
+    );
+    window.electronAPI.handleProgressThumbnailGenerationCompleted((_event) => {
+      hideProgress();
     });
   }, []);
 
@@ -138,6 +155,17 @@ export default function App() {
     setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
   };
 
+  const showProgress = (value: number) => {
+    if (!progressActive) {
+      setProgressActive(true);
+    }
+    setProgressValue(value);
+  };
+
+  const hideProgress = () => {
+    setProgressActive(false);
+  };
+
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -197,6 +225,7 @@ export default function App() {
         <BookEditorDialog />
         <SettingsDialog />
         <ErrorDialog />
+        <Progress active={progressActive} value={progressValue} />
       </div>{" "}
     </>
   );

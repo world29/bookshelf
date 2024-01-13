@@ -1,0 +1,26 @@
+﻿.my-progress-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: none; /* 最初は非表示に設定 */
+}
+
+/* 進捗があるときだけ表示 */
+.my-progress-container.my-progress-active {
+  display: block;
+}
+
+.my-progress-bar {
+  width: 100%;
+  height: 2px;
+  background-color: #eee;
+  overflow: hidden;
+}
+
+.my-progress-bar-fill {
+  height: 100%;
+  width: 0; /* コード側で上書き指定する */
+  background-color: #4caf50; /* 進捗バーの色 */
+  transition: width 0.3s ease-in-out;
+}
