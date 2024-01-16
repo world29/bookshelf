@@ -198,19 +198,23 @@ export default function App() {
         )} of ${filterResults} results`}
       </div>
       <div>
-        <Pagination
-          page={currentPage}
-          pageCount={pageCount}
-          onPageChange={handlePageChange}
-        />
+        <div className="pagination-wrapper">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={pageCount}
+            onPageChange={handlePageChange}
+          />
+        </div>
         <div className="booksWrapper">
           <BookList books={currentBooks} />
         </div>
-        <Pagination
-          page={currentPage}
-          pageCount={pageCount}
-          onPageChange={handlePageChange}
-        />
+        <div className="pagination-wrapper">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={pageCount}
+            onPageChange={handlePageChange}
+          />
+        </div>
         <div className="toasts-container">
           {toasts.map((toast) => (
             <Toast

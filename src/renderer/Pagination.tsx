@@ -1,44 +1,88 @@
-﻿import ReactPaginate from "react-paginate";
-
-import "./styles/Pagination.css";
+﻿import "./styles/Pagination.css";
 
 type Props = {
-  page: number;
-  pageCount: number;
+  currentPage: number;
+  totalPages: number;
   onPageChange: (page: number) => void;
 };
 
-const Pagination = (props: Props) => {
-  const { page, pageCount, onPageChange } = props;
+const maxVisiblePages = 3;
 
-  const handlePageChange = (e: { selected: number }) => {
-    onPageChange(e.selected);
+function Pagination(props: Props) {
+  const { currentPage, totalPages, onPageChange } = props;
+
+  const handlePageClick = (pageNumber: number) => {
+    onPageChange(pageNumber);
   };
 
+  const renderPages = () => {
+    const pages = [];
+    const halfVisiblePages = Math.floor(maxVisiblePages / 2);
+
+    let startPage = Math.max(currentPage - halfVisiblePages, 0);
+    const endPage = Math.min(startPage + maxVisiblePages - 1, totalPages - 1);
+
+    if (endPage - startPage < maxVisiblePages - 1) {
+      startPage = Math.max(endPage - maxVisiblePages + 1, 0);
+    }
+
+    // 先頭ページへのリンク
+    if (startPage > 0) {
+      pages.push(renderPage(0));
+      if (startPage > 1) {
+        pages.push(renderDots("dots-left"));
+      }
+    }
+
+    // 現在ページ周辺のリンク
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(renderPage(i));
+    }
+
+    // 末尾ページへのリンク
+    if (endPage < totalPages - 1) {
+      if (endPage < totalPages - 2) {
+        pages.push(renderDots("dots-right"));
+      }
+      pages.push(renderPage(totalPages - 1));
+    }
+
+    return pages;
+  };
+
+  const renderPage = (pageNumber: number) => (
+    <span
+      key={pageNumber}
+      className={`page ${pageNumber === currentPage ? "active" : ""}`}
+      onClick={() => handlePageClick(pageNumber)}
+    >
+      {pageNumber + 1}
+    </span>
+  );
+
+  const renderDots = (key: string) => (
+    <span key={key} className="dots">
+      ...
+    </span>
+  );
+
   return (
-    <div className="paginateWrapper">
-      <ReactPaginate
-        nextLabel="next >"
-        onPageChange={handlePageChange}
-        pageRangeDisplayed={3}
-        marginPagesDisplayed={2}
-        forcePage={page}
-        pageCount={pageCount}
-        previousLabel="< previous"
-        pageClassName="page-item"
-        pageLinkClassName="page-link"
-        previousClassName="page-item"
-        previousLinkClassName="page-link"
-        nextClassName="page-item"
-        nextLinkClassName="page-link"
-        breakLabel="..."
-        breakClassName="page-item"
-        breakLinkClassName="page-link"
-        containerClassName="pagination"
-        activeClassName="active"
-      />
+    <div className="pagination">
+      <span
+        className={`prev ${currentPage === 0 ? "disabled" : ""}`}
+        onClick={() => handlePageClick(currentPage - 1)}
+      >
+        &#10094;
+      </span>
+      {renderPages()}
+      <span
+        className={`next ${currentPage === totalPages - 1 ? "disabled" : ""}`}
+        onClick={() => handlePageClick(currentPage + 1)}
+      >
+        &#10095;
+      </span>
     </div>
   );
-};
+}
 
 export default Pagination;

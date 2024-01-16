@@ -20,6 +20,10 @@
   gap: 8px;
 }
 
+.pagination-wrapper {
+  margin: 1rem auto;
+}
+
 dialog {
   padding: 0;
   border: 0;
