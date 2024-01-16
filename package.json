@@ -61,7 +61,6 @@
     "adm-zip": "^0.5.10",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
-    "react-paginate": "^8.1.4",
     "react-redux": "^8.0.5",
     "redux-logger": "^3.0.6",
     "redux-saga": "^1.2.3",
