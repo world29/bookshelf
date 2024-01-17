@@ -22,6 +22,8 @@ import { Nav } from "./Nav";
 import { Toast } from "./features/common/Toast";
 import Progress from "./features/common/Progress";
 
+const itemsPerPage = 60;
+
 export default function App() {
   const currentBooks = useAppSelector((state) => state.books);
 
@@ -45,7 +47,6 @@ export default function App() {
 
   // 現在のフィルタ条件にマッチしたファイル数
   const [filterResults, setFilterResults] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(0);
 
   const pageCount = Math.ceil(filterResults / itemsPerPage);
@@ -129,10 +130,6 @@ export default function App() {
       });
   };
 
-  const handleChangeSelect = (e: ChangeEvent<HTMLSelectElement>) => {
-    setItemsPerPage(parseInt(e.target.value));
-  };
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     scrollToTop();
@@ -182,55 +179,48 @@ export default function App() {
         defaultRating={filterByRating}
         defaultSortOrder={sortOrder}
       />
-      <div className="viewOptions">
-        <div className="label">Items per page:</div>
+      <div className="content">
         <div>
-          <select onChange={handleChangeSelect} defaultValue={50}>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
+          {`${currentPage * itemsPerPage + 1}-${Math.min(
+            (currentPage + 1) * itemsPerPage,
+            filterResults
+          )} of ${filterResults} results`}
         </div>
-      </div>
-      <div>
-        {`${currentPage * itemsPerPage + 1}-${Math.min(
-          (currentPage + 1) * itemsPerPage,
-          filterResults
-        )} of ${filterResults} results`}
-      </div>
-      <div>
-        <div className="pagination-wrapper">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={pageCount}
-            onPageChange={handlePageChange}
-          />
-        </div>
-        <div className="booksWrapper">
-          <BookList books={currentBooks} />
-        </div>
-        <div className="pagination-wrapper">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={pageCount}
-            onPageChange={handlePageChange}
-          />
-        </div>
-        <div className="toasts-container">
-          {toasts.map((toast) => (
-            <Toast
-              key={toast.id}
-              id={toast.id}
-              message={toast.message}
-              type={toast.type}
-              onClose={closeToast}
+        <div>
+          <div className="pagination-wrapper">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={pageCount}
+              onPageChange={handlePageChange}
             />
-          ))}
-        </div>
-        <BookEditorDialog />
-        <SettingsDialog />
-        <ErrorDialog />
-        <Progress active={progressActive} value={progressValue} />
-      </div>{" "}
+          </div>
+          <div>
+            <BookList books={currentBooks} />
+          </div>
+          <div className="pagination-wrapper">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={pageCount}
+              onPageChange={handlePageChange}
+            />
+          </div>
+          <div className="toasts-container">
+            {toasts.map((toast) => (
+              <Toast
+                key={toast.id}
+                id={toast.id}
+                message={toast.message}
+                type={toast.type}
+                onClose={closeToast}
+              />
+            ))}
+          </div>
+          <BookEditorDialog />
+          <SettingsDialog />
+          <ErrorDialog />
+          <Progress active={progressActive} value={progressValue} />
+        </div>{" "}
+      </div>
     </>
   );
 }
