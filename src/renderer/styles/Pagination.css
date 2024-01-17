@@ -6,7 +6,7 @@
 }
 
 .page {
-  padding: 8px 16px;
+  padding: 4px 12px;
   margin: 0 4px;
   border: 1px solid #ccc;
   cursor: pointer;
@@ -19,14 +19,14 @@
 
 .prev,
 .next {
-  padding: 8px 16px;
+  padding: 4px 12px;
   margin: 0 4px;
   border: 1px solid #ccc;
   cursor: pointer;
 }
 
 .dots {
-  padding: 8px 16px;
+  padding: 4px 12px;
   margin: 0 4px;
 }
 

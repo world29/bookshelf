@@ -1,15 +1,11 @@
 ﻿#app {
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0;
   text-align: center;
   width: 100%;
 }
-
-.searchForm {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+.content {
+  padding: 0 1rem;
 }
 
 .viewOptions {
@@ -20,8 +16,17 @@
   gap: 8px;
 }
 
+.pagination-root {
+  display: flex;
+  align-items: center;
+}
+
 .pagination-wrapper {
   margin: 1rem auto;
+}
+
+.pagination-label {
+  margin: auto;
 }
 
 dialog {

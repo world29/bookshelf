@@ -170,6 +170,24 @@ export default function App() {
     });
   };
 
+  const renderPagination = () => (
+    <div className="pagination-root">
+      <div className="pagination-wrapper">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={pageCount}
+          onPageChange={handlePageChange}
+        />
+      </div>
+      <div className="pagination-label">
+        {`${currentPage * itemsPerPage + 1}-${Math.min(
+          (currentPage + 1) * itemsPerPage,
+          filterResults
+        )} of ${filterResults}`}
+      </div>
+    </div>
+  );
+
   return (
     <>
       <Nav
@@ -180,46 +198,26 @@ export default function App() {
         defaultSortOrder={sortOrder}
       />
       <div className="content">
+        {renderPagination()}
         <div>
-          {`${currentPage * itemsPerPage + 1}-${Math.min(
-            (currentPage + 1) * itemsPerPage,
-            filterResults
-          )} of ${filterResults} results`}
+          <BookList books={currentBooks} />
         </div>
-        <div>
-          <div className="pagination-wrapper">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={pageCount}
-              onPageChange={handlePageChange}
+        {renderPagination()}
+        <div className="toasts-container">
+          {toasts.map((toast) => (
+            <Toast
+              key={toast.id}
+              id={toast.id}
+              message={toast.message}
+              type={toast.type}
+              onClose={closeToast}
             />
-          </div>
-          <div>
-            <BookList books={currentBooks} />
-          </div>
-          <div className="pagination-wrapper">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={pageCount}
-              onPageChange={handlePageChange}
-            />
-          </div>
-          <div className="toasts-container">
-            {toasts.map((toast) => (
-              <Toast
-                key={toast.id}
-                id={toast.id}
-                message={toast.message}
-                type={toast.type}
-                onClose={closeToast}
-              />
-            ))}
-          </div>
-          <BookEditorDialog />
-          <SettingsDialog />
-          <ErrorDialog />
-          <Progress active={progressActive} value={progressValue} />
-        </div>{" "}
+          ))}
+        </div>
+        <BookEditorDialog />
+        <SettingsDialog />
+        <ErrorDialog />
+        <Progress active={progressActive} value={progressValue} />
       </div>
     </>
   );
