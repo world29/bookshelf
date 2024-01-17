@@ -74,28 +74,22 @@ export const Nav = (props: Props) => {
           placeholder="Search..."
           onChange={handleChangeString}
         />
-        <select
-          className=""
-          defaultValue={rating}
-          onChange={handleChangeRating}
-        >
-          {Object.values(FILTER_BY_RATING).map((value) => (
-            <option key={value} value={value}>
-              {value}
-            </option>
-          ))}
-        </select>
-        <select
-          className=""
-          defaultValue={sortOrder}
-          onChange={handleChangeSortOrder}
-        >
-          {Object.values(SORT_ORDER).map((value) => (
-            <option key={value} value={value}>
-              {value}
-            </option>
-          ))}
-        </select>
+        <div className="select-wrapper">
+          <select defaultValue={rating} onChange={handleChangeRating}>
+            {Object.values(FILTER_BY_RATING).map((value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            ))}
+          </select>
+          <select defaultValue={sortOrder} onChange={handleChangeSortOrder}>
+            {Object.values(SORT_ORDER).map((value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
       <div>
         <button className="button" type="button" onClick={handleClickAddZip}>
