@@ -5,6 +5,8 @@ import { SORT_ORDER, SortOrder } from "../models/sortOrder";
 import { useAppDispatch } from "./app/hooks";
 import { addBooks } from "./features/books/booksSlice";
 
+import "./styles/Nav.css";
+
 type Props = {
   onChangeString: (queryString: string) => void;
   onChangeRating: (queryRating: FilterByRating) => void;
@@ -64,55 +66,45 @@ export const Nav = (props: Props) => {
   };
 
   return (
-    <nav className="navbar bg-body-tertiary">
-      <div className="container-fluid">
-        <form className="d-flex align-items-start" role="search">
-          <input
-            className="form-control me-2"
-            type="search"
-            placeholder="Search"
-            onChange={handleChangeString}
-          ></input>
-          <select
-            className="form-select me-2"
-            defaultValue={rating}
-            onChange={handleChangeRating}
-          >
-            {Object.values(FILTER_BY_RATING).map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </select>
-          <select
-            className="form-select me-2"
-            defaultValue={sortOrder}
-            onChange={handleChangeSortOrder}
-          >
-            {Object.values(SORT_ORDER).map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </select>
-        </form>
-        <form className="d-flex align-items-end">
-          <button
-            className="btn btn-outline-success me-2"
-            type="button"
-            onClick={handleClickAddZip}
-          >
-            Addzip
-          </button>
-          <button
-            className="btn btn-outline-success"
-            type="button"
-            onClick={handleClickAddFolder}
-          >
-            Addfolder
-          </button>
-        </form>
+    <div className="navbar">
+      <div className="search-form">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Search..."
+          onChange={handleChangeString}
+        />
+        <select
+          className=""
+          defaultValue={rating}
+          onChange={handleChangeRating}
+        >
+          {Object.values(FILTER_BY_RATING).map((value) => (
+            <option key={value} value={value}>
+              {value}
+            </option>
+          ))}
+        </select>
+        <select
+          className=""
+          defaultValue={sortOrder}
+          onChange={handleChangeSortOrder}
+        >
+          {Object.values(SORT_ORDER).map((value) => (
+            <option key={value} value={value}>
+              {value}
+            </option>
+          ))}
+        </select>
       </div>
-    </nav>
+      <div>
+        <button className="button" type="button" onClick={handleClickAddZip}>
+          Addzip
+        </button>
+        <button className="button" type="button" onClick={handleClickAddFolder}>
+          Addfolder
+        </button>
+      </div>
+    </div>
   );
 };
