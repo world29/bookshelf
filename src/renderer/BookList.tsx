@@ -2,7 +2,7 @@
 
 import { Book } from "../models/book";
 import { useAppDispatch } from "./app/hooks";
-import ClickAwayListener from "./common/ClickAwayListener";
+import ContextMenu from "./components/ContextMenu";
 import StarRating from "./common/StarRating";
 import {
   removeBook,
@@ -20,82 +20,16 @@ type BookListProps = {
   books: Book[];
 };
 
-type ContextMenuProps = {
-  top: number;
-  left: number;
-  onClose: () => void;
-  book: Book;
-};
-
-const ContextMenu = (props: ContextMenuProps) => {
-  const { top, left, onClose, book } = props;
-
-  const dispatch = useAppDispatch();
-
-  const handleClickShowInFolder = () => {
-    window.electronAPI.showItemInFolder(book.path);
-
-    onClose();
-  };
-
-  const handleClickCreateThumbnail = () => {
-    dispatch(updateBookThumbnail({ path: book.path }));
-
-    onClose();
-  };
-
-  const handleClickMoveToTrash = () => {
-    window.electronAPI
-      .moveToTrash(book.path)
-      .then(() => dispatch(removeBook({ path: book.path })))
-      .then(() => onClose());
-  };
-
-  const styles = {
-    position: "absolute",
-    top: `${top}px`,
-    left: `${left}px`,
-    zIndex: 999,
-  } as React.CSSProperties;
-
-  return (
-    <ClickAwayListener onClick={onClose}>
-      <div style={styles}>
-        <div className="list-group">
-          <button
-            className="list-group-item list-group-item-action"
-            onClick={handleClickShowInFolder}
-          >
-            Reveal in File Explorer
-          </button>
-          <button className="list-group-item list-group-item-action disabled">
-            Copy Path
-          </button>
-          <button
-            className="list-group-item list-group-item-action"
-            onClick={handleClickCreateThumbnail}
-          >
-            Create Thumbnail
-          </button>
-          <button
-            className="list-group-item list-group-item-action"
-            onClick={handleClickMoveToTrash}
-          >
-            Move to Trash
-          </button>
-        </div>
-      </div>
-    </ClickAwayListener>
-  );
-};
-
 const BookListItem = (props: BookListItemProps) => {
   const { book } = props;
 
   const dispatch = useAppDispatch();
 
-  const [isOpenMenu, setIsOpenMenu] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [contextMenuState, setContextMenuState] = useState<{
+    isOpen: boolean;
+    top: number;
+    left: number;
+  }>({ isOpen: false, top: 0, left: 0 });
 
   const handleClickEdit = () => {
     dispatch(openEditDialog(book.path));
@@ -112,14 +46,57 @@ const BookListItem = (props: BookListItemProps) => {
   const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
 
-    if (!isOpenMenu) {
-      setIsOpenMenu(true);
-      setPosition({ x: e.pageX, y: e.pageY });
+    if (!contextMenuState.isOpen) {
+      openContextMenu(e.clientY, e.clientX);
     }
   };
 
   const handleChangeRating = (newRating: number) => {
     dispatch(updateBookRating({ path: book.path, rating: newRating }));
+  };
+
+  const handleClickContextMenuShowInFolder = (book: Book) => {
+    window.electronAPI.showItemInFolder(book.path);
+
+    closeContextMenu();
+  };
+
+  const handleClickContextMenuCreateThumbnail = (book: Book) => {
+    dispatch(updateBookThumbnail({ path: book.path }));
+
+    closeContextMenu();
+  };
+
+  const handleClickContextMenuMoveToTrash = (book: Book) => {
+    window.electronAPI
+      .moveToTrash(book.path)
+      .then(() => dispatch(removeBook({ path: book.path })))
+      .then(() => closeContextMenu());
+  };
+
+  const openContextMenu = (top: number, left: number) => {
+    setContextMenuState({ isOpen: true, top, left });
+  };
+
+  const closeContextMenu = () => {
+    setContextMenuState({ isOpen: false, top: 0, left: 0 });
+  };
+
+  const createMenuItems = (book: Book) => {
+    return [
+      {
+        label: "Reveal in File Explorer",
+        onClick: () => handleClickContextMenuShowInFolder(book),
+      },
+      {
+        label: "Create Thumbnail",
+        onClick: () => handleClickContextMenuCreateThumbnail(book),
+      },
+      {
+        label: "Move to Trash",
+        onClick: () => handleClickContextMenuMoveToTrash(book),
+      },
+    ];
   };
 
   const thumbnailPath =
@@ -149,12 +126,12 @@ const BookListItem = (props: BookListItemProps) => {
           remove
         </button>
       </div>
-      {isOpenMenu && (
+      {contextMenuState.isOpen && (
         <ContextMenu
-          top={position.y}
-          left={position.x}
-          onClose={() => setIsOpenMenu(false)}
-          book={book}
+          top={contextMenuState.top}
+          left={contextMenuState.left}
+          onClose={() => closeContextMenu()}
+          menuItems={createMenuItems(book)}
         />
       )}
     </div>
