@@ -1,5 +1,4 @@
-﻿import { useEffect } from "react";
-
+﻿import ClickAwayListener from "../common/ClickAwayListener";
 import "./../styles/ContextMenu.css";
 
 type MenuItemProps = {
@@ -21,22 +20,16 @@ const ContextMenu = (props: Props) => {
     onClose();
   };
 
-  useEffect(() => {
-    document.addEventListener("click", handleClickAway);
-
-    return () => {
-      document.removeEventListener("click", handleClickAway);
-    };
-  }, []);
-
   return (
-    <div className="context-menu" style={{ top: top, left: left }}>
-      {menuItems.map((item, key) => (
-        <div key={key} onClick={() => item.onClick()}>
-          {item.label}
-        </div>
-      ))}
-    </div>
+    <ClickAwayListener onClick={handleClickAway}>
+      <div className="context-menu" style={{ top: top, left: left }}>
+        {menuItems.map((item, key) => (
+          <div key={key} onClick={() => item.onClick()}>
+            {item.label}
+          </div>
+        ))}
+      </div>
+    </ClickAwayListener>
   );
 };
 
