@@ -58,7 +58,7 @@ export default function BookEditorDialog() {
   }
 
   return (
-    <dialog ref={dialogRef} onClick={closeModal}>
+    <dialog ref={dialogRef} onClick={closeModal} onCancel={closeModal}>
       <div onClick={(e) => e.stopPropagation()}>
         <div className="book-edit-page">
           <h1>Edit Book Information</h1>
