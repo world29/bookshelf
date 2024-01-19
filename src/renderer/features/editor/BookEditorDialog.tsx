@@ -1,8 +1,10 @@
-﻿import React, { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectBook, updateBook } from "../books/booksSlice";
 import { closeEditDialog } from "./editorSlice";
+
+import "./../../styles/BookEditorDialog.css";
 
 export default function BookEditorDialog() {
   const { isOpen, bookPath } = useAppSelector(
@@ -41,9 +43,7 @@ export default function BookEditorDialog() {
     setAuthor(e.target.value);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const handleSave = () => {
     dispatch(updateBook({ path: bookPath, title, author }));
 
     closeModal();
@@ -59,25 +59,23 @@ export default function BookEditorDialog() {
 
   return (
     <dialog ref={dialogRef} onClick={closeModal}>
-      <div className="dialogInner" onClick={(e) => e.stopPropagation()}>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            defaultValue={book.title}
-            onChange={handleChangeTitle}
-          />
-          <input
-            type="text"
-            defaultValue={book.author}
-            onChange={handleChangeAuthor}
-          />
-          <div>
-            <button type="submit">apply</button>
-            <button type="button" onClick={closeModal}>
-              cancel
+      <div onClick={(e) => e.stopPropagation()}>
+        <div className="book-edit-page">
+          <h1>Edit Book Information</h1>
+          <form>
+            <div className="form-group">
+              <label>Title:</label>
+              <input type="text" value={title} onChange={handleChangeTitle} />
+            </div>
+            <div className="form-group">
+              <label>Author:</label>
+              <input type="text" value={author} onChange={handleChangeAuthor} />
+            </div>
+            <button type="button" onClick={handleSave}>
+              Save
             </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </dialog>
   );
