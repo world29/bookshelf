@@ -1,7 +1,9 @@
-﻿import React, { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { closeSettingsDialog } from "./editorSlice";
+
+import "./../../styles/SettingsDialog.css";
 
 export default function SettingsDialog() {
   const { isOpen } = useAppSelector((state) => state.editor.settingsDialog);
@@ -33,7 +35,7 @@ export default function SettingsDialog() {
     setViewer(e.target.value);
   };
 
-  const handleApply = () => {
+  const handleSave = () => {
     // メインプロセスに新しい設定値を送り、バリデーションする
     window.electronAPI
       .setSettingsViewer(viewer)
@@ -46,33 +48,20 @@ export default function SettingsDialog() {
   };
 
   return (
-    <dialog ref={dialogRef} onClick={closeModal}>
-      <div className="dialogInner" onClick={(e) => e.stopPropagation()}>
-        <div className="form-group row mb-3">
-          <label className="col-form-label col-sm-2">Viewer</label>
-          <div className="col-sm-10">
-            <input
-              type="text"
-              className="form-control"
-              onChange={handleChangeViewer}
-              defaultValue={viewer}
-            />
-          </div>
+    <dialog ref={dialogRef} onClick={closeModal} onCancel={closeModal}>
+      <div onClick={(e) => e.stopPropagation()}>
+        <div className="settings-page">
+          <h1>Settings</h1>
+          <form>
+            <div className="form-group">
+              <label>Viewer:</label>
+              <input type="text" value={viewer} onChange={handleChangeViewer} />
+            </div>
+            <button type="button" onClick={handleSave}>
+              Save
+            </button>
+          </form>
         </div>
-        <button
-          type="submit"
-          className="btn btn-primary me-2"
-          onClick={handleApply}
-        >
-          Apply
-        </button>
-        <button
-          type="button"
-          className="btn btn-outline-secondary"
-          onClick={closeModal}
-        >
-          Close
-        </button>
       </div>
     </dialog>
   );
