@@ -6,6 +6,7 @@ import { useAppDispatch } from "./app/hooks";
 import { addBooks } from "./features/books/booksSlice";
 
 import "./styles/Nav.css";
+import RatingSelect from "./components/RatingSelect";
 
 type Props = {
   onChangeString: (queryString: string) => void;
@@ -47,6 +48,13 @@ export const Nav = (props: Props) => {
     onChangeString(e.target.value);
   };
 
+  const handleChangeFilterByRating = (value: FilterByRating) => {
+    if (rating !== value) {
+      setRating(value);
+      onChangeRating(value);
+    }
+  };
+
   const handleChangeRating = (e: ChangeEvent<HTMLSelectElement>) => {
     const newValue = e.target.value as FilterByRating;
 
@@ -74,14 +82,11 @@ export const Nav = (props: Props) => {
           placeholder="Search..."
           onChange={handleChangeString}
         />
+        <RatingSelect
+          defaultValue={rating}
+          onSelect={handleChangeFilterByRating}
+        />
         <div className="select-wrapper">
-          <select defaultValue={rating} onChange={handleChangeRating}>
-            {Object.values(FILTER_BY_RATING).map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </select>
           <select defaultValue={sortOrder} onChange={handleChangeSortOrder}>
             {Object.values(SORT_ORDER).map((value) => (
               <option key={value} value={value}>

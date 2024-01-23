@@ -1,0 +1,49 @@
+﻿.rating-select {
+  position: relative;
+  width: 140px;
+  color: #333;
+  background-color: #fff;
+  margin-right: 10px;
+}
+
+.selected-option {
+  padding: 2px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 5px 5px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.option {
+  padding: 4px;
+  display: flex;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.option:hover {
+  background-color: #f0f0f0;
+}
+
+.option.selected {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.option.selected:hover {
+  background-color: #0056b3;
+}
