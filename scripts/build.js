@@ -10,6 +10,10 @@ const options = {
   directories: {
     output: "release",
   },
+  publish: {
+    provider: "github",
+    releaseType: "draft", // or 'release', 'prerelease'
+  },
   win: {
     target: "nsis",
   },
