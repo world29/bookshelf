@@ -1,9 +1,10 @@
 {
+  "name":"bookshelf",
   "productName": "bookshelf",
   "version": "1.0.0",
-  "description": "",
+  "description": "ebook management",
   "main": "main.js",
-  "author": "",
+  "author": "world29",
   "license": "ISC",
   "dependencies": {
     "sqlite3": "^5.0.8",
