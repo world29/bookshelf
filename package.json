@@ -1,7 +1,7 @@
 {
   "name": "bookshelf",
   "version": "1.0.0",
-  "description": "",
+  "description": "ebook management",
   "main": "dist/main.js",
   "scripts": {
     "start": "rimraf dist && run-p dev:webpack dev:electron",
@@ -11,11 +11,11 @@
     "package:install-deps": "npm --prefix ./dist install ./dist",
     "package:pack": "electron-packager ./dist --platform=win32 --arch=x64 --overwrite --out=out",
     "package": "rimraf dist && run-s package:*",
-    "make": "node ./scripts/create-installer.js",
+    "build": "node ./scripts/build.js",
     "lint": "eslint src",
     "lint:fix": "eslint --fix src"
   },
-  "author": "",
+  "author": "world29",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.18.2",
@@ -40,8 +40,8 @@
     "cross-env": "^7.0.3",
     "css-loader": "^6.7.3",
     "electron": "^19.0.3",
+    "electron-builder": "^24.9.1",
     "electron-packager": "^15.5.1",
-    "electron-winstaller": "^5.2.1",
     "electronmon": "^2.0.2",
     "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
