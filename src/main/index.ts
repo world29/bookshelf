@@ -21,7 +21,9 @@ const createWindow = () => {
   const menu = createMenu(mainWindow);
   Menu.setApplicationMenu(menu);
 
-  mainWindow.webContents.openDevTools();
+  if (!app.isPackaged) {
+    mainWindow.webContents.openDevTools();
+  }
 
   session.defaultSession.loadExtension(reactDevTools, {
     allowFileAccess: true,
