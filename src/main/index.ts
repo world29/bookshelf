@@ -1,14 +1,12 @@
-﻿import { app, BrowserWindow, Menu, session } from "electron";
+﻿import { app, BrowserWindow, Menu } from "electron";
 import { join } from "path";
 import { bridge } from "./api";
 import db from "./database";
 import { createMenu } from "./menu";
+import { loadExtensions } from "./devtools";
 
-const reactDevTools = join(__dirname, "../externals/ReactDevTools");
-const reduxDevTools = join(__dirname, "../externals/ReduxDevTools");
-
-const createWindow = () => {
-  const mainWindow: BrowserWindow = new BrowserWindow({
+async function createWindow(): Promise<void> {
+  const mainWindow = new BrowserWindow({
     width: 1600,
     height: 900,
     webPreferences: {
@@ -21,22 +19,17 @@ const createWindow = () => {
   const menu = createMenu(mainWindow);
   Menu.setApplicationMenu(menu);
 
+  await loadExtensions();
+
   if (!app.isPackaged) {
     mainWindow.webContents.openDevTools();
   }
+}
 
-  session.defaultSession.loadExtension(reactDevTools, {
-    allowFileAccess: true,
-  });
-  session.defaultSession.loadExtension(reduxDevTools, {
-    allowFileAccess: true,
-  });
-};
-
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   db.initialize();
 
-  createWindow();
+  await createWindow();
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
