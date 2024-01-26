@@ -23,7 +23,7 @@ export default function SettingsDialog() {
   }, []);
 
   const openDialog = () => {
-    if (dialogRef.current) {
+    if (dialogRef.current && !dialogRef.current.open) {
       dialogRef.current.showModal();
 
       // ダイアログが開いたときに設定情報をメインプロセスから受け取る
