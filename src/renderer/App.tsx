@@ -12,7 +12,7 @@ import { SortOrder, SORT_ORDER } from "../models/sortOrder";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { BookList } from "./BookList";
 import { booksFetched } from "./features/books/booksSlice";
-import SettingsDialog from "./features/editor/SettingsDialog";
+import SettingsDialog from "./components/SettingsDialog";
 import Pagination from "./Pagination";
 import "./styles/App.css";
 import { Nav } from "./Nav";

@@ -1,6 +1,6 @@
 ﻿import { useEffect, useRef, useState } from "react";
 
-import "./../../styles/SettingsDialog.css";
+import "./../styles/SettingsDialog.css";
 
 export default function SettingsDialog() {
   const dialogRef = useRef<HTMLDialogElement>(null);

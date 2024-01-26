@@ -10,7 +10,7 @@ import {
   updateBookThumbnail,
 } from "./features/books/booksSlice";
 import "./styles/BookList.css";
-import BookEditorDialog from "./features/editor/BookEditorDialog";
+import BookEditorDialog from "./components/BookEditorDialog";
 
 type BookListItemProps = {
   book: Book;

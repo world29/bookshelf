@@ -1,10 +1,10 @@
 ﻿import { RefObject, useEffect, useState } from "react";
 
-import { useAppDispatch } from "../../app/hooks";
-import { updateBook } from "../books/booksSlice";
+import { useAppDispatch } from "../app/hooks";
+import { updateBook } from "../features/books/booksSlice";
 
-import "./../../styles/BookEditorDialog.css";
-import { Book } from "../../../models/book";
+import "./../styles/BookEditorDialog.css";
+import { Book } from "../../models/book";
 
 type Props = {
   dialogRef: RefObject<HTMLDialogElement>;
