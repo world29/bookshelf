@@ -1,31 +1,23 @@
-﻿import { useEffect, useRef, useState } from "react";
+﻿import { RefObject, useEffect, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectBook, updateBook } from "../books/booksSlice";
-import { closeEditDialog } from "./editorSlice";
 
 import "./../../styles/BookEditorDialog.css";
 
-export default function BookEditorDialog() {
-  const { isOpen, bookPath } = useAppSelector(
-    (state) => state.editor.editDialog
-  );
+type Props = {
+  dialogRef: RefObject<HTMLDialogElement>;
+  onClose: () => void;
+};
+
+export default function BookEditorDialog(props: Props) {
+  const { dialogRef, onClose } = props;
+
+  const { bookPath } = useAppSelector((state) => state.editor.bookEdit);
 
   const book = useAppSelector(selectBook(bookPath));
 
   const dispatch = useAppDispatch();
-
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    if (dialogRef.current) {
-      if (isOpen) {
-        dialogRef.current.showModal();
-      } else {
-        dialogRef.current.close();
-      }
-    }
-  }, [isOpen]);
 
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -46,19 +38,15 @@ export default function BookEditorDialog() {
   const handleSave = () => {
     dispatch(updateBook({ path: bookPath, title, author }));
 
-    closeModal();
+    onClose();
   };
-
-  const closeModal = () => {
-    dispatch(closeEditDialog());
-  };
-
-  if (!book) {
-    return null;
-  }
 
   return (
-    <dialog ref={dialogRef} onClick={closeModal} onCancel={closeModal}>
+    <dialog
+      ref={dialogRef}
+      onClick={() => onClose()}
+      onCancel={() => onClose()}
+    >
       <div onClick={(e) => e.stopPropagation()}>
         <div className="book-edit-page">
           <h1>Edit Book Information</h1>

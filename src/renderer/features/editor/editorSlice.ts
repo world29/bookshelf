@@ -1,8 +1,7 @@
 ﻿import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface EditorState {
-  editDialog: {
-    isOpen: boolean;
+  bookEdit: {
     bookPath: string;
   };
   settingsDialog: {
@@ -11,8 +10,7 @@ interface EditorState {
 }
 
 const initialState: EditorState = {
-  editDialog: {
-    isOpen: false,
+  bookEdit: {
     bookPath: "",
   },
   settingsDialog: {
@@ -24,16 +22,9 @@ export const editorSlice = createSlice({
   name: "editor",
   initialState,
   reducers: {
-    openEditDialog: (state, action: PayloadAction<string>) => {
-      state.editDialog = {
-        isOpen: true,
+    setBookPathToEdit: (state, action: PayloadAction<string>) => {
+      state.bookEdit = {
         bookPath: action.payload,
-      };
-    },
-    closeEditDialog: (state) => {
-      state.editDialog = {
-        isOpen: false,
-        bookPath: "",
       };
     },
     openSettingsDialog: (state) => {
@@ -45,11 +36,7 @@ export const editorSlice = createSlice({
   },
 });
 
-export const {
-  openEditDialog,
-  closeEditDialog,
-  openSettingsDialog,
-  closeSettingsDialog,
-} = editorSlice.actions;
+export const { setBookPathToEdit, openSettingsDialog, closeSettingsDialog } =
+  editorSlice.actions;
 
 export default editorSlice.reducer;

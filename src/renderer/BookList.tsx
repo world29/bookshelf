@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿import { useRef, useState } from "react";
 
 import { Book } from "../models/book";
 import { useAppDispatch } from "./app/hooks";
@@ -9,11 +9,13 @@ import {
   updateBookRating,
   updateBookThumbnail,
 } from "./features/books/booksSlice";
-import { openEditDialog } from "./features/editor/editorSlice";
+import { setBookPathToEdit } from "./features/editor/editorSlice";
 import "./styles/BookList.css";
+import BookEditorDialog from "./features/editor/BookEditorDialog";
 
 type BookListItemProps = {
   book: Book;
+  onClickEdit: () => void;
 };
 
 type BookListProps = {
@@ -21,7 +23,7 @@ type BookListProps = {
 };
 
 const BookListItem = (props: BookListItemProps) => {
-  const { book } = props;
+  const { book, onClickEdit } = props;
 
   const dispatch = useAppDispatch();
 
@@ -30,10 +32,6 @@ const BookListItem = (props: BookListItemProps) => {
     top: number;
     left: number;
   }>({ isOpen: false, top: 0, left: 0 });
-
-  const handleClickEdit = () => {
-    dispatch(openEditDialog(book.path));
-  };
 
   const handleClickRemove = () => {
     dispatch(removeBook({ path: book.path }));
@@ -118,7 +116,7 @@ const BookListItem = (props: BookListItemProps) => {
         <StarRating defaultRating={book.rating} onChange={handleChangeRating} />
         <div className="button-container">
           <button onClick={handleClickOpen}>open</button>
-          <button onClick={handleClickEdit}>edit</button>
+          <button onClick={() => onClickEdit()}>edit</button>
           <button onClick={handleClickRemove}>remove</button>
         </div>
       </div>
@@ -137,11 +135,35 @@ const BookListItem = (props: BookListItemProps) => {
 export const BookList = (props: BookListProps) => {
   const { books } = props;
 
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  const dispatch = useAppDispatch();
+
+  function showEditDialog(book: Book) {
+    if (dialogRef.current) {
+      dispatch(setBookPathToEdit(book.path));
+      dialogRef.current.showModal();
+    }
+  }
+
+  function handleCloseDialog() {
+    if (dialogRef.current) {
+      dialogRef.current.close();
+    }
+  }
+
   return (
-    <div className="bookGridWrapper">
-      {books.map((book) => (
-        <BookListItem key={book.path} book={book} />
-      ))}
-    </div>
+    <>
+      <div className="bookGridWrapper">
+        {books.map((book) => (
+          <BookListItem
+            key={book.path}
+            book={book}
+            onClickEdit={() => showEditDialog(book)}
+          />
+        ))}
+      </div>
+      <BookEditorDialog dialogRef={dialogRef} onClose={handleCloseDialog} />
+    </>
   );
 };

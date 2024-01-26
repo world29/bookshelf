@@ -12,7 +12,6 @@ import { SortOrder, SORT_ORDER } from "../models/sortOrder";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { BookList } from "./BookList";
 import { booksFetched } from "./features/books/booksSlice";
-import BookEditorDialog from "./features/editor/BookEditorDialog";
 import { openSettingsDialog } from "./features/editor/editorSlice";
 import SettingsDialog from "./features/editor/SettingsDialog";
 import ErrorDialog from "./features/common/ErrorDialog";
@@ -214,7 +213,6 @@ export default function App() {
             />
           ))}
         </div>
-        <BookEditorDialog />
         <SettingsDialog />
         <ErrorDialog />
         <Progress active={progressActive} value={progressValue} />
