@@ -1,21 +1,19 @@
 ﻿import { RefObject, useEffect, useState } from "react";
 
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { selectBook, updateBook } from "../books/booksSlice";
+import { useAppDispatch } from "../../app/hooks";
+import { updateBook } from "../books/booksSlice";
 
 import "./../../styles/BookEditorDialog.css";
+import { Book } from "../../../models/book";
 
 type Props = {
   dialogRef: RefObject<HTMLDialogElement>;
+  book: Book | null;
   onClose: () => void;
 };
 
 export default function BookEditorDialog(props: Props) {
-  const { dialogRef, onClose } = props;
-
-  const { bookPath } = useAppSelector((state) => state.editor.bookEdit);
-
-  const book = useAppSelector(selectBook(bookPath));
+  const { dialogRef, book, onClose } = props;
 
   const dispatch = useAppDispatch();
 
@@ -36,7 +34,9 @@ export default function BookEditorDialog(props: Props) {
   };
 
   const handleSave = () => {
-    dispatch(updateBook({ path: bookPath, title, author }));
+    if (book) {
+      dispatch(updateBook({ path: book.path, title, author }));
+    }
 
     onClose();
   };

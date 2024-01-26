@@ -9,7 +9,6 @@ import {
   updateBookRating,
   updateBookThumbnail,
 } from "./features/books/booksSlice";
-import { setBookPathToEdit } from "./features/editor/editorSlice";
 import "./styles/BookList.css";
 import BookEditorDialog from "./features/editor/BookEditorDialog";
 
@@ -136,12 +135,11 @@ export const BookList = (props: BookListProps) => {
   const { books } = props;
 
   const dialogRef = useRef<HTMLDialogElement>(null);
-
-  const dispatch = useAppDispatch();
+  const [bookToEdit, setBookToEdit] = useState<Book | null>(null);
 
   function showEditDialog(book: Book) {
     if (dialogRef.current) {
-      dispatch(setBookPathToEdit(book.path));
+      setBookToEdit(book);
       dialogRef.current.showModal();
     }
   }
@@ -163,7 +161,11 @@ export const BookList = (props: BookListProps) => {
           />
         ))}
       </div>
-      <BookEditorDialog dialogRef={dialogRef} onClose={handleCloseDialog} />
+      <BookEditorDialog
+        dialogRef={dialogRef}
+        book={bookToEdit}
+        onClose={handleCloseDialog}
+      />
     </>
   );
 };
