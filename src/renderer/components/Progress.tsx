@@ -1,4 +1,4 @@
-﻿import "../../styles/Progress.css";
+﻿import "./../styles/Progress.css";
 
 interface ProgressProp {
   active: boolean;

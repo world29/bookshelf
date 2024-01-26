@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from "react";
-import "./../../styles/Toast.css";
+import "./../styles/Toast.css";
 
 interface ToastProps {
   id: string;

@@ -3,7 +3,7 @@
 import { Book } from "../models/book";
 import { useAppDispatch } from "./app/hooks";
 import ContextMenu from "./components/ContextMenu";
-import StarRating from "./common/StarRating";
+import StarRating from "./components/StarRating";
 import {
   removeBook,
   updateBookRating,

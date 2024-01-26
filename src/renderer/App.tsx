@@ -13,12 +13,11 @@ import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { BookList } from "./BookList";
 import { booksFetched } from "./features/books/booksSlice";
 import SettingsDialog from "./features/editor/SettingsDialog";
-import ErrorDialog from "./features/common/ErrorDialog";
 import Pagination from "./Pagination";
 import "./styles/App.css";
 import { Nav } from "./Nav";
-import { Toast } from "./features/common/Toast";
-import Progress from "./features/common/Progress";
+import { Toast } from "./components/Toast";
+import Progress from "./components/Progress";
 
 const itemsPerPage = 60;
 
@@ -207,7 +206,6 @@ export default function App() {
           ))}
         </div>
         <SettingsDialog />
-        <ErrorDialog />
         <Progress active={progressActive} value={progressValue} />
       </div>
     </>

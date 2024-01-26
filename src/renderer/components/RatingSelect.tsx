@@ -1,5 +1,5 @@
 ﻿import { ReactNode, useState } from "react";
-import ClickAwayListener from "./../common/ClickAwayListener";
+import ClickAwayListener from "./ClickAwayListener";
 import { FILTER_BY_RATING, FilterByRating } from "../../models/filter";
 
 import "./../styles/RatingSelect.css";

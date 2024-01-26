@@ -1,4 +1,4 @@
-﻿import ClickAwayListener from "../common/ClickAwayListener";
+﻿import ClickAwayListener from "./ClickAwayListener";
 import "./../styles/ContextMenu.css";
 
 type MenuItemProps = {
