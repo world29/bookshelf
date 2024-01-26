@@ -1,16 +1,17 @@
 ﻿import { useRef, useState } from "react";
 
-import { Book } from "../models/book";
-import { useAppDispatch } from "./app/hooks";
-import ContextMenu from "./components/ContextMenu";
-import StarRating from "./components/StarRating";
+import { Book } from "../../models/book";
+import { useAppDispatch } from "../app/hooks";
+import ContextMenu from "./ContextMenu";
+import StarRating from "./StarRating";
 import {
   removeBook,
   updateBookRating,
   updateBookThumbnail,
-} from "./features/books/booksSlice";
-import "./styles/BookList.css";
-import BookEditorDialog from "./components/BookEditorDialog";
+} from "../features/books/booksSlice";
+import BookEditorDialog from "./BookEditorDialog";
+
+import "./../styles/BookList.css";
 
 type BookListItemProps = {
   book: Book;

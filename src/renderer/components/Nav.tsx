@@ -1,12 +1,12 @@
 ﻿import { ChangeEvent, useState } from "react";
 
-import { FilterByRating } from "../models/filter";
-import { SORT_ORDER, SortOrder } from "../models/sortOrder";
-import { useAppDispatch } from "./app/hooks";
-import { addBooks } from "./features/books/booksSlice";
+import { FilterByRating } from "../../models/filter";
+import { SORT_ORDER, SortOrder } from "../../models/sortOrder";
+import { useAppDispatch } from "../app/hooks";
+import { addBooks } from "../features/books/booksSlice";
+import RatingSelect from "./RatingSelect";
 
-import "./styles/Nav.css";
-import RatingSelect from "./components/RatingSelect";
+import "./../styles/Nav.css";
 
 type Props = {
   onChangeString: (queryString: string) => void;

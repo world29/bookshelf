@@ -6,18 +6,19 @@ import {
   FilterByTag,
   FILTER_BY_RATING,
   FILTER_BY_TAG,
-} from "../models/filter";
-import { SortOrder, SORT_ORDER } from "../models/sortOrder";
+} from "../../models/filter";
+import { SortOrder, SORT_ORDER } from "../../models/sortOrder";
 
-import { useAppDispatch, useAppSelector } from "./app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { BookList } from "./BookList";
-import { booksFetched } from "./features/books/booksSlice";
-import SettingsDialog from "./components/SettingsDialog";
+import { booksFetched } from "../features/books/booksSlice";
+import SettingsDialog from "./SettingsDialog";
 import Pagination from "./Pagination";
-import "./styles/App.css";
 import { Nav } from "./Nav";
-import { Toast } from "./components/Toast";
-import Progress from "./components/Progress";
+import { Toast } from "./Toast";
+import Progress from "./Progress";
+
+import "./../styles/App.css";
 
 const itemsPerPage = 60;
 
