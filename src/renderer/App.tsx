@@ -12,7 +12,6 @@ import { SortOrder, SORT_ORDER } from "../models/sortOrder";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { BookList } from "./BookList";
 import { booksFetched } from "./features/books/booksSlice";
-import { openSettingsDialog } from "./features/editor/editorSlice";
 import SettingsDialog from "./features/editor/SettingsDialog";
 import ErrorDialog from "./features/common/ErrorDialog";
 import Pagination from "./Pagination";
@@ -56,12 +55,6 @@ export default function App() {
     calledRef.current = true;
 
     console.log("App:useEffect()");
-
-    // メニューから設定ダイアログを開く
-    // memo: dispatch を使いたいため App コンポーネントの中でコールバックを登録している。
-    window.electronAPI.handleOpenSettings(() => {
-      dispatch(openSettingsDialog());
-    });
 
     window.electronAPI.handleProgressBooksAdded((_event, books) => {
       if (books) {

@@ -1,35 +1,43 @@
 ﻿import { useEffect, useRef, useState } from "react";
 
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { closeSettingsDialog } from "./editorSlice";
-
 import "./../../styles/SettingsDialog.css";
 
 export default function SettingsDialog() {
-  const { isOpen } = useAppSelector((state) => state.editor.settingsDialog);
-
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  const dispatch = useAppDispatch();
+  const calledRef = useRef(false);
 
   const [viewer, setViewer] = useState("");
 
   useEffect(() => {
-    // ダイアログが開いたときだけ設定情報をメインプロセスから受け取る
-    if (isOpen) {
+    // devServer が有効なときは useEffect が２回呼ばれるので、１度だけ実行したい処理はフラグでチェックする
+    if (calledRef.current) return;
+    calledRef.current = true;
+
+    console.log("SettingsDialog:useEffect()");
+
+    // メニューから設定ダイアログを開く
+    window.electronAPI.handleOpenSettings(() => {
+      openDialog();
+    });
+  }, []);
+
+  const openDialog = () => {
+    if (dialogRef.current) {
+      dialogRef.current.showModal();
+
+      // ダイアログが開いたときに設定情報をメインプロセスから受け取る
       window.electronAPI
         .getSettings()
         .then((settings) => setViewer(settings.viewer));
     }
+  };
 
+  const closeDialog = () => {
     if (dialogRef.current) {
-      if (isOpen) {
-        dialogRef.current.showModal();
-      } else {
-        dialogRef.current.close();
-      }
+      dialogRef.current.close();
     }
-  }, [isOpen]);
+  };
 
   const handleChangeViewer = (e: React.ChangeEvent<HTMLInputElement>) => {
     setViewer(e.target.value);
@@ -39,16 +47,16 @@ export default function SettingsDialog() {
     // メインプロセスに新しい設定値を送り、バリデーションする
     window.electronAPI
       .setSettingsViewer(viewer)
-      .then(() => closeModal())
+      .then(() => closeDialog())
       .catch((err) => console.error(err));
   };
 
-  const closeModal = () => {
-    dispatch(closeSettingsDialog());
-  };
-
   return (
-    <dialog ref={dialogRef} onClick={closeModal} onCancel={closeModal}>
+    <dialog
+      ref={dialogRef}
+      onClick={() => closeDialog()}
+      onCancel={() => closeDialog()}
+    >
       <div onClick={(e) => e.stopPropagation()}>
         <div className="settings-page">
           <h1>Settings</h1>
