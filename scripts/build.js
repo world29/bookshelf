@@ -16,6 +16,7 @@ const options = {
   },
   win: {
     target: "nsis",
+    icon: "build/icon.ico",
   },
 };
 

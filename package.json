@@ -9,7 +9,7 @@
     "dev:electron": "wait-on ./dist/index.html ./dist/main.js && electronmon ./dist",
     "package:webpack": "cross-env NODE_ENV=\"production\" webpack --progress",
     "package:install-deps": "npm --prefix ./dist install ./dist",
-    "package:pack": "electron-packager ./dist --platform=win32 --arch=x64 --overwrite --out=out",
+    "package:pack": "electron-packager ./dist --platform=win32 --arch=x64 --icon=./build/icon.ico --overwrite --out=out",
     "package": "rimraf dist && run-s package:*",
     "build": "node ./scripts/build.js",
     "release": "npm run build",
