@@ -68,12 +68,12 @@ export default function App() {
       showToast(message, "error");
     });
 
-    window.electronAPI.handleProgressBookUpdated((_event, _book) => {
+    window.electronAPI.handleProgressBookUpdated((_event, _book) => { // eslint-disable-line
       fetchBooks();
     });
 
     window.electronAPI.handleProgressThumbnailGenerationStarted(
-      (_event, fileCount) => {
+      (_event, fileCount) => { // eslint-disable-line
         showProgress(0);
       }
     );
@@ -82,7 +82,7 @@ export default function App() {
         showProgress(generatedCount / fileCount);
       }
     );
-    window.electronAPI.handleProgressThumbnailGenerationCompleted((_event) => {
+    window.electronAPI.handleProgressThumbnailGenerationCompleted((_event) => { // eslint-disable-line
       hideProgress();
     });
   }, []);
