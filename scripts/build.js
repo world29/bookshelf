@@ -1,14 +1,11 @@
-﻿const { getAppUpdateYml } = require("electron-updater-yaml");
-const builder = require("electron-builder");
+﻿const builder = require("electron-builder");
 const fs = require("node:fs/promises");
 
-/**
- * @type {import('electron-updater-yaml').AppUpdateYmlOptions}
- */
-const ymlOptions = {
-  name: "bookshelf",
-  url: "https://github.com/world29/bookshelf.git",
-};
+const ymlContents = `provider: github
+owner: world29
+repo: bookshelf
+channel: latest
+updaterCacheDirName: bookshelf-updater\n`;
 
 /**
  * @type {import('electron-builder').Configuration}
@@ -32,11 +29,10 @@ const options = {
 };
 
 async function build() {
-  const appUpdateYml = await getAppUpdateYml(ymlOptions);
-
+  // auto-update.yml を書き出す
   await fs.writeFile(
     "./out/bookshelf-win32-x64/resources/app-update.yml",
-    appUpdateYml,
+    ymlContents,
     "utf8"
   );
 
