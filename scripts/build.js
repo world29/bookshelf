@@ -12,7 +12,6 @@ const options = {
   },
   publish: {
     provider: "github",
-    releaseType: "draft", // or 'release', 'prerelease'
     owner: "world29",
     repo: "bookshelf",
     private: true,
