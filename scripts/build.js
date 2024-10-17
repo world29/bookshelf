@@ -1,7 +1,23 @@
-﻿const builder = require("electron-builder");
+﻿const { getAppUpdateYml } = require("electron-updater-yaml");
+const builder = require("electron-builder");
+
 const Platform = builder.Platform;
 
-// Let's get that intellisense working
+/**
+ * @type {import('electron-updater-yaml').AppUpdateYmlOptions}
+ */
+const ymlOptions = {
+  name: "bookshelf",
+  url: "https://github.com/world29/bookshelf.git",
+};
+
+const appUpdateYml = await getAppUpdateYml(ymlOptions);
+await fs.writeFile(
+  "./out/bookshelf-win32-x64/resources/app-update.yml",
+  appUpdateYml,
+  "utf8"
+);
+
 /**
  * @type {import('electron-builder').Configuration}
  * @see https://www.electron.build/configuration/configuration
