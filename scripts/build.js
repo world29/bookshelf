@@ -28,6 +28,7 @@ builder
     targets: Platform.WINDOWS.createTarget(),
     config: options,
     prepackaged: "./out/bookshelf-win32-x64",
+    publish: "always",
   })
   .then((result) => {
     console.log(JSON.stringify(result));
