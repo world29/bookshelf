@@ -4,8 +4,9 @@ import { bridge } from "./api";
 import db from "./database";
 import { createMenu } from "./menu";
 import { loadExtensions } from "./devtools";
+import checkForUpdates from "./updater";
 
-async function createWindow(): Promise<void> {
+async function createWindow(): Promise<BrowserWindow> {
   const mainWindow = new BrowserWindow({
     width: 1600,
     height: 900,
@@ -24,12 +25,16 @@ async function createWindow(): Promise<void> {
   if (!app.isPackaged) {
     mainWindow.webContents.openDevTools();
   }
+
+  return mainWindow;
 }
 
 app.whenReady().then(async () => {
   db.initialize();
 
-  await createWindow();
+  const win = await createWindow();
+
+  checkForUpdates(win);
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
