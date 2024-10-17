@@ -1,7 +1,7 @@
 {
   "name":"bookshelf",
   "productName": "bookshelf",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "ebook management",
   "main": "main.js",
   "author": "world29",
