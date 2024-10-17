@@ -43,6 +43,7 @@
     "electron": "^19.0.3",
     "electron-builder": "^24.9.1",
     "electron-packager": "^15.5.1",
+    "electron-updater-yaml": "^1.1.2",
     "electronmon": "^2.0.2",
     "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
