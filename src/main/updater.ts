@@ -1,16 +1,12 @@
-﻿import log from "electron-log";
+﻿import { autoUpdater } from "electron-updater";
+import log from "electron-log";
 import { BrowserWindow } from "electron";
-
-import { getAutoUpdater } from "./updater-wrapper";
 
 export default function checkForUpdates(win: BrowserWindow): void {
   function sendStatusToWindow(text: string) {
     log.info(text);
     win.webContents.send("message", text);
   }
-
-  const autoUpdater = getAutoUpdater();
-
   autoUpdater.on("checking-for-update", () => {
     sendStatusToWindow("Checking for update...");
   });
