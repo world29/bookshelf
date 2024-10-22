@@ -89,12 +89,30 @@ const renderer = {
   ],
 };
 
+const worker = {
+  ...common,
+  target: "electron-renderer",
+  entry: {
+    worker: "./src/worker/index.ts",
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, "src/worker.html"),
+      filename: "worker.html",
+    }),
+    new ESLintWebpackPlugin({
+      extensions: ["ts", "js"],
+    }),
+  ],
+};
+
 const preload = {
   ...common,
   target: "electron-preload",
   entry: {
-    preload: "./src/preload.ts",
+    preload_renderer: "./src/renderer/preload.ts",
+    preload_worker: "./src/worker/preload.ts",
   },
 };
 
-module.exports = [main, renderer, preload];
+module.exports = [main, renderer, worker, preload];

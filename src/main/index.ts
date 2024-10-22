@@ -1,6 +1,7 @@
 ﻿import { app, BrowserWindow, Menu } from "electron";
 import { join } from "path";
 import { bridge } from "./api";
+import bridge_worker from "./bridge_worker";
 import db from "./database";
 import { createMenu } from "./menu";
 import { loadExtensions } from "./devtools";
@@ -11,7 +12,7 @@ async function createWindow(): Promise<BrowserWindow> {
     width: 1600,
     height: 900,
     webPreferences: {
-      preload: join(__dirname, "preload.js"),
+      preload: join(__dirname, "preload_renderer.js"),
     },
   });
   bridge.setupAPIs(mainWindow);
@@ -29,15 +30,40 @@ async function createWindow(): Promise<BrowserWindow> {
   return mainWindow;
 }
 
+async function createWorkerWindow(): Promise<BrowserWindow> {
+  const workerWindow = new BrowserWindow({
+    width: 1600,
+    height: 900,
+    show: true,
+    webPreferences: {
+      preload: join(__dirname, "preload_worker.js"),
+      nodeIntegration: true,
+      contextIsolation: true,
+    },
+  });
+  bridge_worker.setupAPIs(workerWindow);
+  workerWindow.loadFile("worker.html");
+
+  if (!app.isPackaged) {
+    workerWindow.webContents.openDevTools();
+  }
+
+  return workerWindow;
+}
+
 app.whenReady().then(async () => {
   db.initialize();
 
   const win = await createWindow();
+  await createWorkerWindow();
 
   checkForUpdates(win);
 
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  app.on("activate", async () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      await createWindow();
+      await createWorkerWindow();
+    }
   });
 });
 

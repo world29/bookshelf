@@ -1,10 +1,10 @@
 ﻿import { contextBridge, ipcRenderer, IpcRendererEvent } from "electron";
-import { Book } from "./models/book";
+import { Book } from "../models/book";
 
-import { OpenFileType } from "./models/dialog";
-import { FilterByRating, FilterByTag } from "./models/filter";
-import { SortOrder } from "./models/sortOrder";
-import { BookFileInfo } from "./main/book";
+import { OpenFileType } from "../models/dialog";
+import { FilterByRating, FilterByTag } from "../models/filter";
+import { SortOrder } from "../models/sortOrder";
+import { BookFileInfo } from "../main/book";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   doThing: () => ipcRenderer.invoke("do-a-thing"),
