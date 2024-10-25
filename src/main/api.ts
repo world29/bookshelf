@@ -193,7 +193,7 @@ class Bridge {
           width: 256,
           height: 256,
         };
-        return createThumbnail(desc);
+        return bridge_worker.createThumbnail(desc);
       }
     );
 

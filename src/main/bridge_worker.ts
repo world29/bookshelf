@@ -17,11 +17,15 @@ class BridgeWorker {
   }
 
   createThumbnail(desc: ThumbnailCreationDesc): Promise<string> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       this.window?.webContents.send("worker:createThumbnail", desc);
-      console.log("worker:createThumbnail");
-      ipcMain.once("worker:createThumbnailReply", (_event, outPath) => {
-        console.log("worker:createThumbnailReply");
+      //console.log(`worker:createThumbnail: ${desc.path}`);
+      ipcMain.once("worker:createThumbnailReply", (_event, outPath, err) => {
+        if (err) {
+          reject(err);
+        }
+
+        //console.log(`worker:createThumbnailReply: ${outPath}`);
         resolve(outPath);
       });
     });

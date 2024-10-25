@@ -69,7 +69,6 @@ const main = {
   ],
   externals: {
     sqlite3: "commonjs sqlite3",
-    sharp: "commonjs sharp",
   },
 };
 
@@ -104,6 +103,9 @@ const worker = {
       extensions: ["ts", "js"],
     }),
   ],
+  externals: {
+    sharp: "commonjs sharp",
+  },
 };
 
 const preload = {
