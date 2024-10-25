@@ -7,12 +7,10 @@ console.log("worker loaded.");
 ipcRenderer.on(
   "worker:createThumbnail",
   (_event: IpcRendererEvent, desc: ThumbnailCreationDesc) => {
-    try {
-      createThumbnail(desc).then((outPath) => {
+    createThumbnail(desc)
+      .then((outPath) => {
         ipcRenderer.send("worker:createThumbnailReply", outPath);
-      });
-    } catch (err) {
-      ipcRenderer.send("worker:createThumbnailReply", "", err);
-    }
+      })
+      .catch((err) => ipcRenderer.send("worker:createThumbnailReply", "", err));
   }
 );

@@ -1,5 +1,4 @@
-﻿import { app } from "electron";
-import { join, extname } from "path";
+﻿import { join, extname } from "path";
 import { mkdir, readdir } from "node:fs/promises";
 import { statSync } from "fs";
 import AdmZip from "adm-zip";
@@ -36,34 +35,43 @@ async function writeThumbnail(
 
 // サムネイル画像を生成する
 const createThumbnailFromZip = async (desc: ThumbnailCreationDesc) => {
-  const zip = new AdmZip(desc.path);
+  try {
+    const zip = new AdmZip(desc.path);
 
-  const entries = zip.getEntries();
+    const entries = zip.getEntries();
 
-  if (entries.length === 0) {
-    throw new Error(`empty zip: ${desc.path}`);
-  }
-
-  let imageEntryName = "";
-
-  for (const entry of entries) {
-    if (isImageFile(entry.entryName)) {
-      imageEntryName = entry.entryName;
-      break;
+    if (entries.length === 0) {
+      throw new Error(`empty zip: ${desc.path}`);
     }
+
+    let imageEntryName = "";
+
+    for (const entry of entries) {
+      if (isImageFile(entry.entryName)) {
+        imageEntryName = entry.entryName;
+        break;
+      }
+    }
+
+    if (imageEntryName === "") {
+      throw new Error(`supported image not found: ${desc.path}`);
+    }
+
+    const inBuffer = zip.readFile(imageEntryName);
+
+    if (!inBuffer) {
+      throw new Error(`failed to AdmZip.readFile(${imageEntryName}`);
+    }
+
+    return await writeThumbnail(
+      inBuffer,
+      desc.width,
+      desc.height,
+      desc.out_dir
+    );
+  } catch (err) {
+    return Promise.reject(err);
   }
-
-  if (imageEntryName === "") {
-    throw new Error(`supported image not found: ${desc.path}`);
-  }
-
-  const inBuffer = zip.readFile(imageEntryName);
-
-  if (!inBuffer) {
-    throw new Error(`failed to AdmZip.readFile(${imageEntryName}`);
-  }
-
-  return await writeThumbnail(inBuffer, desc.width, desc.height, desc.out_dir);
 };
 
 async function findFirstImage(dir: string): Promise<string> {
@@ -102,9 +110,7 @@ const createThumbnailFromFolder = async (desc: ThumbnailCreationDesc) => {
   );
 };
 
-export default async function createThumbnail(
-  desc: ThumbnailCreationDesc
-): Promise<string> {
+export default async function createThumbnail(desc: ThumbnailCreationDesc) {
   if (extname(desc.path) === ".zip") {
     return createThumbnailFromZip(desc);
   }
