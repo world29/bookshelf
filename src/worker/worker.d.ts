@@ -1,14 +1,15 @@
 ﻿import { IpcRendererEvent } from "electron";
+import { ThumbnailCreationDesc } from "../models/worker";
 
-export interface IWorkerAPI {
-  doThing: () => Promise<string>;
-  handleSendMessage: (
-    callback: (_event: IpcRendererEvent, text: string) => void
-  ) => void;
-}
+declare function doThing(): Promise<string>;
 
-declare global {
-  interface Window {
-    workerAPI: IWorkerAPI;
-  }
-}
+declare function sendThumbnailCreationReply(filePath: string): void;
+
+declare function ThumbnailCreationRequestCallback(
+  _event: IpcRendererEvent,
+  desc: ThumbnailCreationDesc
+): void;
+
+declare function handleThumbnailCreationRequest(
+  callback: ThumbnailCreationRequestCallback
+): void;

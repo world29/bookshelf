@@ -6,6 +6,7 @@ import db from "./database";
 import { createMenu } from "./menu";
 import { loadExtensions } from "./devtools";
 import checkForUpdates from "./updater";
+import { ThumbnailCreationDesc } from "../models/worker";
 
 async function createWindow(): Promise<BrowserWindow> {
   const mainWindow = new BrowserWindow({
@@ -36,9 +37,9 @@ async function createWorkerWindow(): Promise<BrowserWindow> {
     height: 900,
     show: true,
     webPreferences: {
-      preload: join(__dirname, "preload_worker.js"),
+      //preload: join(__dirname, "preload_worker.js"),
       nodeIntegration: true,
-      contextIsolation: true,
+      contextIsolation: false,
     },
   });
   bridge_worker.setupAPIs(workerWindow);
@@ -58,6 +59,17 @@ app.whenReady().then(async () => {
   await createWorkerWindow();
 
   checkForUpdates(win);
+
+  const thumbnailsDir = join(app.getPath("userData"), "thumbnails");
+
+  const desc: ThumbnailCreationDesc = {
+    path: "/path/to/image.png",
+    out_dir: join(thumbnailsDir, "dummy"),
+    width: 256,
+    height: 256,
+  };
+  const thumbnailPath = await bridge_worker.createThumbnail(desc);
+  console.log(thumbnailPath);
 
   app.on("activate", async () => {
     if (BrowserWindow.getAllWindows().length === 0) {

@@ -111,7 +111,6 @@ const preload = {
   target: "electron-preload",
   entry: {
     preload_renderer: "./src/renderer/preload.ts",
-    preload_worker: "./src/worker/preload.ts",
   },
 };
 
