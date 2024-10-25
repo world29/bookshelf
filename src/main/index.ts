@@ -36,6 +36,7 @@ async function createWorkerWindow(): Promise<BrowserWindow> {
   const workerWindow = new BrowserWindow({
     x: 100,
     y: 100,
+    show: false,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
