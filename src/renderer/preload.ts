@@ -28,6 +28,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
       count,
       offset
     ),
+  fetchBook: (path: string) => ipcRenderer.invoke("fetch-book", path),
   updateBook: (path: string, title: string, author: string) =>
     ipcRenderer.invoke("update-book", path, title, author),
   updateBookThumbnail: (path: string, thumbnailPath: string) =>

@@ -101,6 +101,10 @@ class Bridge {
       ) => db.filterAndFetchBooks(keyword, tag, rating, order, count, offset)
     );
 
+    ipcMain.handle("fetch-book", (_event: IpcMainInvokeEvent, path: string) =>
+      db.getBookByPath(path)
+    );
+
     ipcMain.handle(
       "update-book",
       (

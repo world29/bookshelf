@@ -11,7 +11,7 @@ import { SortOrder, SORT_ORDER } from "../../models/sortOrder";
 
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { BookList } from "./BookList";
-import { booksFetched } from "../features/books/booksSlice";
+import { booksFetched, bookUpdated } from "../features/books/booksSlice";
 import SettingsDialog from "./SettingsDialog";
 import Pagination from "./Pagination";
 import { Nav } from "./Nav";
@@ -68,12 +68,14 @@ export default function App() {
       showToast(message, "error");
     });
 
-    window.electronAPI.handleProgressBookUpdated((_event, _book) => { // eslint-disable-line
-      fetchBooks();
+    window.electronAPI.handleProgressBookUpdated((_event, _book) => {
+      // eslint-disable-line
+      fetchBook(_book.path);
     });
 
     window.electronAPI.handleProgressThumbnailGenerationStarted(
-      (_event, fileCount) => { // eslint-disable-line
+      (_event, fileCount) => {
+        // eslint-disable-line
         showProgress(0);
       }
     );
@@ -82,7 +84,8 @@ export default function App() {
         showProgress(generatedCount / fileCount);
       }
     );
-    window.electronAPI.handleProgressThumbnailGenerationCompleted((_event) => { // eslint-disable-line
+    window.electronAPI.handleProgressThumbnailGenerationCompleted((_event) => {
+      // eslint-disable-line
       hideProgress();
     });
   }, []);
@@ -120,6 +123,12 @@ export default function App() {
         setFilterResults(filterResult.count);
         dispatch(booksFetched(fetchResult.books));
       });
+  };
+
+  const fetchBook = (path: string) => {
+    window.electronAPI
+      .fetchBook(path)
+      .then((book) => dispatch(bookUpdated(book)));
   };
 
   const handlePageChange = (page: number) => {

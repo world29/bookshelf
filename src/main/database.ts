@@ -161,6 +161,19 @@ function filterAndFetchBooks(
   });
 }
 
+function getBookByPath(path: string): Promise<Book> {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT * FROM books WHERE path LIKE '%${path}%'`,
+      (err: Error, rows: Row[]) => {
+        if (err) reject(err);
+
+        resolve(rows[0]);
+      }
+    );
+  });
+}
+
 function updateBook(
   path: string,
   title: string,
@@ -318,6 +331,7 @@ export default {
   findBooks,
   getBookCount,
   filterAndFetchBooks,
+  getBookByPath,
   updateBook,
   updateBookThumbnail,
   updateBookRating,

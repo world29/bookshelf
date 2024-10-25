@@ -20,6 +20,7 @@ export interface IElectronAPI {
     filterResult: { count: number };
     fetchResult: { books: Book[] };
   }>;
+  fetchBook: (path: string) => Promise<Book>;
   updateBook: (path: string, title: string, author: string) => Promise<Book>;
   updateBookThumbnail: (path: string, thumbnailPath: string) => Promise<Book>;
   updateBookRating: (path: string, rating: number) => Promise<Book>;
