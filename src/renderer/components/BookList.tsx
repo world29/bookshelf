@@ -7,7 +7,7 @@ import StarRating from "./StarRating";
 import {
   removeBook,
   updateBookRating,
-  updateBookThumbnail,
+  createBookThumbnail,
 } from "../features/books/booksSlice";
 import BookEditorDialog from "./BookEditorDialog";
 
@@ -60,7 +60,7 @@ const BookListItem = (props: BookListItemProps) => {
   };
 
   const handleClickContextMenuCreateThumbnail = (book: Book) => {
-    dispatch(updateBookThumbnail({ path: book.path }));
+    dispatch(createBookThumbnail({ path: book.path }));
 
     closeContextMenu();
   };

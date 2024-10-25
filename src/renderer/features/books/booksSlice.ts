@@ -46,9 +46,9 @@ export const removeBook = createAction<{
   path: string;
 }>("books/removeBook");
 
-export const updateBookThumbnail = createAction<{
+export const createBookThumbnail = createAction<{
   path: string;
-}>("books/updateBookThumbnail");
+}>("books/createBookThumbnail");
 
 export const updateBookRating = createAction<{
   path: string;

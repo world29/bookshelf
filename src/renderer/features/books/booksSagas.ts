@@ -12,7 +12,7 @@ import {
   addBook,
   addBooks,
   removeBook,
-  updateBookThumbnail,
+  createBookThumbnail,
   updateBookRating,
 } from "./booksSlice";
 
@@ -70,7 +70,7 @@ function* handleRemoveBook(action: { payload: { path: string } }) {
   yield put(bookRemoved(removedPath));
 }
 
-function* handleUpdateBookThumbnail(action: { payload: { path: string } }) {
+function* handleCreateBookThumbnail(action: { payload: { path: string } }) {
   const { path } = action.payload;
 
   try {
@@ -109,14 +109,18 @@ function* handleUpdateBookRating(action: {
   }
 }
 
+function* handleBookAdded(action: { payload: { path: string } }) {
+  // ファイルが追加されたら(自動的に)サムネイル生成を行う
+  yield handleCreateBookThumbnail(action);
+}
+
 export default [
   takeLatest(updateBook, handleUpdateBook),
   takeLatest(fetchBooks, handleFetchBooks),
   takeLatest(addBook, handleAddBook),
   takeLatest(addBooks, handleAddBooks),
   takeLatest(removeBook, handleRemoveBook),
-  takeEvery(updateBookThumbnail, handleUpdateBookThumbnail),
+  takeEvery(createBookThumbnail, handleCreateBookThumbnail),
   takeLatest(updateBookRating, handleUpdateBookRating),
-  // ファイルが追加されたら(自動的に)サムネイル生成を行う
-  takeEvery(bookAdded, handleUpdateBookThumbnail),
+  takeEvery(bookAdded, handleBookAdded),
 ];
