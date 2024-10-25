@@ -3,10 +3,9 @@ import { join, extname } from "path";
 import { mkdir, readdir } from "node:fs/promises";
 import { statSync } from "fs";
 import AdmZip from "adm-zip";
-import { v4 as uuidv4 } from "uuid";
 import sharp from "sharp";
 
-const thumbnailsDir = join(app.getPath("userData"), "thumbnails");
+import { ThumbnailCreationDesc } from "../models/worker";
 
 function isImageFile(fileName: string): boolean {
   const extensionsRenderableImgTag = [".png", ".jpg", ".jpeg", ".gif", ".webp"];
@@ -16,16 +15,19 @@ function isImageFile(fileName: string): boolean {
 
 async function writeThumbnail(
   origFile: string | Buffer,
-  size: number
+  width: number,
+  height: number,
+  outDir: string
 ): Promise<string> {
   // webp に変換して出力する
-  const uid = uuidv4();
-  const outDir = join(thumbnailsDir, uid);
-  const outPath = join(outDir, `${size}.webp`);
+  const outPath = join(outDir, `${width}x${height}.webp`);
 
   await mkdir(outDir, { recursive: true });
 
-  const outInfo = await sharp(origFile).webp().resize(size).toFile(outPath);
+  const outInfo = await sharp(origFile)
+    .webp()
+    .resize(width, height)
+    .toFile(outPath);
 
   console.dir(outInfo);
 
@@ -33,13 +35,13 @@ async function writeThumbnail(
 }
 
 // サムネイル画像を生成する
-const createThumbnailFromZip = async (filePath: string) => {
-  const zip = new AdmZip(filePath);
+const createThumbnailFromZip = async (desc: ThumbnailCreationDesc) => {
+  const zip = new AdmZip(desc.path);
 
   const entries = zip.getEntries();
 
   if (entries.length === 0) {
-    throw new Error(`empty zip: ${filePath}`);
+    throw new Error(`empty zip: ${desc.path}`);
   }
 
   let imageEntryName = "";
@@ -52,7 +54,7 @@ const createThumbnailFromZip = async (filePath: string) => {
   }
 
   if (imageEntryName === "") {
-    throw new Error(`supported image not found: ${filePath}`);
+    throw new Error(`supported image not found: ${desc.path}`);
   }
 
   const inBuffer = zip.readFile(imageEntryName);
@@ -61,7 +63,7 @@ const createThumbnailFromZip = async (filePath: string) => {
     throw new Error(`failed to AdmZip.readFile(${imageEntryName}`);
   }
 
-  return await writeThumbnail(inBuffer, 256);
+  return await writeThumbnail(inBuffer, desc.width, desc.height, desc.out_dir);
 };
 
 async function findFirstImage(dir: string): Promise<string> {
@@ -86,23 +88,30 @@ async function findFirstImage(dir: string): Promise<string> {
 }
 
 // フォルダパスからサムネイル画像を生成する
-const createThumbnailFromFolder = async (dirPath: string) => {
-  const imageFilePath = await findFirstImage(dirPath);
+const createThumbnailFromFolder = async (desc: ThumbnailCreationDesc) => {
+  const imageFilePath = await findFirstImage(desc.path);
   if (imageFilePath === "") {
-    throw new Error(`supported image not found: ${dirPath}`);
+    throw new Error(`supported image not found: ${desc.path}`);
   }
 
-  return await writeThumbnail(imageFilePath, 256);
+  return await writeThumbnail(
+    imageFilePath,
+    desc.width,
+    desc.height,
+    desc.out_dir
+  );
 };
 
-export function createThumbnailFromFile(filePath: string): Promise<string> {
-  if (extname(filePath) === ".zip") {
-    return createThumbnailFromZip(filePath);
+export default async function createThumbnail(
+  desc: ThumbnailCreationDesc
+): Promise<string> {
+  if (extname(desc.path) === ".zip") {
+    return createThumbnailFromZip(desc);
   }
 
-  if (statSync(filePath).isDirectory()) {
-    return createThumbnailFromFolder(filePath);
+  if (statSync(desc.path).isDirectory()) {
+    return createThumbnailFromFolder(desc);
   }
 
-  return Promise.reject(`unsupported file format: ${filePath}`);
+  throw new Error(`unsupported file format: ${desc.path}`);
 }

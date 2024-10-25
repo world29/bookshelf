@@ -60,18 +60,6 @@ app.whenReady().then(async () => {
   await createWorkerWindow();
 
   checkForUpdates(win);
-
-  const thumbnailsDir = join(app.getPath("userData"), "thumbnails");
-
-  const desc: ThumbnailCreationDesc = {
-    path: "/path/to/image.png",
-    out_dir: join(thumbnailsDir, "dummy"),
-    width: 256,
-    height: 256,
-  };
-  console.log(desc.path);
-  const thumbnailPath = await bridge_worker.createThumbnail(desc);
-  console.log(thumbnailPath);
 });
 
 app.on("activate", async () => {

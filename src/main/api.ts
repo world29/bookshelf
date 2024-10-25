@@ -14,7 +14,7 @@ import db from "./database";
 import settingsStore from "./settings";
 import { openFile } from "./shell";
 import { BookFileInfo, getBookFileInfo } from "./book";
-import { createThumbnailFromFile } from "./thumbnail";
+import { createThumbnail } from "../worker/thumbnail";
 import { Book } from "../models/book";
 import { FilterByRating, FilterByTag } from "../models/filter";
 import { SortOrder } from "../models/sortOrder";
@@ -184,8 +184,17 @@ class Bridge {
 
     ipcMain.handle(
       "create-thumbnail",
-      (_event: IpcMainInvokeEvent, filePath: string) =>
-        createThumbnailFromFile(filePath)
+      (_event: IpcMainInvokeEvent, filePath: string) => {
+        const thumbnailsDir = join(app.getPath("userData"), "thumbnails");
+
+        const desc: ThumbnailCreationDesc = {
+          path: filePath,
+          out_dir: join(thumbnailsDir, "dummy"),
+          width: 256,
+          height: 256,
+        };
+        return createThumbnail(desc);
+      }
     );
 
     ipcMain.handle(
