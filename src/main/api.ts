@@ -14,7 +14,6 @@ import db from "./database";
 import settingsStore from "./settings";
 import { openFile } from "./shell";
 import { BookFileInfo, getBookFileInfo } from "./book";
-import { createThumbnail } from "../worker/thumbnail";
 import { Book } from "../models/book";
 import { FilterByRating, FilterByTag } from "../models/filter";
 import { SortOrder } from "../models/sortOrder";

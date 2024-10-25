@@ -6,7 +6,6 @@ import db from "./database";
 import { createMenu } from "./menu";
 import { loadExtensions } from "./devtools";
 import checkForUpdates from "./updater";
-import { ThumbnailCreationDesc } from "../models/worker";
 
 async function createWindow(): Promise<BrowserWindow> {
   const mainWindow = new BrowserWindow({
