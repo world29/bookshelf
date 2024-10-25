@@ -24,9 +24,22 @@ import { ThumbnailCreationDesc } from "../models/worker";
 // レンダラープロセスへイベントを送信するための API を公開
 class Bridge {
   private window: BrowserWindow | null;
+  private thumbnailsDir: string;
 
   constructor() {
     this.window = null;
+    this.thumbnailsDir = join(app.getPath("userData"), "thumbnails");
+  }
+
+  /** 指定したファイルからサムネイルを生成する */
+  async createThumbnail(path: string): Promise<string> {
+    const desc: ThumbnailCreationDesc = {
+      path: path,
+      out_dir: join(this.thumbnailsDir, uuidv4()),
+      width: 256,
+      height: 256,
+    };
+    return bridge_worker.createThumbnail(desc);
   }
 
   emitBooksAdded(books: Book[]) {
@@ -146,15 +159,7 @@ class Bridge {
           let generatedCount = 0;
           for (const book of succeeded) {
             try {
-              const thumbnailsDir = join(app.getPath("userData"), "thumbnails");
-
-              const desc: ThumbnailCreationDesc = {
-                path: book.path,
-                out_dir: join(thumbnailsDir, uuidv4()),
-                width: 256,
-                height: 256,
-              };
-              const thumbnailPath = await bridge_worker.createThumbnail(desc);
+              const thumbnailPath = await this.createThumbnail(book.path);
               const newBook = await db.updateBookThumbnail(
                 book.path,
                 thumbnailPath
@@ -184,15 +189,13 @@ class Bridge {
     ipcMain.handle(
       "create-thumbnail",
       (_event: IpcMainInvokeEvent, filePath: string) => {
-        const thumbnailsDir = join(app.getPath("userData"), "thumbnails");
-
-        const desc: ThumbnailCreationDesc = {
-          path: filePath,
-          out_dir: join(thumbnailsDir, "dummy"),
-          width: 256,
-          height: 256,
-        };
-        return bridge_worker.createThumbnail(desc);
+        try {
+          const outPath = this.createThumbnail(filePath);
+          return outPath;
+        } catch (err) {
+          console.log(err);
+          throw err;
+        }
       }
     );
 
