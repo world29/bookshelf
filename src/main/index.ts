@@ -22,7 +22,9 @@ async function createWindow(): Promise<BrowserWindow> {
   const menu = createMenu(mainWindow);
   Menu.setApplicationMenu(menu);
 
-  await loadExtensions();
+  if (process.platform !== "darwin") {
+    await loadExtensions();
+  }
 
   if (!app.isPackaged) {
     mainWindow.webContents.openDevTools();
@@ -33,15 +35,14 @@ async function createWindow(): Promise<BrowserWindow> {
 
 async function createWorkerWindow(): Promise<BrowserWindow> {
   const workerWindow = new BrowserWindow({
-    width: 1600,
-    height: 900,
-    show: true,
+    x: 100,
+    y: 100,
     webPreferences: {
-      //preload: join(__dirname, "preload_worker.js"),
       nodeIntegration: true,
       contextIsolation: false,
     },
   });
+
   bridge_worker.setupAPIs(workerWindow);
   workerWindow.loadFile("worker.html");
 
@@ -68,15 +69,17 @@ app.whenReady().then(async () => {
     width: 256,
     height: 256,
   };
+  console.log(desc.path);
   const thumbnailPath = await bridge_worker.createThumbnail(desc);
   console.log(thumbnailPath);
+});
 
-  app.on("activate", async () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      await createWindow();
-      await createWorkerWindow();
-    }
-  });
+app.on("activate", async () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    console.log("activate");
+    await createWindow();
+    await createWorkerWindow();
+  }
 });
 
 app.on("window-all-closed", () => {

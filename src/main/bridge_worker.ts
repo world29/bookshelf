@@ -29,10 +29,6 @@ class BridgeWorker {
 
   setupAPIs(mainWindow: BrowserWindow) {
     this.window = mainWindow;
-
-    ipcMain.handle("do-a-thing", () =>
-      Promise.resolve("hello from main process.")
-    );
   }
 }
 
