@@ -37,7 +37,7 @@ class Bridge {
       path: path,
       out_dir: join(this.thumbnailsDir, uuidv4()),
       width: 256,
-      height: 256,
+      height: 362,
     };
     return bridge_worker.createThumbnail(desc);
   }
