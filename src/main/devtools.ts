@@ -24,18 +24,22 @@ async function loadExtension(devToolsKey: string): Promise<Electron.Extension> {
       fs.readdir(reactDevTools, (err, versions) => {
         if (err) reject(err);
 
-        session.defaultSession
-          .loadExtension(path.resolve(reactDevTools, versions[0]), {
-            allowFileAccess: true,
-          })
-          .then((extension) => resolve(extension));
+        if (versions) {
+          session.defaultSession
+            .loadExtension(path.resolve(reactDevTools, versions[0]), {
+              allowFileAccess: true,
+            })
+            .then((extension) => resolve(extension));
+        }
       });
     }
   });
 }
 
-export function loadExtensions(): Promise<Electron.Extension[]> {
-  return Promise.all([
+export function loadExtensions(): Promise<
+  PromiseSettledResult<Electron.Extension>[]
+> {
+  return Promise.allSettled([
     loadExtension(REACT_DEV_TOOLS),
     loadExtension(REDUX_DEV_TOOLS),
   ]);
