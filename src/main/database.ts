@@ -2,7 +2,6 @@
 import sqlite3 from "sqlite3";
 import { join } from "path";
 import { Book } from "../models/book";
-import { BookFileInfo } from "./book";
 import {
   FilterByRating,
   FilterByTag,
@@ -15,7 +14,15 @@ const databasePath: string = join(app.getPath("userData"), "books.db");
 
 const db = new sqlite3.Database(databasePath);
 
+export type BookFileInfoWithId = {
+  id: string;
+  path: string;
+  title: string;
+  modifiedTime: string;
+};
+
 type Row = {
+  id: string;
   path: string;
   title: string;
   author: string;
@@ -36,7 +43,7 @@ type FilterAndFetchResult = {
 
 type AddBooksResult = {
   succeeded: Book[];
-  failed: BookFileInfo[];
+  failed: BookFileInfoWithId[];
 };
 
 // データベース初期化
@@ -44,14 +51,17 @@ function initialize() {
   db.serialize(() => {
     db.run(
       `CREATE TABLE IF NOT EXISTS books(
-        path TEXT UNIQUE,
+        id TEXT UNIQUE,
+        path TEXT,
         title TEXT,
         author TEXT DEFAULT '',
         thumbnailPath TEXT DEFAULT '',
         modifiedTime TEXT DEFAULT '',
-        registeredTime TEXT DEFAULT ''
+        registeredTime TEXT DEFAULT '',
+        rating INTEGER DEFAULT 0
       )`
     );
+    /*
     // カラムを追加する。すでにカラムが存在する場合はエラーになるためコールバックを渡しておく。
     db.run(
       "ALTER TABLE books ADD COLUMN rating INTEGER DEFAULT 0",
@@ -59,6 +69,7 @@ function initialize() {
         if (err) console.error(err);
       }
     );
+    */
   });
 }
 
@@ -273,15 +284,15 @@ function addBook(
   });
 }
 
-function addBooks(bookInfos: BookFileInfo[]): Promise<AddBooksResult> {
+function addBooks(bookInfos: BookFileInfoWithId[]): Promise<AddBooksResult> {
   return new Promise((resolve, reject) => {
     const registeredTime = new Date(Date.now()).toISOString();
 
     db.serialize(() => {
-      const failedEntries: BookFileInfo[] = [];
+      const failedEntries: BookFileInfoWithId[] = [];
 
       const stmt = db.prepare(
-        "INSERT OR FAIL INTO books (path, title, modifiedTime, registeredTime) VALUES(?, ?, ?, ?)",
+        "INSERT OR FAIL INTO books (id, path, title, modifiedTime, registeredTime) VALUES(?, ?, ?, ?, ?)",
         (err: Error | null) => {
           if (err) reject(err);
         }
@@ -289,7 +300,7 @@ function addBooks(bookInfos: BookFileInfo[]): Promise<AddBooksResult> {
 
       for (const info of bookInfos) {
         stmt.run(
-          [info.path, info.title, info.modifiedTime, registeredTime],
+          [info.id, info.path, info.title, info.modifiedTime, registeredTime],
           (err: Error | null) => {
             if (err) {
               failedEntries.push(info);

@@ -6,11 +6,12 @@
   shell,
   app,
 } from "electron";
-import { join } from "path";
+import { join, basename } from "path";
+import { rename, mkdir } from "node:fs/promises";
 import { v4 as uuidv4 } from "uuid";
 
 import { OpenFileType } from "../models/dialog";
-import db from "./database";
+import db, { BookFileInfoWithId } from "./database";
 import settingsStore from "./settings";
 import { openFile } from "./shell";
 import { BookFileInfo, getBookFileInfo } from "./book";
@@ -147,7 +148,29 @@ class Bridge {
 
         const bookInfos = fullfilledResults.map((result) => result.value);
 
-        const { succeeded, failed } = await db.addBooks(bookInfos);
+        //todo: ユニーク ID を割り当てて data_dir 以下に移動する
+        const bookInfoWithIds: BookFileInfoWithId[] = [];
+        for (const info of bookInfos) {
+          const id = uuidv4();
+
+          // uuid にもとづくフォルダを作成し、移動する
+          const new_dir = join(settingsStore.get("data_dir"), "files", id);
+          await mkdir(new_dir, { recursive: true }).catch((err) =>
+            console.log(err)
+          );
+
+          const new_path = join(new_dir, basename(info.path));
+          await rename(info.path, new_path)
+            .then(() => {
+              bookInfoWithIds.push(Object.assign(info, { id, path: new_path }));
+            })
+            .catch((err) => {
+              console.log(err);
+              this.emitBookAddFailed(info);
+            });
+        }
+
+        const { succeeded, failed } = await db.addBooks(bookInfoWithIds);
         // ファイル一括登録イベント
         if (succeeded.length > 0) {
           this.emitBooksAdded(succeeded);
