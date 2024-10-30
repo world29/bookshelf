@@ -7,6 +7,7 @@ export default function SettingsDialog() {
 
   const calledRef = useRef(false);
 
+  const [data_dir, setDataDir] = useState("");
   const [viewer, setViewer] = useState("");
 
   useEffect(() => {
@@ -27,9 +28,10 @@ export default function SettingsDialog() {
       dialogRef.current.showModal();
 
       // ダイアログが開いたときに設定情報をメインプロセスから受け取る
-      window.electronAPI
-        .getSettings()
-        .then((settings) => setViewer(settings.viewer));
+      window.electronAPI.getSettings().then((settings) => {
+        setDataDir(settings.data_dir);
+        setViewer(settings.viewer);
+      });
     }
   };
 
@@ -61,6 +63,10 @@ export default function SettingsDialog() {
         <div className="settings-page">
           <h1>Settings</h1>
           <form>
+            <div className="form-group">
+              <label>Data folder:</label>
+              <input type="text" value={data_dir} disabled />
+            </div>
             <div className="form-group">
               <label>Viewer:</label>
               <input type="text" value={viewer} onChange={handleChangeViewer} />

@@ -215,6 +215,15 @@ class Bridge {
     });
 
     ipcMain.handle(
+      "set-settings-data-dir",
+      (_event: IpcMainInvokeEvent, data_dir: string) =>
+        new Promise<void>((resolve) => {
+          settingsStore.set("data_dir", data_dir);
+          resolve();
+        })
+    );
+
+    ipcMain.handle(
       "set-settings-viewer",
       (_event: IpcMainInvokeEvent, viewerPath: string) =>
         new Promise<void>((resolve) => {

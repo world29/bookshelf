@@ -42,6 +42,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("create-thumbnail", path),
   openFile: (path: string) => ipcRenderer.invoke("open-file", path),
   getSettings: () => ipcRenderer.invoke("get-settings"),
+  setSettingsDataDir: (path: string) =>
+    ipcRenderer.invoke("set-settings-data-dir", path),
   setSettingsViewer: (path: string) =>
     ipcRenderer.invoke("set-settings-viewer", path),
   openFileDialog: (fileType: OpenFileType) =>

@@ -30,6 +30,7 @@ export interface IElectronAPI {
   createThumbnail: (path: string) => Promise<string>;
   openFile: (path: string) => Promise<void>;
   getSettings: () => Promise<Settings>;
+  setSettingsDataDir: (path: sting) => Promise<void>;
   setSettingsViewer: (path: sting) => Promise<void>;
   openFileDialog: (
     fileType: OpenFileType
