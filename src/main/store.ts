@@ -2,7 +2,7 @@
 import { join } from "path";
 import fs from "fs";
 
-export class Store<T> {
+export class Store<T extends object> {
   private path: string;
   private data: T;
 
@@ -29,7 +29,22 @@ export class Store<T> {
 
   parseDataFile(filePath: string, defaults: T): T {
     try {
-      return JSON.parse(fs.readFileSync(filePath, { encoding: "utf-8" })) as T;
+      const data = JSON.parse(
+        fs.readFileSync(filePath, { encoding: "utf-8" })
+      ) as T;
+
+      // ファイルに記述されていないプロパティをデフォルト値で初期化する
+      for (const [key, value] of Object.entries(defaults)) {
+        if (!Object.prototype.hasOwnProperty.call(data, key)) {
+          Object.defineProperty(data, key, {
+            value: value,
+            writable: true,
+            enumerable: true,
+            configurable: true,
+          });
+        }
+      }
+      return data;
     } catch (error) {
       return defaults;
     }
