@@ -43,7 +43,11 @@ export interface IElectronAPI {
     callback: (_event: IpcRendererEvent, books: Book[]) => void
   ) => void;
   handleProgressBookAddFailed: (
-    callback: (_event: IpcRendererEvent, fileInfo: BookFileInfo) => void
+    callback: (
+      _event: IpcRendererEvent,
+      fileInfo: BookFileInfo,
+      error: string
+    ) => void
   ) => void;
   handleProgressBookUpdated: (
     callback: (_event: IpcRendererEvent, book: Book) => void

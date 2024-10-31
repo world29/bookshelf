@@ -38,9 +38,14 @@ type FilterAndFetchResult = {
   };
 };
 
+type AddBooksFailedInfo = {
+  book: BookFileInfoWithId;
+  error: string;
+};
+
 type AddBooksResult = {
   succeeded: Book[];
-  failed: BookFileInfoWithId[];
+  failed: AddBooksFailedInfo[];
 };
 
 // データベース初期化
@@ -53,7 +58,7 @@ function initialize(data_dir: string) {
     db?.run(
       `CREATE TABLE IF NOT EXISTS books(
         id TEXT UNIQUE,
-        path TEXT,
+        path TEXT UNIQUE,
         title TEXT,
         author TEXT DEFAULT '',
         thumbnailPath TEXT DEFAULT '',
@@ -290,7 +295,7 @@ function addBooks(bookInfos: BookFileInfoWithId[]): Promise<AddBooksResult> {
     const registeredTime = new Date(Date.now()).toISOString();
 
     db?.serialize(() => {
-      const failedEntries: BookFileInfoWithId[] = [];
+      const failedEntries: AddBooksFailedInfo[] = [];
 
       const stmt = db?.prepare(
         "INSERT OR FAIL INTO books (id, path, title, modifiedTime, registeredTime) VALUES(?, ?, ?, ?, ?)",
@@ -304,7 +309,7 @@ function addBooks(bookInfos: BookFileInfoWithId[]): Promise<AddBooksResult> {
           [info.id, info.path, info.title, info.modifiedTime, registeredTime],
           (err: Error | null) => {
             if (err) {
-              failedEntries.push(info);
+              failedEntries.push({ book: info, error: err.message });
             }
           }
         );

@@ -6,7 +6,7 @@
   shell,
   app,
 } from "electron";
-import { join, basename } from "path";
+import { join, basename, dirname, sep } from "path";
 import { rename, mkdir } from "node:fs/promises";
 import { v4 as uuidv4 } from "uuid";
 
@@ -20,6 +20,7 @@ import { FilterByRating, FilterByTag } from "../models/filter";
 import { SortOrder } from "../models/sortOrder";
 import bridge_worker from "./bridge_worker";
 import { ThumbnailCreationDesc } from "../models/worker";
+import { existsSync } from "original-fs";
 
 // レンダラープロセスとの IPC 通信のセットアップ
 // レンダラープロセスへイベントを送信するための API を公開
@@ -47,8 +48,8 @@ class Bridge {
     this.window?.webContents.send("progress:booksAdded", books);
   }
 
-  emitBookAddFailed(fileInfo: BookFileInfo) {
-    this.window?.webContents.send("progress:bookAddFailed", fileInfo);
+  emitBookAddFailed(fileInfo: BookFileInfo, error: string) {
+    this.window?.webContents.send("progress:bookAddFailed", fileInfo, error);
   }
 
   emitBookUpdated(book: Book) {
@@ -137,6 +138,8 @@ class Bridge {
     ipcMain.handle(
       "add-books",
       async (_event: IpcMainInvokeEvent, paths: string[]): Promise<void> => {
+        const files_dir = join(settingsStore.get("data_dir"), "files");
+
         const promises = paths.map((path) => getBookFileInfo(path));
 
         const results = await Promise.allSettled(promises);
@@ -151,23 +154,42 @@ class Bridge {
         //todo: ユニーク ID を割り当てて data_dir 以下に移動する
         const bookInfoWithIds: BookFileInfoWithId[] = [];
         for (const info of bookInfos) {
-          const id = uuidv4();
+          let id = uuidv4();
+
+          // すでに data_dir 以下のファイルを登録しようとした場合は、親ディレクトリから id を抽出する。
+          // data_dir 以下に配置されていても、データベースから削除済みの場合があるため、この時点ではエラーにしない。
+          if (info.path.includes(files_dir)) {
+            // 親ディレクトリの名前を取得する
+            console.log(`file already in files_dir: ${info.path}`);
+            const dir_entries = dirname(info.path).split(sep);
+            id = dir_entries[dir_entries.length - 1];
+            console.log(id);
+          }
 
           // uuid にもとづくフォルダを作成し、移動する
-          const new_dir = join(settingsStore.get("data_dir"), "files", id);
+          const new_dir = join(files_dir, id);
           await mkdir(new_dir, { recursive: true }).catch((err) =>
             console.log(err)
           );
 
+          // data_dir 以下のファイルを登録する際は rename を行わない
           const new_path = join(new_dir, basename(info.path));
-          await rename(info.path, new_path)
-            .then(() => {
-              bookInfoWithIds.push(Object.assign(info, { id, path: new_path }));
-            })
-            .catch((err) => {
-              console.log(err);
-              this.emitBookAddFailed(info);
-            });
+          if (existsSync(new_path)) {
+            bookInfoWithIds.push(Object.assign(info, { id, path: new_path }));
+          } else {
+            console.log(`renaming: ${info.path} -> ${new_path}`);
+
+            await rename(info.path, new_path)
+              .then(() => {
+                bookInfoWithIds.push(
+                  Object.assign(info, { id, path: new_path })
+                );
+              })
+              .catch((err) => {
+                console.log(err);
+                this.emitBookAddFailed(info, err.message);
+              });
+          }
         }
 
         const { succeeded, failed } = await db.addBooks(bookInfoWithIds);
@@ -175,8 +197,8 @@ class Bridge {
         if (succeeded.length > 0) {
           this.emitBooksAdded(succeeded);
         }
-        for (const fileInfo of failed) {
-          this.emitBookAddFailed(fileInfo);
+        for (const failedInfo of failed) {
+          this.emitBookAddFailed(failedInfo.book, failedInfo.error);
         }
 
         // サムネイルを一つずつ作成する
