@@ -6,6 +6,7 @@ import db from "./database";
 import { createMenu } from "./menu";
 import { loadExtensions } from "./devtools";
 import checkForUpdates from "./updater";
+import settingsStore from "./settings";
 
 async function createWindow(): Promise<BrowserWindow> {
   const mainWindow = new BrowserWindow({
@@ -54,7 +55,7 @@ async function createWorkerWindow(): Promise<BrowserWindow> {
 }
 
 app.whenReady().then(async () => {
-  db.initialize();
+  db.initialize(settingsStore.get("data_dir"));
 
   const win = await createWindow();
   await createWorkerWindow();

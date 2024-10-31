@@ -1,5 +1,4 @@
-﻿import { app } from "electron";
-import sqlite3 from "sqlite3";
+﻿import sqlite3 from "sqlite3";
 import { join } from "path";
 import { Book } from "../models/book";
 import {
@@ -10,9 +9,7 @@ import {
 } from "../models/filter";
 import { SortOrder, SORT_ORDER } from "../models/sortOrder";
 
-const databasePath: string = join(app.getPath("userData"), "books.db");
-
-const db = new sqlite3.Database(databasePath);
+let db: sqlite3.Database | null = null;
 
 export type BookFileInfoWithId = {
   id: string;
@@ -47,9 +44,13 @@ type AddBooksResult = {
 };
 
 // データベース初期化
-function initialize() {
-  db.serialize(() => {
-    db.run(
+function initialize(data_dir: string) {
+  const databasePath: string = join(data_dir, "books.db");
+
+  db = new sqlite3.Database(databasePath);
+
+  db?.serialize(() => {
+    db?.run(
       `CREATE TABLE IF NOT EXISTS books(
         id TEXT UNIQUE,
         path TEXT,
@@ -63,7 +64,7 @@ function initialize() {
     );
     /*
     // カラムを追加する。すでにカラムが存在する場合はエラーになるためコールバックを渡しておく。
-    db.run(
+    db?.run(
       "ALTER TABLE books ADD COLUMN rating INTEGER DEFAULT 0",
       (err: Error | null) => {
         if (err) console.error(err);
@@ -75,12 +76,12 @@ function initialize() {
 
 // データベース終了
 function finalize() {
-  db.close();
+  db?.close();
 }
 
 function findBooks(searchQuery: string): Promise<Book[]> {
   return new Promise((resolve, reject) => {
-    db.all(
+    db?.all(
       `SELECT * FROM books WHERE title LIKE '%${searchQuery}%' OR author LIKE '%${searchQuery}%'`,
       (err: Error, rows: Row[]) => {
         if (err) reject(err);
@@ -93,7 +94,7 @@ function findBooks(searchQuery: string): Promise<Book[]> {
 
 function getBookCount(): Promise<number> {
   return new Promise((resolve, reject) => {
-    db.get(
+    db?.get(
       "SELECT COUNT(*) AS count FROM books",
       (err: Error | null, row: { count: number }) => {
         if (err) reject(err);
@@ -147,9 +148,9 @@ function filterAndFetchBooks(
 
     console.log(query);
 
-    db.serialize(() => {
+    db?.serialize(() => {
       let filterResultCount = 0;
-      db.get(
+      db?.get(
         `SELECT COUNT(*) AS count ${query}`,
         (err: Error | null, row: { count: number }) => {
           if (err) reject(err);
@@ -160,7 +161,7 @@ function filterAndFetchBooks(
 
       query += ` LIMIT ${fetchCount} OFFSET ${fetchOffset}`;
 
-      db.all(`SELECT * ${query}`, (err: Error, rows: Row[]) => {
+      db?.all(`SELECT * ${query}`, (err: Error, rows: Row[]) => {
         if (err) reject(err);
 
         resolve({
@@ -174,7 +175,7 @@ function filterAndFetchBooks(
 
 function getBookByPath(path: string): Promise<Book> {
   return new Promise((resolve, reject) => {
-    db.all(
+    db?.all(
       `SELECT * FROM books WHERE path LIKE '%${path}%'`,
       (err: Error, rows: Row[]) => {
         if (err) reject(err);
@@ -191,14 +192,14 @@ function updateBook(
   author: string
 ): Promise<Book> {
   return new Promise((resolve, reject) => {
-    db.serialize(() => {
-      db.run(
+    db?.serialize(() => {
+      db?.run(
         "UPDATE books SET title = ?, author = ? WHERE path = ?",
         title,
         author,
         path
       );
-      db.get(
+      db?.get(
         "SELECT * FROM books WHERE path = ?",
         path,
         (err: Error | null, row: Row) => {
@@ -216,13 +217,13 @@ function updateBookThumbnail(
   thumbnailPath: string
 ): Promise<Book> {
   return new Promise((resolve, reject) => {
-    db.serialize(() => {
-      db.run(
+    db?.serialize(() => {
+      db?.run(
         "UPDATE books SET thumbnailPath = ? WHERE path = ?",
         thumbnailPath,
         path
       );
-      db.get(
+      db?.get(
         "SELECT * FROM books WHERE path = ?",
         path,
         (err: Error | null, row: Row) => {
@@ -237,9 +238,9 @@ function updateBookThumbnail(
 
 function updateBookRating(path: string, rating: number): Promise<Book> {
   return new Promise((resolve, reject) => {
-    db.serialize(() => {
-      db.run("UPDATE books SET rating = ? WHERE path = ?", rating, path);
-      db.get(
+    db?.serialize(() => {
+      db?.run("UPDATE books SET rating = ? WHERE path = ?", rating, path);
+      db?.get(
         "SELECT * FROM books WHERE path = ?",
         path,
         (err: Error | null, row: Row) => {
@@ -260,8 +261,8 @@ function addBook(
   const registeredTime = new Date(Date.now()).toISOString();
 
   return new Promise((resolve, reject) => {
-    db.serialize(() => {
-      db.run(
+    db?.serialize(() => {
+      db?.run(
         "INSERT OR FAIL INTO books (path, title, modifiedTime, registeredTime) VALUES(?, ?, ?, ?)",
         path,
         title,
@@ -271,7 +272,7 @@ function addBook(
           if (err) reject(err);
         }
       );
-      db.get(
+      db?.get(
         "SELECT * FROM books WHERE path = ?",
         path,
         (err: Error | null, row: Row) => {
@@ -288,10 +289,10 @@ function addBooks(bookInfos: BookFileInfoWithId[]): Promise<AddBooksResult> {
   return new Promise((resolve, reject) => {
     const registeredTime = new Date(Date.now()).toISOString();
 
-    db.serialize(() => {
+    db?.serialize(() => {
       const failedEntries: BookFileInfoWithId[] = [];
 
-      const stmt = db.prepare(
+      const stmt = db?.prepare(
         "INSERT OR FAIL INTO books (id, path, title, modifiedTime, registeredTime) VALUES(?, ?, ?, ?, ?)",
         (err: Error | null) => {
           if (err) reject(err);
@@ -299,7 +300,7 @@ function addBooks(bookInfos: BookFileInfoWithId[]): Promise<AddBooksResult> {
       );
 
       for (const info of bookInfos) {
-        stmt.run(
+        stmt?.run(
           [info.id, info.path, info.title, info.modifiedTime, registeredTime],
           (err: Error | null) => {
             if (err) {
@@ -309,11 +310,11 @@ function addBooks(bookInfos: BookFileInfoWithId[]): Promise<AddBooksResult> {
         );
       }
 
-      stmt.finalize((err: Error | null) => {
+      stmt?.finalize((err: Error | null) => {
         if (err) reject(err);
       });
 
-      db.all(
+      db?.all(
         "SELECT * FROM books WHERE registeredTime = ?",
         registeredTime,
         (err: Error | null, rows: Row[]) => {
@@ -328,7 +329,7 @@ function addBooks(bookInfos: BookFileInfoWithId[]): Promise<AddBooksResult> {
 
 function removeBook(path: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    db.run("DELETE FROM books WHERE path = ?", path, (err: Error | null) => {
+    db?.run("DELETE FROM books WHERE path = ?", path, (err: Error | null) => {
       if (err) reject(err);
 
       resolve(path);
