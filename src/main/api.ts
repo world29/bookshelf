@@ -4,7 +4,6 @@
   ipcMain,
   IpcMainInvokeEvent,
   shell,
-  app,
 } from "electron";
 import { join, basename, dirname, sep } from "path";
 import { rename, mkdir } from "node:fs/promises";
@@ -26,18 +25,16 @@ import { existsSync } from "original-fs";
 // レンダラープロセスへイベントを送信するための API を公開
 class Bridge {
   private window: BrowserWindow | null;
-  private thumbnailsDir: string;
 
   constructor() {
     this.window = null;
-    this.thumbnailsDir = join(app.getPath("userData"), "thumbnails");
   }
 
   /** 指定したファイルからサムネイルを生成する */
   async createThumbnail(path: string): Promise<string> {
     const desc: ThumbnailCreationDesc = {
       path: path,
-      out_dir: join(this.thumbnailsDir, uuidv4()),
+      out_dir: dirname(path),
       width: 256,
       height: 362,
     };
