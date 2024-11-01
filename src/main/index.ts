@@ -1,5 +1,7 @@
 ﻿import { app, BrowserWindow, Menu } from "electron";
 import { join } from "path";
+import { mkdir } from "node:fs/promises";
+
 import { bridge } from "./api";
 import bridge_worker from "./bridge_worker";
 import db from "./database";
@@ -55,7 +57,9 @@ async function createWorkerWindow(): Promise<BrowserWindow> {
 }
 
 app.whenReady().then(async () => {
-  db.initialize(settingsStore.get("data_dir"));
+  const data_dir = settingsStore.get("data_dir");
+  await mkdir(data_dir, { recursive: true });
+  db.initialize(data_dir);
 
   const win = await createWindow();
   await createWorkerWindow();
