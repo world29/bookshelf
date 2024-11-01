@@ -5,7 +5,7 @@
   IpcMainInvokeEvent,
   shell,
 } from "electron";
-import { join, basename, dirname, sep } from "path";
+import { join, basename, dirname, extname, sep } from "path";
 import { rename, mkdir } from "node:fs/promises";
 import { v4 as uuidv4 } from "uuid";
 
@@ -161,6 +161,18 @@ class Bridge {
             const dir_entries = dirname(info.path).split(sep);
             id = dir_entries[dir_entries.length - 1];
             console.log(id);
+          }
+
+          // zip ファイルかフォルダのみ対応する
+          const is_zip = extname(info.path);
+          const is_folder = info.stats.isDirectory();
+
+          if (!is_zip && !is_folder) {
+            this.emitBookAddFailed(
+              info,
+              `file must be zip or folder: ${info.path}`
+            );
+            continue;
           }
 
           // uuid にもとづくフォルダを作成し、移動する
