@@ -52,6 +52,10 @@ export const createBookThumbnail = createAction<{
   path: string;
 }>("books/createBookThumbnail");
 
+export const createBookThumbnailAll = createAction(
+  "books/createBookThumbnailAll"
+);
+
 export const updateBookRating = createAction<{
   path: string;
   rating: number;

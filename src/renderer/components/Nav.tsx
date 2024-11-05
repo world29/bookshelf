@@ -3,7 +3,7 @@
 import { FilterByRating } from "../../models/filter";
 import { SORT_ORDER, SortOrder } from "../../models/sortOrder";
 import { useAppDispatch } from "../app/hooks";
-import { addBooks } from "../features/books/booksSlice";
+import { addBooks, createBookThumbnailAll } from "../features/books/booksSlice";
 import RatingSelect from "./RatingSelect";
 
 import "./../styles/Nav.css";
@@ -85,6 +85,13 @@ export const Nav = (props: Props) => {
         </div>
       </div>
       <div>
+        <button
+          className="button"
+          type="button"
+          onClick={() => dispatch(createBookThumbnailAll())}
+        >
+          thumb:reflesh
+        </button>
         <button className="button" type="button" onClick={handleClickAddZip}>
           Addzip
         </button>
