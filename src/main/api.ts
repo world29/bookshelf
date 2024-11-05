@@ -222,7 +222,7 @@ class Bridge {
             if (existsSync(new_path)) {
               bookInfoWithIds.push(Object.assign(info, { id, path: new_path }));
             } else {
-              this.convertFolderToZip(info.path, new_path)
+              await this.convertFolderToZip(info.path, new_path)
                 .then(() => {
                   bookInfoWithIds.push(
                     Object.assign(info, { id, path: new_path })
@@ -235,6 +235,8 @@ class Bridge {
             }
           }
         }
+
+        console.dir(bookInfoWithIds);
 
         const { succeeded, failed } = await db.addBooks(bookInfoWithIds);
         // ファイル一括登録イベント

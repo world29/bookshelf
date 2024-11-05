@@ -26,11 +26,13 @@ class BridgeWorker {
   convertFolderToZip(desc: FolderToZipConversionDesc): Promise<string> {
     return new Promise((resolve, reject) => {
       this.window?.webContents.send("worker:convertFolderToZip", desc);
+      console.log(`worker:convertFolderToZip: ${desc.folder_path}`);
       ipcMain.once("worker:convertFolderToZipReply", (_event, outPath, err) => {
         if (err) {
           reject(err);
         }
 
+        console.log(`worker:convertFolderToZipReply: ${outPath}`);
         resolve(outPath);
       });
     });
