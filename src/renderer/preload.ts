@@ -4,7 +4,6 @@ import { Book } from "../models/book";
 import { OpenFileType } from "../models/dialog";
 import { FilterByRating, FilterByTag } from "../models/filter";
 import { SortOrder } from "../models/sortOrder";
-import { BookFileInfo } from "../main/book";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   doThing: () => ipcRenderer.invoke("do-a-thing"),
@@ -58,11 +57,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
     callback: (_event: IpcRendererEvent, books: Book[]) => void
   ) => ipcRenderer.on("progress:booksAdded", callback),
   handleProgressBookAddFailed: (
-    callback: (
-      _event: IpcRendererEvent,
-      fileInfo: BookFileInfo,
-      error: string
-    ) => void
+    callback: (_event: IpcRendererEvent, path: string, error: string) => void
   ) => ipcRenderer.on("progress:bookAddFailed", callback),
   handleProgressBookUpdated: (
     callback: (_event: IpcRendererEvent, book: Book) => void

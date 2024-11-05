@@ -63,9 +63,9 @@ export default function App() {
     });
 
     window.electronAPI.handleProgressBookAddFailed(
-      (_event, fileInfo, error: string) => {
+      (_event, path, error: string) => {
         // 登録失敗したファイルをエラーとして表示する
-        const message = `Add failed: ${fileInfo.path}\n${error}`;
+        const message = `Add failed: ${path}\n${error}`;
         showToast(message, "error");
       }
     );

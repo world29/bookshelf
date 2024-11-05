@@ -3,7 +3,6 @@ import { Book } from "./models/book";
 import { OpenFileType } from "./models/dialog";
 import { Settings } from "./models/settings";
 import { FilterByRating, FilterByTag } from "./models/filter";
-import { BookFileInfo } from "./main/book";
 
 export interface IElectronAPI {
   doThing: () => Promise<string>;
@@ -43,11 +42,7 @@ export interface IElectronAPI {
     callback: (_event: IpcRendererEvent, books: Book[]) => void
   ) => void;
   handleProgressBookAddFailed: (
-    callback: (
-      _event: IpcRendererEvent,
-      fileInfo: BookFileInfo,
-      error: string
-    ) => void
+    callback: (_event: IpcRendererEvent, path: string, error: string) => void
   ) => void;
   handleProgressBookUpdated: (
     callback: (_event: IpcRendererEvent, book: Book) => void

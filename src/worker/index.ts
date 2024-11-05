@@ -4,16 +4,20 @@ import {
   ThumbnailCreationDesc,
 } from "../models/worker";
 import createThumbnail from "./thumbnail";
-import folderToZip from "./folder-to-zip";
+import convertFolderToZip from "./folder-to-zip";
 
 console.log("worker loaded.");
 
 ipcRenderer.on(
-  "worker:folderToZip",
+  "worker:convertFolderToZip",
   (_event: IpcRendererEvent, desc: FolderToZipConversionDesc) => {
-    folderToZip(desc)
-      .then(() => ipcRenderer.send("worker:folderToZipReply"))
-      .catch((err) => ipcRenderer.send("worker:folderToZipReply", err));
+    convertFolderToZip(desc)
+      .then((outPath) => {
+        ipcRenderer.send("worker:convertFolderToZipReply", outPath);
+      })
+      .catch((err) =>
+        ipcRenderer.send("worker:convertFolderToZipReply", "", err)
+      );
   }
 );
 

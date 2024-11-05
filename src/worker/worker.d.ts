@@ -6,6 +6,8 @@ import {
 
 declare function doThing(): Promise<string>;
 
+declare function sendFolderToZipConversionReply(filePath: string): void;
+
 declare function sendThumbnailCreationReply(filePath: string): void;
 
 declare function FolderToZipConversionRequestCallback(
