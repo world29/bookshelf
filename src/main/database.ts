@@ -52,6 +52,8 @@ type AddBooksResult = {
 function initialize(data_dir: string) {
   const databasePath: string = join(data_dir, "books.db");
 
+  console.log(databasePath);
+
   db = new sqlite3.Database(databasePath);
 
   db?.serialize(() => {

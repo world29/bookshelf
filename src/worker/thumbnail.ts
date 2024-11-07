@@ -44,6 +44,8 @@ const createThumbnailFromZip = async (desc: ThumbnailCreationDesc) => {
       throw new Error(`empty zip: ${desc.path}`);
     }
 
+    entries.sort();
+
     let imageEntryName = "";
 
     for (const entry of entries) {
@@ -56,6 +58,8 @@ const createThumbnailFromZip = async (desc: ThumbnailCreationDesc) => {
     if (imageEntryName === "") {
       throw new Error(`supported image not found: ${desc.path}`);
     }
+
+    console.log(`create thumbnail from ${imageEntryName}`);
 
     const inBuffer = zip.readFile(imageEntryName);
 

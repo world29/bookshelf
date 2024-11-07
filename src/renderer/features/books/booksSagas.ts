@@ -14,6 +14,7 @@ import {
   removeBook,
   createBookThumbnail,
   updateBookRating,
+  createBookThumbnailAll,
 } from "./booksSlice";
 
 function* handleUpdateBook(action: {
@@ -91,6 +92,29 @@ function* handleCreateBookThumbnail(action: { payload: { path: string } }) {
   }
 }
 
+function* handleCreateBookThumbnailAll() {
+  try {
+    const books: Book[] = yield select((state) => state.books);
+
+    for (const book of books) {
+      const thumbnailPath: string = yield call(
+        window.electronAPI.createThumbnail,
+        book.path
+      );
+
+      const newBook: Book = yield call(
+        window.electronAPI.updateBookThumbnail,
+        book.path,
+        thumbnailPath
+      );
+
+      yield put(bookUpdated(newBook));
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 function* handleUpdateBookRating(action: {
   payload: { path: string; rating: number };
 }) {
@@ -121,6 +145,7 @@ export default [
   takeLatest(addBooks, handleAddBooks),
   takeLatest(removeBook, handleRemoveBook),
   takeEvery(createBookThumbnail, handleCreateBookThumbnail),
+  takeLatest(createBookThumbnailAll, handleCreateBookThumbnailAll),
   takeLatest(updateBookRating, handleUpdateBookRating),
   takeEvery(bookAdded, handleBookAdded),
 ];

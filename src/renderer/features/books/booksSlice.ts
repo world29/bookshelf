@@ -11,7 +11,9 @@ export const booksSlice = createSlice({
   reducers: {
     bookUpdated: (state, action: PayloadAction<Book>) =>
       state.map((book) =>
-        book.path === action.payload.path ? action.payload : book
+        book.path === action.payload.path
+          ? { thumbHash: Date.now().toString(), ...action.payload }
+          : book
       ),
     booksFetched: (state, action: PayloadAction<Book[]>) => action.payload,
     bookAdded: (state, action: PayloadAction<Book>) =>
@@ -49,6 +51,10 @@ export const removeBook = createAction<{
 export const createBookThumbnail = createAction<{
   path: string;
 }>("books/createBookThumbnail");
+
+export const createBookThumbnailAll = createAction(
+  "books/createBookThumbnailAll"
+);
 
 export const updateBookRating = createAction<{
   path: string;

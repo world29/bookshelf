@@ -1,5 +1,8 @@
 ﻿import { BrowserWindow, ipcMain } from "electron";
-import { ThumbnailCreationDesc } from "../models/worker";
+import {
+  FolderToZipConversionDesc,
+  ThumbnailCreationDesc,
+} from "../models/worker";
 
 class BridgeWorker {
   private window: BrowserWindow | null;
@@ -12,8 +15,27 @@ class BridgeWorker {
     this.window?.webContents.send("worker:sendMessage", text);
   }
 
+  emitFolderToZipConversionRequest(desc: FolderToZipConversionDesc) {
+    this.window?.webContents.send("worker:folderToZip", desc);
+  }
+
   emitThumbnailCreationRequest(desc: ThumbnailCreationDesc) {
     this.window?.webContents.send("worker:createThumbnail", desc);
+  }
+
+  convertFolderToZip(desc: FolderToZipConversionDesc): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.window?.webContents.send("worker:convertFolderToZip", desc);
+      console.log(`worker:convertFolderToZip: ${desc.folder_path}`);
+      ipcMain.once("worker:convertFolderToZipReply", (_event, outPath, err) => {
+        if (err) {
+          reject(err);
+        }
+
+        console.log(`worker:convertFolderToZipReply: ${outPath}`);
+        resolve(outPath);
+      });
+    });
   }
 
   createThumbnail(desc: ThumbnailCreationDesc): Promise<string> {

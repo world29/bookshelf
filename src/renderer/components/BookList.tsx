@@ -97,17 +97,22 @@ const BookListItem = (props: BookListItemProps) => {
     ];
   };
 
-  const thumbnailPath =
-    book.thumbnailPath !== ""
-      ? book.thumbnailPath
-      : "https://via.placeholder.com/256x362/92c952";
+  const createThumbnailUrl = (): string => {
+    if (book.thumbnailPath === "") {
+      return "https://via.placeholder.com/256x362/92c952";
+    }
+    if (book.thumbHash) {
+      return `${book.thumbnailPath}?${book.thumbHash}`;
+    }
+    return book.thumbnailPath;
+  };
 
   const modifiedTimeString = new Date(book.modifiedTime).toLocaleDateString();
 
   return (
     <div className="bookWrapper" onContextMenu={handleContextMenu}>
       <div className="thumbnail">
-        <img src={thumbnailPath} alt="thumbnail" />
+        <img src={createThumbnailUrl()} alt="thumbnail" />
       </div>
       <div>
         <div className="bookText">{book.title}</div>

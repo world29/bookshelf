@@ -1,9 +1,11 @@
-﻿import { stat } from "node:fs/promises";
+﻿import { Stats } from "node:fs";
+import { stat } from "node:fs/promises";
 import { basename, extname } from "path";
 
 export type BookFileInfo = {
   path: string;
   title: string;
+  stats: Stats;
   modifiedTime: string;
 };
 
@@ -14,5 +16,5 @@ export async function getBookFileInfo(path: string): Promise<BookFileInfo> {
   const stats = await stat(path);
   const modifiedTime = stats.mtime.toISOString();
 
-  return { path, title, modifiedTime };
+  return { path, title, stats, modifiedTime };
 }

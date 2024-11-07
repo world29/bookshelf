@@ -5,7 +5,7 @@
   IpcMainInvokeEvent,
   shell,
 } from "electron";
-import { join, basename, dirname, sep } from "path";
+import { join, basename, dirname, extname, sep } from "path";
 import { rename, mkdir } from "node:fs/promises";
 import { v4 as uuidv4 } from "uuid";
 
@@ -18,7 +18,10 @@ import { Book } from "../models/book";
 import { FilterByRating, FilterByTag } from "../models/filter";
 import { SortOrder } from "../models/sortOrder";
 import bridge_worker from "./bridge_worker";
-import { ThumbnailCreationDesc } from "../models/worker";
+import {
+  FolderToZipConversionDesc,
+  ThumbnailCreationDesc,
+} from "../models/worker";
 import { existsSync } from "original-fs";
 
 // レンダラープロセスとの IPC 通信のセットアップ
@@ -28,6 +31,18 @@ class Bridge {
 
   constructor() {
     this.window = null;
+  }
+
+  async convertFolderToZip(
+    folder_path: string,
+    zip_path: string
+  ): Promise<string> {
+    const desc: FolderToZipConversionDesc = {
+      folder_path,
+      zip_path,
+      delete_folder: false,
+    };
+    return bridge_worker.convertFolderToZip(desc);
   }
 
   /** 指定したファイルからサムネイルを生成する */
@@ -45,8 +60,8 @@ class Bridge {
     this.window?.webContents.send("progress:booksAdded", books);
   }
 
-  emitBookAddFailed(fileInfo: BookFileInfo, error: string) {
-    this.window?.webContents.send("progress:bookAddFailed", fileInfo, error);
+  emitBookAddFailed(path: string, error: string) {
+    this.window?.webContents.send("progress:bookAddFailed", path, error);
   }
 
   emitBookUpdated(book: Book) {
@@ -163,31 +178,65 @@ class Bridge {
             console.log(id);
           }
 
+          // zip ファイルかフォルダのみ対応する
+          const is_zip = extname(info.path) === ".zip";
+          const is_folder = info.stats.isDirectory();
+
+          if (!is_zip && !is_folder) {
+            this.emitBookAddFailed(
+              info.path,
+              `file must be zip or folder: ${info.path}`
+            );
+            continue;
+          }
+
           // uuid にもとづくフォルダを作成し、移動する
           const new_dir = join(files_dir, id);
           await mkdir(new_dir, { recursive: true }).catch((err) =>
             console.log(err)
           );
 
-          // data_dir 以下のファイルを登録する際は rename を行わない
-          const new_path = join(new_dir, basename(info.path));
-          if (existsSync(new_path)) {
-            bookInfoWithIds.push(Object.assign(info, { id, path: new_path }));
-          } else {
-            console.log(`renaming: ${info.path} -> ${new_path}`);
+          if (is_zip) {
+            // data_dir 以下のファイルを登録する際は rename を行わない
+            const new_path = join(new_dir, basename(info.path));
+            if (existsSync(new_path)) {
+              bookInfoWithIds.push(Object.assign(info, { id, path: new_path }));
+            } else {
+              console.log(`renaming: ${info.path} -> ${new_path}`);
 
-            await rename(info.path, new_path)
-              .then(() => {
-                bookInfoWithIds.push(
-                  Object.assign(info, { id, path: new_path })
-                );
-              })
-              .catch((err) => {
-                console.log(err);
-                this.emitBookAddFailed(info, err.message);
-              });
+              await rename(info.path, new_path)
+                .then(() => {
+                  bookInfoWithIds.push(
+                    Object.assign(info, { id, path: new_path })
+                  );
+                })
+                .catch((err) => {
+                  console.log(err);
+                  this.emitBookAddFailed(info.path, err.message);
+                });
+            }
+          } else if (is_folder) {
+            const new_path = join(new_dir, basename(info.path)) + ".zip";
+            console.log(`convert folder to zip: ${info.path} -> ${new_path}`);
+
+            if (existsSync(new_path)) {
+              bookInfoWithIds.push(Object.assign(info, { id, path: new_path }));
+            } else {
+              await this.convertFolderToZip(info.path, new_path)
+                .then(() => {
+                  bookInfoWithIds.push(
+                    Object.assign(info, { id, path: new_path })
+                  );
+                })
+                .catch((err) => {
+                  console.log(err);
+                  this.emitBookAddFailed(info.path, err.message);
+                });
+            }
           }
         }
+
+        console.dir(bookInfoWithIds);
 
         const { succeeded, failed } = await db.addBooks(bookInfoWithIds);
         // ファイル一括登録イベント
@@ -195,7 +244,7 @@ class Bridge {
           this.emitBooksAdded(succeeded);
         }
         for (const failedInfo of failed) {
-          this.emitBookAddFailed(failedInfo.book, failedInfo.error);
+          this.emitBookAddFailed(failedInfo.book.path, failedInfo.error);
         }
 
         // サムネイルを一つずつ作成する
