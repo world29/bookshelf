@@ -1,11 +1,27 @@
-﻿import { IpcRendererEvent } from "electron";
+﻿import {
+  IpcRendererEvent,
+  MessageBoxOptions,
+  MessageBoxReturnValue,
+} from "electron";
 import { Book } from "./models/book";
 import { OpenFileType } from "./models/dialog";
 import { Settings } from "./models/settings";
 import { FilterByRating, FilterByTag } from "./models/filter";
+import {
+  UpdaterError,
+  UpdaterEvents,
+  UpdaterProgressInfo,
+  UpdaterUpdateInfo,
+} from "../models/autoUpdater";
+import { UpdateCheckResult } from "electron-updater";
 
 export interface IElectronAPI {
   doThing: () => Promise<string>;
+  showMessageBox: (
+    options: MessageBoxOptions
+  ) => Promise<MessageBoxReturnValue>;
+  checkForUpdatesAndNotify: () => Promise<UpdateCheckResult>;
+  quitAndInstall: () => void;
   findBooks: (searchQuery: string) => Promise<Book[]>;
   getBookCount: () => Promise<number>;
   filterAndFetchBooks: (
@@ -37,6 +53,13 @@ export interface IElectronAPI {
   showItemInFolder: (path: string) => Promise<void>;
   moveToTrash: (path: string) => Promise<void>;
   // メインからレンダラープロセス
+  handleUpdaterEvent: (
+    callback: (
+      _event: IpcRendererEvent,
+      updaterEvent: UpdaterEvents,
+      info?: UpdaterUpdateInfo | UpdaterProgressInfo | UpdaterError
+    ) => void
+  ) => void;
   handleOpenSettings: (callback: () => void) => void;
   handleProgressBooksAdded: (
     callback: (_event: IpcRendererEvent, books: Book[]) => void

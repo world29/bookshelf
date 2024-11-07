@@ -7,7 +7,7 @@ import bridge_worker from "./bridge_worker";
 import db from "./database";
 import { createMenu } from "./menu";
 import { loadExtensions } from "./devtools";
-import checkForUpdates from "./updater";
+import initializeAutoUpdater from "./updater";
 import settingsStore from "./settings";
 
 async function createWindow(): Promise<BrowserWindow> {
@@ -63,7 +63,7 @@ app.whenReady().then(async () => {
   const win = await createWindow();
   await createWorkerWindow();
 
-  checkForUpdates(win);
+  initializeAutoUpdater(win);
 });
 
 app.on("activate", async () => {

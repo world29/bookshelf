@@ -1,12 +1,29 @@
-﻿import { contextBridge, ipcRenderer, IpcRendererEvent } from "electron";
+﻿import {
+  contextBridge,
+  ipcRenderer,
+  IpcRendererEvent,
+  MessageBoxOptions,
+} from "electron";
 import { Book } from "../models/book";
 
 import { OpenFileType } from "../models/dialog";
 import { FilterByRating, FilterByTag } from "../models/filter";
 import { SortOrder } from "../models/sortOrder";
+import {
+  updaterChannel,
+  UpdaterError,
+  UpdaterEvents,
+  UpdaterProgressInfo,
+  UpdaterUpdateInfo,
+} from "../models/autoUpdater";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   doThing: () => ipcRenderer.invoke("do-a-thing"),
+  showMessageBox: (options: MessageBoxOptions) =>
+    ipcRenderer.invoke("showMessageDialog", options),
+  checkForUpdatesAndNotify: () =>
+    ipcRenderer.invoke("checkForUpdatesAndNotify"),
+  quitAndInstall: () => ipcRenderer.send("quitAndInstall"),
   findBooks: (searchQuery: string) =>
     ipcRenderer.invoke("find-books", searchQuery),
   getBookCount: () => ipcRenderer.invoke("get-book-count"),
@@ -51,6 +68,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("show-item-in-folder", path),
   moveToTrash: (path: string) => ipcRenderer.invoke("move-to-trash", path),
   // メインからレンダラープロセス
+  handleUpdaterEvent: (
+    callback: (
+      _event: IpcRendererEvent,
+      updaterEvent: UpdaterEvents,
+      info?: UpdaterUpdateInfo | UpdaterProgressInfo | UpdaterError
+    ) => void
+  ) => ipcRenderer.on(updaterChannel, callback),
   handleOpenSettings: (callback: () => void) =>
     ipcRenderer.on("open-settings", callback),
   handleProgressBooksAdded: (

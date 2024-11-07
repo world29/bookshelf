@@ -3,6 +3,7 @@
   dialog,
   ipcMain,
   IpcMainInvokeEvent,
+  MessageBoxOptions,
   shell,
 } from "electron";
 import { join, basename, dirname, extname, sep } from "path";
@@ -321,6 +322,17 @@ class Bridge {
           settingsStore.set("viewer", viewerPath);
           resolve();
         })
+    );
+
+    ipcMain.handle(
+      "showMessageDialog",
+      (_event: IpcMainInvokeEvent, options: MessageBoxOptions) => {
+        const win = BrowserWindow.fromWebContents(_event.sender);
+        if (win) {
+          return dialog.showMessageBox(win, options);
+        }
+        return Promise.reject("BrowserWindow.fromWebContens() failed.");
+      }
     );
 
     ipcMain.handle(
