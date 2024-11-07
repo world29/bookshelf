@@ -61,7 +61,10 @@ app.whenReady().then(async () => {
   db.initialize(data_dir);
 
   const win = await createWindow();
-  await createWorkerWindow();
+  const worker = await createWorkerWindow();
+
+  // メインウィンドウが閉じたらワーカーウィンドウも閉じる
+  win.on("closed", () => worker.close());
 
   initializeAutoUpdater(win);
 });
