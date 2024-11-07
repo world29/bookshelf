@@ -1,6 +1,6 @@
 {
   "name": "bookshelf",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "ebook management",
   "main": "dist/main.js",
   "scripts": {
