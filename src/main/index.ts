@@ -24,11 +24,10 @@ async function createWindow(): Promise<BrowserWindow> {
   const menu = createMenu(mainWindow);
   Menu.setApplicationMenu(menu);
 
-  if (process.platform !== "darwin") {
-    await loadExtensions();
-  }
-
   if (!app.isPackaged) {
+    if (process.platform !== "darwin") {
+      await loadExtensions();
+    }
     mainWindow.webContents.openDevTools();
   }
 
