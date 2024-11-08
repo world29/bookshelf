@@ -95,16 +95,20 @@ function* handleCreateBookThumbnail(action: { payload: { path: string } }) {
 function* handleCreateBookThumbnailAll() {
   const books: Book[] = yield select((state) => state.books);
 
-  for (const book of books) {
+  const bookPaths = books
+    .filter((book) => book.thumbnailPath === "")
+    .map((book) => book.path);
+
+  for (const bookPath of bookPaths) {
     try {
       const thumbnailPath: string = yield call(
         window.electronAPI.createThumbnail,
-        book.path
+        bookPath
       );
 
       const newBook: Book = yield call(
         window.electronAPI.updateBookThumbnail,
-        book.path,
+        bookPath,
         thumbnailPath
       );
 
