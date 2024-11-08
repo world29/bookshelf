@@ -166,14 +166,19 @@ function filterAndFetchBooks(
         }
       );
 
-      query += ` LIMIT ${fetchCount} OFFSET ${fetchOffset}`;
+      //query += ` LIMIT ${fetchCount} OFFSET ${fetchOffset}`;
 
       db?.all(`SELECT * ${query}`, (err: Error, rows: Row[]) => {
         if (err) reject(err);
 
+        // 指定されたオフセットが件数よりも大きいなら無視する
+        // (先頭ページの結果を返すことになる)
+        const offset = rows.length <= fetchOffset ? 0 : fetchOffset;
+        const books = rows.slice(offset, offset + fetchCount);
+
         resolve({
           filterResult: { count: filterResultCount },
-          fetchResult: { books: rows },
+          fetchResult: { books },
         });
       });
     });

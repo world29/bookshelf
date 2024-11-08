@@ -122,6 +122,11 @@ export default function App() {
         currentPage * itemsPerPage
       )
       .then(({ filterResult, fetchResult }) => {
+        // フィルタによって件数が変化する場合は先頭ページにする
+        if (filterResult.count !== filterResults) {
+          //todo: 先頭ページへの移動によって再度 fetchBooks が呼ばれるのを防ぐ
+          setCurrentPage(0);
+        }
         setFilterResults(filterResult.count);
         dispatch(booksFetched(fetchResult.books));
       });
