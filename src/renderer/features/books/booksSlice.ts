@@ -61,7 +61,4 @@ export const updateBookRating = createAction<{
   rating: number;
 }>("books/updateBookRating");
 
-export const selectBook = (path: string) => (state: RootState) =>
-  state.books.find((book) => book.path === path);
-
 export default booksSlice.reducer;

@@ -7,7 +7,6 @@ import {
   bookAdded,
   bookRemoved,
   fetchBooks,
-  selectBook,
   updateBook,
   addBook,
   addBooks,
@@ -16,13 +15,17 @@ import {
   updateBookRating,
   createBookThumbnailAll,
 } from "./booksSlice";
+import { removeSelectedBooks, selectBook, selectAll } from "./selectionSlice";
+import { RootState } from "../../app/store";
 
 function* handleUpdateBook(action: {
   payload: { path: string; title: string; author: string };
 }) {
   const { path, title, author } = action.payload;
 
-  const book: Book | undefined = yield select(selectBook(path));
+  const book: Book | undefined = yield select((state: RootState) =>
+    state.books.find((book) => book.path === path)
+  );
 
   if (!book) {
     //error
@@ -142,6 +145,31 @@ function* handleBookAdded(action: { payload: { path: string } }) {
   yield handleCreateBookThumbnail(action);
 }
 
+function* handleRemoveSelectedBooks() {
+  const books: Book[] = yield select((state) => state.selection);
+
+  for (const book of books) {
+    try {
+      yield call(window.electronAPI.moveToTrash, book.path);
+      yield put(removeBook({ path: book.path }));
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
+function* handleSelectAll() {
+  const books: Book[] = yield select((state) => state.books);
+
+  for (const book of books) {
+    try {
+      yield put(selectBook(book));
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
 export default [
   takeLatest(updateBook, handleUpdateBook),
   takeLatest(fetchBooks, handleFetchBooks),
@@ -152,4 +180,6 @@ export default [
   takeLatest(createBookThumbnailAll, handleCreateBookThumbnailAll),
   takeLatest(updateBookRating, handleUpdateBookRating),
   takeEvery(bookAdded, handleBookAdded),
+  takeLatest(removeSelectedBooks, handleRemoveSelectedBooks),
+  takeLatest(selectAll, handleSelectAll),
 ];

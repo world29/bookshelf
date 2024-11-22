@@ -9,6 +9,7 @@
   overflow: hidden;
   background-color: #fff;
   box-shadow: 0 0 0.2em 1px #ddd;
+  position: relative;
 }
 
 .bookWrapper > .thumbnail {
@@ -19,6 +20,12 @@
 .thumbnail img {
   width: 100%;
   object-fit: contain;
+}
+
+.bookSelect {
+  position: absolute;
+  top: 10px;
+  left: 10px;
 }
 
 .bookText {

@@ -1,7 +1,7 @@
-﻿import { useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 
 import { Book } from "../../models/book";
-import { useAppDispatch } from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import ContextMenu from "./ContextMenu";
 import StarRating from "./StarRating";
 import {
@@ -12,9 +12,15 @@ import {
 import BookEditorDialog from "./BookEditorDialog";
 
 import "./../styles/BookList.css";
+import {
+  clearSelection,
+  deselectBook,
+  selectBook,
+} from "../features/books/selectionSlice";
 
 type BookListItemProps = {
   book: Book;
+  selected: boolean;
   onClickEdit: () => void;
 };
 
@@ -23,7 +29,7 @@ type BookListProps = {
 };
 
 const BookListItem = (props: BookListItemProps) => {
-  const { book, onClickEdit } = props;
+  const { book, selected, onClickEdit } = props;
 
   const dispatch = useAppDispatch();
 
@@ -39,6 +45,14 @@ const BookListItem = (props: BookListItemProps) => {
 
   const handleClickOpen = () => {
     window.electronAPI.openFile(book.path);
+  };
+
+  const handleSelect = () => {
+    if (selected) {
+      dispatch(deselectBook(book));
+    } else {
+      dispatch(selectBook(book));
+    }
   };
 
   const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -111,8 +125,11 @@ const BookListItem = (props: BookListItemProps) => {
 
   return (
     <div className="bookWrapper" onContextMenu={handleContextMenu}>
-      <div className="thumbnail">
+      <div className="thumbnail" onClick={handleSelect}>
         <img src={createThumbnailUrl()} alt="thumbnail" />
+        <div className="bookSelect">
+          <input type="checkbox" checked={selected} readOnly />
+        </div>
       </div>
       <div>
         <div className="bookText">{book.title}</div>
@@ -140,8 +157,15 @@ const BookListItem = (props: BookListItemProps) => {
 export const BookList = (props: BookListProps) => {
   const { books } = props;
 
+  const dispatch = useAppDispatch();
+  const selection = useAppSelector((state) => state.selection);
+
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [bookToEdit, setBookToEdit] = useState<Book | null>(null);
+
+  useEffect(() => {
+    dispatch(clearSelection());
+  }, [books]);
 
   function showEditDialog(book: Book) {
     if (dialogRef.current) {
@@ -163,6 +187,7 @@ export const BookList = (props: BookListProps) => {
           <BookListItem
             key={book.path}
             book={book}
+            selected={selection.findIndex((x) => x.path === book.path) !== -1}
             onClickEdit={() => showEditDialog(book)}
           />
         ))}

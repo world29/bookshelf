@@ -7,6 +7,10 @@ import { addBooks, createBookThumbnailAll } from "../features/books/booksSlice";
 import RatingSelect from "./RatingSelect";
 
 import "./../styles/Nav.css";
+import {
+  removeSelectedBooks,
+  selectAll,
+} from "../features/books/selectionSlice";
 
 type Props = {
   onChangeString: (queryString: string) => void;
@@ -85,6 +89,20 @@ export const Nav = (props: Props) => {
         </div>
       </div>
       <div>
+        <button
+          className="button"
+          type="button"
+          onClick={() => dispatch(selectAll())}
+        >
+          selection:all
+        </button>
+        <button
+          className="button"
+          type="button"
+          onClick={() => dispatch(removeSelectedBooks())}
+        >
+          selection:remove
+        </button>
         <button
           className="button"
           type="button"
